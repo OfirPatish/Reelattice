@@ -19,6 +19,10 @@ export default defineConfig({
   },
 
   clearScreen: false,
+  build: {
+    // Desktop app — single bundle is fine; avoids noisy 500 kB warnings.
+    chunkSizeWarningLimit: 700,
+  },
   server: {
     port: 1420,
     strictPort: true,
