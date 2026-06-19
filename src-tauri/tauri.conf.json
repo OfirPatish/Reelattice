@@ -1,0 +1,85 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Reelattice",
+  "version": "0.1.0",
+  "identifier": "com.ofirp.Reelattice",
+  "build": {
+    "beforeDevCommand": "npm run dev",
+    "devUrl": "http://localhost:1420",
+    "beforeBuildCommand": "npm run build",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "windows": [
+      {
+        "label": "main",
+        "title": "Reelattice",
+        "width": 1680,
+        "height": 945,
+        "center": true,
+        "visible": false,
+        "focus": true,
+        "resizable": true,
+        "maximizable": true,
+        "minimizable": true,
+        "closable": true,
+        "decorations": false,
+        "backgroundColor": "#09090b",
+        "theme": "Dark",
+        "dragDropEnabled": true
+      }
+    ],
+    "security": {
+      "csp": null,
+      "assetProtocol": {
+        "enable": true,
+        "scope": [
+          "$DOCUMENT/Reelattice/**",
+          "$APPDATA/Reelattice/**",
+          "$HOME/Documents/Reelattice/**",
+          "$HOME/OneDrive/Documents/Reelattice/**",
+          "$HOME/OneDrive/**/Reelattice/**",
+          "$DOCUMENT/Vaultline/**",
+          "$APPDATA/Vaultline/**",
+          "$HOME/Documents/Vaultline/**"
+        ]
+      }
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "createUpdaterArtifacts": true,
+    "externalBin": ["binaries/ffmpeg"],
+    "category": "Utility",
+    "shortDescription": "Organize Tesla Dashcam footage",
+    "longDescription": "Local-first desktop app for importing, organizing, and reviewing Tesla Dashcam and Sentry Mode recordings.",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "windows": {
+      "nsis": {
+        "sidebarImage": "installer/sidebar.bmp",
+        "headerImage": "installer/header.bmp",
+        "installerIcon": "icons/icon.ico",
+        "uninstallerIcon": "icons/icon.ico",
+        "startMenuFolder": "Reelattice"
+      }
+    }
+  },
+  "plugins": {
+    "updater": {
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEJCRjk5M0IyQ0JFQkNFNjAKUldSZ3p1dkxzcFA1dXd6NjRpRk0zMHlTdmZXc1lWaVNUMm53ZEIwTXEwTGVnSCtzNlE4WG56cGwK",
+      "endpoints": [
+        "https://github.com/OfirPatish/Reelattice/releases/latest/download/latest.json"
+      ],
+      "windows": {
+        "installMode": "passive"
+      }
+    }
+  }
+}

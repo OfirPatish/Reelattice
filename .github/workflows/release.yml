@@ -1,0 +1,55 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Download FFmpeg sidecar
+        shell: pwsh
+        run: ./scripts/download-ffmpeg.ps1
+
+      - name: Generate installer assets
+        shell: pwsh
+        run: ./scripts/generate-installer-assets.ps1
+
+      - name: Build and publish release
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+        with:
+          tagName: ${{ github.ref_name }}
+          releaseName: Reelattice ${{ github.ref_name }}
+          releaseBody: See the assets below to install or update Reelattice on Windows.
+          releaseDraft: false
+          prerelease: false
+          args: --bundles nsis
+          tauriScript: npm run tauri
+          uploadUpdaterJson: true
+          updaterJsonPreferNsis: true
