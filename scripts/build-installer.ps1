@@ -1,5 +1,5 @@
 # Builds a signed NSIS installer with updater artifacts.
-# Auto-sets TAURI_SIGNING_PRIVATE_KEY_PATH when the default key exists.
+# Loads the default minisign private key for Tauri signing.
 
 $ErrorActionPreference = "Stop"
 $root = Split-Path $PSScriptRoot -Parent
@@ -9,10 +9,7 @@ Set-Location $root
 
 & "$PSScriptRoot\generate-installer-assets.ps1"
 
-if (Test-Path $keyPath) {
-    $env:TAURI_SIGNING_PRIVATE_KEY_PATH = $keyPath
-    Write-Host "Using signing key: $keyPath"
-} else {
+if (-not (Test-Path $keyPath)) {
     Write-Host ""
     Write-Host "No signing key found at $keyPath" -ForegroundColor Yellow
     Write-Host "Run: npm run updater:keys" -ForegroundColor Yellow
@@ -20,4 +17,9 @@ if (Test-Path $keyPath) {
     exit 1
 }
 
-npm run tauri -- build --bundles nsis
+$env:TAURI_SIGNING_PRIVATE_KEY = (Get-Content -Path $keyPath -Raw).Trim()
+$env:TAURI_SIGNING_PRIVATE_KEY_PATH = $keyPath
+Write-Host "Using signing key: $keyPath"
+
+# Call the CLI directly so npm does not drop signing env vars.
+npx tauri build --bundles nsis
