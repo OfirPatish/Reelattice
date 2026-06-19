@@ -2,7 +2,7 @@
 
 **Product:** Reelattice  
 **Type:** Local-first desktop app (Tauri 2 + React)  
-**Status:** v0.3.1 — daily-use ready  
+**Status:** v1.3 — daily-use ready, public releases on GitHub  
 **Last updated:** June 2026
 
 ---
@@ -76,6 +76,25 @@
 - [x] Library collapse: animated panel width; list content stays fixed width and clips (no event-card reflow); virtualized rows use stable heights
 - [x] Bulk select panel: action cards, selection progress, animated empty state on the right
 - [x] Library collapse chevron hidden when the list has no browsable events
+
+### Shipped (v1.0)
+
+- [x] Custom frameless window with draggable title bar and window controls (minimize / maximize / close)
+- [x] Branded NSIS installer (sidebar + header artwork)
+- [x] In-app auto-updates via GitHub Releases (`latest.json`, signed NSIS bundle)
+- [x] GitHub Actions release workflow + updater signing keys
+- [x] User-facing version display as major.minor (e.g. **1.0** from `1.0.0`)
+- [x] Header update status indicator (check on startup, install from Settings → About)
+
+### Shipped (v1.3)
+
+- [x] **Changelog** tab — concise release notes per version (1.0 → latest)
+- [x] Help: software update behavior in Good to know
+
+### Shipped (v1.2)
+
+- [x] New circular transparent app icon (multi-cam reel / play motif)
+- [x] Round `AppLogo` in title bar and Settings
 
 ### Next (v0.4)
 

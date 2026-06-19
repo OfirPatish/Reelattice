@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { useEffect } from "react";
-import { CircleHelp, FolderOpen, Library, Settings } from "lucide-react";
+import { CircleHelp, FolderOpen, Library, ScrollText, Settings } from "lucide-react";
 import { AppLogo } from "@/components/app-logo";
 import { UpdateStatusIndicator } from "@/components/layout/update-status-indicator";
 import { WindowControls } from "@/components/layout/window-controls";
@@ -21,6 +21,7 @@ const navItems: NavItem[] = [
   { id: "library", label: "Library", icon: <Library className="h-4 w-4" aria-hidden /> },
   { id: "import", label: "Import", icon: <FolderOpen className="h-4 w-4" aria-hidden /> },
   { id: "help", label: "Help", icon: <CircleHelp className="h-4 w-4" aria-hidden /> },
+  { id: "changelog", label: "Changelog", icon: <ScrollText className="h-4 w-4" aria-hidden /> },
   { id: "settings", label: "Settings", icon: <Settings className="h-4 w-4" aria-hidden /> },
 ];
 
@@ -58,6 +59,14 @@ const HeaderContext = ({ activeView }: { activeView: AppView }) => {
     return (
       <p className="max-w-xs text-right text-[11px] leading-snug text-zinc-600">
         Guides, shortcuts, and examples
+      </p>
+    );
+  }
+
+  if (activeView === "changelog") {
+    return (
+      <p className="max-w-xs text-right text-[11px] leading-snug text-zinc-600">
+        Release notes by version
       </p>
     );
   }

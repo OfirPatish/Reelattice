@@ -2,6 +2,7 @@ import { useMemo, type ReactNode } from "react";
 import {
   Archive,
   CheckSquare,
+  Download,
   FolderOpen,
   Grid2x2,
   Keyboard,
@@ -293,6 +294,17 @@ export const HelpView = () => {
                   Grid MP4 export and first-time list thumbnails (cached as JPEGs under
                   library/.thumbnails). ZIP export, import copy, and playback do not spawn
                   background encodes.
+                </p>
+              </div>
+            </div>
+            <div className="flex gap-3 rounded-lg border border-zinc-800/80 bg-zinc-950/40 px-4 py-3">
+              <Download className="mt-0.5 h-4 w-4 shrink-0 text-sky-400" aria-hidden />
+              <div>
+                <p className="text-sm font-medium text-zinc-300">Software updates</p>
+                <p className="mt-1 text-xs leading-relaxed text-zinc-500">
+                  Reelattice checks for updates when you open the app and when you click Check for
+                  updates in Settings → About. New versions download and install inside the app — no
+                  need to visit GitHub after your first install.
                 </p>
               </div>
             </div>

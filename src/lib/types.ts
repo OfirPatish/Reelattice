@@ -92,4 +92,4 @@ export type AppSettings = {
   stats: LibraryStats;
 };
 
-export type AppView = "library" | "import" | "settings" | "help";
+export type AppView = "library" | "import" | "settings" | "help" | "changelog";

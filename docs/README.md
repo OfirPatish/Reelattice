@@ -2,7 +2,7 @@
 
 | Document | Description |
 |----------|-------------|
-| [../README.md](../README.md) | Features, setup, commands, keyboard shortcuts |
+| [../README.md](../README.md) | Features, setup, releases, icon workflow, keyboard shortcuts |
 | [PLAN.md](./PLAN.md) | Roadmap, architecture, module map |
 
 ## In-app Help

@@ -51,6 +51,7 @@ Local-first desktop app for organizing Tesla Dashcam, Sentry Mode, and Saved cli
 
 ### Help
 - In-app **Help** tab: quick start, topic guides with examples, keyboard shortcuts, storage notes
+- **Changelog** tab: concise release notes per version
 - Complements Settings (paths, stats, prefs) for onboarding new users
 
 ### Settings
@@ -59,7 +60,7 @@ Local-first desktop app for organizing Tesla Dashcam, Sentry Mode, and Saved cli
 - Current display preferences summary + reset (sort, filters, list width, playback layout, panel state)
 - Export & processes: segment export, grid MP4, FFmpeg lifecycle
 - Keyboard shortcuts reference (library + playback)
-- App version and local-first privacy note
+- App version, in-app software updates (check on startup or from About), and local-first privacy note
 
 ### Data model
 - **Import copies files** to `Documents/Reelattice/library/{timestamp}/{event-id}/` — playback uses the copy, not the original USB path
@@ -160,20 +161,18 @@ Import (copy), playback, and ZIP export do **not** require FFmpeg during import.
 
 ## App icon
 
-Source: `reelattice-icon-source.png` (1024×1024). Regenerate all sizes:
+Source: `reelattice-icon-source.png` (1024×1024 PNG, transparent background, circular artwork). Regenerate all sizes and sync to the UI:
 
-```bash
-npx tauri icon reelattice-icon-source.png
-Copy-Item src-tauri/icons/32x32.png public/icons/32x32.png
-Copy-Item src-tauri/icons/128x128.png public/icons/128x128.png
-Copy-Item src-tauri/icons/128x128@2x.png public/icons/app-logo.png
+```powershell
+npm run icons:generate
+npm run installer:assets   # refresh NSIS sidebar/header from the new icon
 ```
 
-Icons are used in: window title bar / `.exe`, `public/icons/` (favicon + header via `AppLogo`).
+Icons are used in: window title bar / `.exe`, `public/icons/` (favicon + header via `AppLogo`, displayed as a circle).
 
 ## Releases & in-app updates
 
-Reelattice checks [GitHub Releases](https://github.com/OfirPatish/Reelattice/releases) for updates. Installed apps can download and install signed updates from **Settings → About** or when prompted on startup.
+Reelattice checks [GitHub Releases](https://github.com/OfirPatish/Reelattice/releases) for updates. Installed apps download and install signed updates in-app from **Settings → About** or when prompted on startup. Use **Check for updates** anytime while the app is open; there is no background polling between checks.
 
 ### First-time setup (signing keys)
 
@@ -188,13 +187,13 @@ Add the private key to GitHub repository secrets as `TAURI_SIGNING_PRIVATE_KEY` 
 
 ### Publish a new version
 
-1. Bump version in `package.json` (`1.0`), `src-tauri/Cargo.toml` and `src-tauri/tauri.conf.json` (`1.0.0` — semver required by Rust/Tauri). The app displays **1.0** to users.
+1. Bump version in `package.json` (`1.2`), `src-tauri/Cargo.toml` and `src-tauri/tauri.conf.json` (`1.2.0` — semver required by Rust/Tauri). The app displays **1.2** to users.
 2. Commit and push to GitHub
 3. Tag and push:
 
 ```bash
-git tag v1.0
-git push origin v1.0
+git tag v1.2
+git push origin v1.2
 ```
 
 GitHub Actions builds the signed NSIS installer, updater bundle, and `latest.json`, then attaches them to the release.
@@ -242,4 +241,4 @@ Full details: [docs/README.md](./docs/README.md) · Roadmap: [docs/PLAN.md](./do
 
 ## License
 
-Private — not for distribution.
+All rights reserved — see repository for usage terms.

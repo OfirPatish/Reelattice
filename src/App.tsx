@@ -7,6 +7,7 @@ import { EventList } from "@/components/event-list";
 import { ImportWizard } from "@/components/import-wizard";
 import { SettingsView } from "@/components/settings-view";
 import { HelpView } from "@/components/help-view";
+import { ChangelogView } from "@/components/changelog-view";
 
 const App = () => {
   const [view, setView] = useState<AppView>("library");
@@ -60,6 +61,14 @@ const App = () => {
         )}
       >
         <HelpView />
+      </div>
+      <div
+        className={cn(
+          "min-h-0 flex-1 flex-col",
+          view === "changelog" ? "flex" : "hidden",
+        )}
+      >
+        <ChangelogView />
       </div>
       <div
         className={cn(

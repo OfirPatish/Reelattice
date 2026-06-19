@@ -1,0 +1,48 @@
+export type ChangelogEntry = {
+  version: string;
+  date: string;
+  highlights: string[];
+};
+
+/** Newest first — user-facing release notes (major.minor). */
+export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: "1.3",
+    date: "June 2026",
+    highlights: [
+      "New Changelog tab with concise release notes per version",
+      "Help guide: how in-app software updates work (Settings → About)",
+    ],
+  },
+  {
+    version: "1.2",
+    date: "June 2026",
+    highlights: [
+      "New circular transparent app icon (multi-cam reel motif)",
+      "Round AppLogo in title bar and Settings",
+      "Refreshed installer and platform icon assets",
+    ],
+  },
+  {
+    version: "1.1",
+    date: "June 2026",
+    highlights: [
+      "Maintenance release validating the signed auto-update pipeline",
+    ],
+  },
+  {
+    version: "1.0",
+    date: "June 2026",
+    highlights: [
+      "First public Windows release with GitHub-hosted updates",
+      "Branded NSIS installer and in-app auto-updates (check on startup, install from Settings)",
+      "Header update status indicator and custom frameless window",
+      "TeslaCam import: Recent, Sentry, Saved folders, drag-and-drop, async copy",
+      "Event library: search, filters, tags, notes, archive, bulk select & export",
+      "Single + Grid multi-camera playback, 30s segment export (scissors mode)",
+      "ZIP and grid MP4 export with live FFmpeg progress",
+      "Collapsible library list and details inspector, virtualized event list",
+      "FFmpeg thumbnails, Help tab, and keyboard shortcuts",
+    ],
+  },
+];
