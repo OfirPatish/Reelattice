@@ -5,6 +5,9 @@ import { check, type DownloadEvent, type Update } from "@tauri-apps/plugin-updat
 export const GITHUB_REPO = "OfirPatish/Reelattice";
 export const GITHUB_RELEASES_URL = `https://github.com/${GITHUB_REPO}/releases`;
 
+/** How long transient statuses stay visible in the header before hiding. */
+export const UPDATE_STATUS_VISIBLE_MS = 8_000;
+
 const DISMISSED_VERSION_KEY = "reelattice.dismissed-update-version";
 
 export type AppUpdateStatus =

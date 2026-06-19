@@ -7,6 +7,7 @@ import {
   installAppUpdate,
   isUpdaterEnabled,
   promptStartupUpdate,
+  UPDATE_STATUS_VISIBLE_MS,
   type AppUpdateState,
 } from "@/lib/app-update";
 
@@ -19,14 +20,50 @@ export const useAppUpdate = ({ currentVersion, checkOnStartup = false }: UseAppU
   const [state, setState] = useState<AppUpdateState>(() => initialAppUpdateState(currentVersion));
   const pendingUpdateRef = useRef<Update | null>(null);
   const startupCheckedRef = useRef(false);
+  const idleTimerRef = useRef<number | null>(null);
 
   useEffect(() => {
     setState((prev) => ({ ...prev, currentVersion }));
   }, [currentVersion]);
 
+  useEffect(
+    () => () => {
+      if (idleTimerRef.current !== null) {
+        window.clearTimeout(idleTimerRef.current);
+      }
+    },
+    [],
+  );
+
+  const scheduleReturnToIdle = useCallback(() => {
+    if (idleTimerRef.current !== null) {
+      window.clearTimeout(idleTimerRef.current);
+    }
+
+    idleTimerRef.current = window.setTimeout(() => {
+      setState((prev) => {
+        if (
+          prev.status !== "up-to-date" &&
+          prev.status !== "error" &&
+          prev.status !== "checking"
+        ) {
+          return prev;
+        }
+
+        return { ...prev, status: "idle" };
+      });
+      idleTimerRef.current = null;
+    }, UPDATE_STATUS_VISIBLE_MS);
+  }, []);
+
   const runInstall = useCallback(async (update: Update | null = pendingUpdateRef.current) => {
     if (!update) {
       return;
+    }
+
+    if (idleTimerRef.current !== null) {
+      window.clearTimeout(idleTimerRef.current);
+      idleTimerRef.current = null;
     }
 
     setState((prev) => ({
@@ -50,8 +87,9 @@ export const useAppUpdate = ({ currentVersion, checkOnStartup = false }: UseAppU
         status: "error",
         errorMessage: formatUpdateError(error),
       }));
+      scheduleReturnToIdle();
     }
-  }, []);
+  }, [scheduleReturnToIdle]);
 
   const runCheck = useCallback(
     async (options?: { silent?: boolean }) => {
@@ -64,7 +102,13 @@ export const useAppUpdate = ({ currentVersion, checkOnStartup = false }: UseAppU
           downloadPercent: null,
           errorMessage: null,
         }));
+        scheduleReturnToIdle();
         return null;
+      }
+
+      if (idleTimerRef.current !== null) {
+        window.clearTimeout(idleTimerRef.current);
+        idleTimerRef.current = null;
       }
 
       setState((prev) => ({
@@ -85,6 +129,7 @@ export const useAppUpdate = ({ currentVersion, checkOnStartup = false }: UseAppU
             availableVersion: null,
             releaseNotes: null,
           }));
+          scheduleReturnToIdle();
           return null;
         }
 
@@ -112,10 +157,13 @@ export const useAppUpdate = ({ currentVersion, checkOnStartup = false }: UseAppU
           releaseNotes: null,
           errorMessage: formatUpdateError(error),
         }));
+        if (!options?.silent) {
+          scheduleReturnToIdle();
+        }
         return null;
       }
     },
-    [checkOnStartup, currentVersion, runInstall],
+    [checkOnStartup, currentVersion, runInstall, scheduleReturnToIdle],
   );
 
   useEffect(() => {
