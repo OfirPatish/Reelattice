@@ -2,7 +2,10 @@ import type { ReactNode } from "react";
 import { useEffect } from "react";
 import { CircleHelp, FolderOpen, Library, Settings } from "lucide-react";
 import { AppLogo } from "@/components/app-logo";
+import { UpdateStatusIndicator } from "@/components/layout/update-status-indicator";
 import { WindowControls } from "@/components/layout/window-controls";
+import { useAppUpdateContext } from "@/contexts/app-update-context";
+import { isUpdaterEnabled } from "@/lib/app-update";
 import { sourceBadgeClass, sourceLabel } from "@/lib/format";
 import { handleTitleBarMouseDown, stopTitleBarMouseDown } from "@/lib/title-bar";
 import type { AppView, EventSource } from "@/lib/types";
@@ -104,6 +107,10 @@ const isTextEntryElement = (target: EventTarget | null) => {
 };
 
 export const AppShell = ({ activeView, onNavigate, children }: AppShellProps) => {
+  const { state: updateState } = useAppUpdateContext();
+  const showSettingsUpdateDot =
+    isUpdaterEnabled() && updateState.status === "available";
+
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key !== "a" && event.key !== "A") return;
@@ -155,7 +162,7 @@ export const AppShell = ({ activeView, onNavigate, children }: AppShellProps) =>
                 onClick={() => onNavigate(item.id)}
                 aria-current={isActive ? "page" : undefined}
                 className={cn(
-                  "flex items-center gap-2 rounded-md px-3 py-1.5 text-sm font-medium transition-colors outline-none focus:outline-none focus-visible:outline-none",
+                  "relative flex items-center gap-2 rounded-md px-3 py-1.5 text-sm font-medium transition-colors outline-none focus:outline-none focus-visible:outline-none",
                   isActive
                     ? "bg-zinc-800 text-zinc-100"
                     : "text-zinc-400 hover:bg-zinc-900 hover:text-zinc-200",
@@ -163,15 +170,26 @@ export const AppShell = ({ activeView, onNavigate, children }: AppShellProps) =>
               >
                 {item.icon}
                 {item.label}
+                {item.id === "settings" && showSettingsUpdateDot && (
+                  <span
+                    className="absolute top-1.5 right-1.5 h-1.5 w-1.5 rounded-full bg-emerald-400"
+                    aria-hidden
+                  />
+                )}
               </button>
             );
           })}
         </nav>
 
-        <div className="flex min-w-0 flex-1 items-center justify-end px-4">
+        <div
+          className="flex min-w-0 flex-1 items-center justify-end gap-3 px-4"
+          data-no-drag
+          onMouseDown={stopTitleBarMouseDown}
+        >
           <div className="hidden sm:block">
             <HeaderContext activeView={activeView} />
           </div>
+          <UpdateStatusIndicator onOpenSettings={() => onNavigate("settings")} />
         </div>
 
         <WindowControls />

@@ -23,7 +23,7 @@ import {
 import { getAppSettings, openDataFolder, openLibraryFolder } from "@/lib/api";
 import { AppLogo } from "@/components/app-logo";
 import { AppUpdatePanel } from "@/components/settings/app-update-panel";
-import { useAppUpdate } from "@/hooks/use-app-update";
+import { useAppUpdateContext } from "@/contexts/app-update-context";
 import { formatFileSize, sourceBadgeClass, sourceLabel } from "@/lib/format";
 import {
   describeLibraryPreferences,
@@ -196,9 +196,7 @@ export const SettingsView = ({ active, refreshKey }: SettingsViewProps) => {
   const [libraryPrefs, setLibraryPrefs] = useState(loadLibraryPreferences);
   const hasLoadedOnceRef = useRef(false);
   const copyTimeoutRef = useRef<number | null>(null);
-  const { state: updateState, checkForUpdate, installUpdate } = useAppUpdate({
-    currentVersion: settings?.version ?? "0.0.0",
-  });
+  const { state: updateState, checkForUpdate, installUpdate } = useAppUpdateContext();
 
   const preferenceRows = useMemo(
     () => describeLibraryPreferences(libraryPrefs),

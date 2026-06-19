@@ -123,9 +123,13 @@ export const useAppUpdate = ({ currentVersion, checkOnStartup = false }: UseAppU
       return;
     }
 
+    if (!currentVersion || currentVersion === "0.0.0") {
+      return;
+    }
+
     startupCheckedRef.current = true;
     void runCheck({ silent: true });
-  }, [checkOnStartup, runCheck]);
+  }, [checkOnStartup, currentVersion, runCheck]);
 
   return {
     state,

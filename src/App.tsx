@@ -2,7 +2,7 @@ import { useState } from "react";
 import { cn } from "@/lib/utils";
 import type { AppView } from "@/lib/types";
 import { AppShell } from "@/components/layout/app-shell";
-import { StartupUpdateCheck } from "@/components/startup-update-check";
+import { AppUpdateProvider } from "@/contexts/app-update-context";
 import { EventList } from "@/components/event-list";
 import { ImportWizard } from "@/components/import-wizard";
 import { SettingsView } from "@/components/settings-view";
@@ -25,8 +25,8 @@ const App = () => {
   };
 
   return (
-    <AppShell activeView={view} onNavigate={setView}>
-      <StartupUpdateCheck />
+    <AppUpdateProvider>
+      <AppShell activeView={view} onNavigate={setView}>
       <div
         className={cn(
           "min-h-0 flex-1 flex-col",
@@ -69,7 +69,8 @@ const App = () => {
       >
         <SettingsView active={view === "settings"} refreshKey={refreshKey} />
       </div>
-    </AppShell>
+      </AppShell>
+    </AppUpdateProvider>
   );
 };
 
