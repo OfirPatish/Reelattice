@@ -294,9 +294,24 @@ pub fn get_settings(db: &Database) -> AppResult<AppSettings> {
     Ok(AppSettings {
         library_path: library_path.to_string_lossy().to_string(),
         db_path: db_path.to_string_lossy().to_string(),
-        version: env!("CARGO_PKG_VERSION").to_string(),
+        version: format_display_version(env!("CARGO_PKG_VERSION")),
         stats,
     })
+}
+
+fn format_display_version(version: &str) -> String {
+    let mut parts = version.split('.');
+    let major = parts.next().unwrap_or("0");
+    let minor = parts.next().unwrap_or("0");
+    let patch = parts.next();
+
+    if patch == Some("0") {
+        format!("{major}.{minor}")
+    } else if let Some(patch) = patch {
+        format!("{major}.{minor}.{patch}")
+    } else {
+        version.to_string()
+    }
 }
 
 pub(crate) fn load_event_by_id(db: &Database, event_id: &str) -> AppResult<DashEvent> {

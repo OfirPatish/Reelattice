@@ -188,13 +188,13 @@ Add the private key to GitHub repository secrets as `TAURI_SIGNING_PRIVATE_KEY` 
 
 ### Publish a new version
 
-1. Bump version in `package.json`, `src-tauri/Cargo.toml`, and `src-tauri/tauri.conf.json`
+1. Bump version in `package.json` (`1.0`), `src-tauri/Cargo.toml` and `src-tauri/tauri.conf.json` (`1.0.0` — semver required by Rust/Tauri). The app displays **1.0** to users.
 2. Commit and push to GitHub
 3. Tag and push:
 
 ```bash
-git tag v0.2.0
-git push origin v0.2.0
+git tag v1.0
+git push origin v1.0
 ```
 
 GitHub Actions builds the signed NSIS installer, updater bundle, and `latest.json`, then attaches them to the release.
@@ -202,9 +202,10 @@ GitHub Actions builds the signed NSIS installer, updater bundle, and `latest.jso
 ### Local signed installer (optional)
 
 ```powershell
-$env:TAURI_SIGNING_PRIVATE_KEY_PATH = "$env:USERPROFILE\.tauri\reelattice.key"
 npm run tauri:installer
 ```
+
+The build script auto-uses `%USERPROFILE%\.tauri\reelattice.key` when present. If missing, run `npm run updater:keys` first.
 
 Ship `src-tauri/target/release/bundle/nsis/Reelattice_<version>_x64-setup.exe` for new installs. Existing users update in-app once `latest.json` is on the release.
 
