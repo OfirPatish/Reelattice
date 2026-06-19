@@ -433,7 +433,7 @@ export const SettingsView = ({ active, refreshKey }: SettingsViewProps) => {
           <SettingsSection title="About" className="lg:col-span-2 xl:col-span-4">
             <div className="space-y-4 p-5">
               <div className="flex items-center gap-3">
-                <AppLogo size={40} className="rounded-xl" />
+                <AppLogo size={40} />
                 <div>
                   <p className="text-sm font-semibold text-zinc-100">Reelattice</p>
                   <p className="text-xs text-zinc-500">

@@ -13,6 +13,6 @@ export const AppLogo = ({ size = 20, className }: AppLogoProps) => (
     alt=""
     aria-hidden
     draggable={false}
-    className={cn("shrink-0 rounded-lg object-contain", className)}
+    className={cn("shrink-0 rounded-full object-contain", className)}
   />
 );
