@@ -33,7 +33,7 @@ Copy `.env.example` to `.env` when deploying:
 | `VITE_BASE` | Vite `base` path | `/` |
 | `VITE_DOWNLOAD_URL` | Download button target | `/download` (default) |
 
-Defaults if unset: `VITE_SITE_URL=https://reelattice.app`, `VITE_BASE=/`, `VITE_DOWNLOAD_URL=/download`.
+Defaults if unset: `VITE_SITE_URL=https://reelattice.vercel.app`, `VITE_BASE=/`, `VITE_DOWNLOAD_URL=/download`.
 
 ## Deploy
 

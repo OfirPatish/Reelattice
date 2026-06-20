@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 
 const rootDir = path.dirname(fileURLToPath(import.meta.url));
 
-const siteUrl = (process.env.VITE_SITE_URL ?? "https://reelattice.app").replace(/\/$/, "");
+const siteUrl = (process.env.VITE_SITE_URL ?? "https://reelattice.vercel.app").replace(/\/$/, "");
 const releasesRepo = process.env.VITE_RELEASES_REPO ?? "OfirPatish/Reelattice";
 const releasesLatestApi =
   process.env.VITE_RELEASES_LATEST_API ??
