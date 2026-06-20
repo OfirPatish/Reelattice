@@ -1,3 +1,25 @@
+node_modules
+dist
+dist-ssr
+*.local
+
+# Environment & secrets (never commit real values)
+.env
+.env.*
+!.env.example
+!**/.env.example
+
+# Signing secrets if copied into the repo (private key lives in %USERPROFILE%\.tauri\)
+*.key
+*.pem
+
+# TypeScript / Vite caches
+*.tsbuildinfo
+.vite/
+
+# Test output
+coverage/
+
 # Logs
 logs
 *.log
@@ -7,10 +29,7 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
-*.local
+# Icon generation scratch files
 reelattice-icon-work.png
 reelattice-icon-work.png.tmp
 reelattice-icon-source.png.tmp
@@ -32,5 +51,7 @@ src-tauri/gen/schemas
 
 # OS
 Thumbs.db
+ehthumbs.db
+Desktop.ini
 
 .vercel
