@@ -2,7 +2,7 @@
 
 **Product:** Reelattice  
 **Type:** Local-first desktop app (Tauri 2 + React)  
-**Status:** v1.7 — daily-use ready, public releases on GitHub  
+**Status:** v1.8 — daily-use ready, public releases on GitHub  
 **Last updated:** June 2026
 
 ---
@@ -101,6 +101,12 @@
 - [x] Cancel mid-copy during import (async Rust job + Cancel import in wizard)
 - [x] Custom library location (Settings → Change location; new imports use chosen folder)
 - [x] Cases / incident bundles (Cases tab, link events from bulk select)
+
+### Shipped (v1.8)
+
+- [x] Cases linked-events panel — scrollable list with stable layout for large bundles
+- [x] Fixed linked events intermittently hidden in case detail (flex collapse + loading layout)
+- [x] Cases tab initial load — skeleton placeholders + indeterminate bar (aligned with Library)
 
 ### Shipped (v1.7)
 

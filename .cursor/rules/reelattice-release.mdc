@@ -9,15 +9,15 @@ When preparing a release (bump version, tag, or user asks to "ship"/"release"), 
 
 ## Version numbers
 
-Use **major.minor** in UI (`1.7`) and **major.minor.patch** in Rust/Tauri (`1.7.0`).
+Use **major.minor** in UI (`1.8`) and **major.minor.patch** in Rust/Tauri (`1.8.0`).
 
 | File | Field |
 |------|-------|
-| `package.json` | `"version": "1.7"` |
-| `src-tauri/Cargo.toml` | `version = "1.7.0"` |
-| `src-tauri/tauri.conf.json` | `"version": "1.7.0"` |
-| `website/package.json` | `"version": "1.7.0"` |
-| `website/src/lib/constants.ts` | `APP_VERSION = "1.7"` |
+| `package.json` | `"version": "1.8"` |
+| `src-tauri/Cargo.toml` | `version = "1.8.0"` |
+| `src-tauri/tauri.conf.json` | `"version": "1.8.0"` |
+| `website/package.json` | `"version": "1.8.0"` |
+| `website/src/lib/constants.ts` | `APP_VERSION = "1.8"` |
 
 App display version comes from `CARGO_PKG_VERSION` in Rust — Cargo.toml must match `tauri.conf.json`.
 
@@ -37,8 +37,8 @@ App display version comes from `CARGO_PKG_VERSION` in Rust — Cargo.toml must m
 After commit + push to `main`:
 
 ```bash
-git tag v1.7
-git push origin v1.7
+git tag v1.8
+git push origin v1.8
 ```
 
 GitHub Actions builds the signed installer and `latest.json`. Do **not** tag without version bumps and changelog.

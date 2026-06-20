@@ -7,6 +7,15 @@ export type ChangelogEntry = {
 /** Newest first — user-facing release notes (major.minor). */
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: "1.8",
+    date: "June 2026",
+    highlights: [
+      "Cases linked-events list scrolls inside the panel — large bundles no longer stretch the layout",
+      "Fixed linked events sometimes missing from case detail",
+      "Cases tab loading matches Library — skeleton placeholders instead of hidden spinner text",
+    ],
+  },
+  {
     version: "1.7",
     date: "June 2026",
     highlights: [
