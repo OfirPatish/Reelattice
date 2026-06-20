@@ -8,7 +8,6 @@ import {
   Pencil,
   Plus,
   Trash2,
-  Video,
 } from "lucide-react";
 import {
   createIncidentCase,
@@ -18,8 +17,9 @@ import {
   removeEventFromIncidentCase,
   updateIncidentCase,
 } from "@/lib/api";
-import { formatEventTime, formatRelativeTime } from "@/lib/format";
+import { formatRelativeTime } from "@/lib/format";
 import type { CaseDetail, CaseSummary } from "@/lib/types";
+import { CaseLinkedEventsList } from "@/components/cases/case-linked-events-list";
 import { CaseTitlePresets } from "@/components/cases/case-title-presets";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -333,9 +333,9 @@ export const CasesView = ({
   const hasCases = cases.length > 0;
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
-      <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 p-5 lg:p-6">
-        <header>
+    <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
+      <div className="mx-auto flex min-h-0 w-full max-w-6xl flex-1 flex-col gap-4 overflow-hidden p-5 lg:p-6">
+        <header className="shrink-0">
           <h1 className="text-lg font-semibold tracking-tight text-zinc-100">Cases</h1>
           <p className="mt-0.5 max-w-2xl text-sm text-zinc-400">
             Group related events into incident bundles for review and export planning.
@@ -345,14 +345,14 @@ export const CasesView = ({
         {error && (
           <div
             role="alert"
-            className="flex items-start gap-2 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300"
+            className="flex shrink-0 items-start gap-2 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300"
           >
             <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
             {error}
           </div>
         )}
 
-        <div className="grid min-h-[420px] flex-1 gap-4 lg:grid-cols-[300px_minmax(0,1fr)]">
+        <div className="grid min-h-0 flex-1 gap-4 lg:grid-cols-[300px_minmax(0,1fr)]">
           <aside
             className={cn(
               "relative flex min-h-0 flex-col overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900/30",
@@ -519,7 +519,7 @@ export const CasesView = ({
                   isDetailBusy && "pointer-events-none",
                 )}
               >
-                <div className="border-b border-zinc-800/80 px-5 py-4">
+                <div className="shrink-0 border-b border-zinc-800/80 px-5 py-4">
                   <p className="text-xs font-medium uppercase tracking-wider text-zinc-500">
                     Case details
                   </p>
@@ -564,8 +564,8 @@ export const CasesView = ({
                   }
                 />
 
-                <div className="min-h-0 flex-1 border-t border-zinc-800/80">
-                  <div className="flex items-center justify-between px-5 py-3">
+                <div className="flex min-h-0 flex-1 flex-col overflow-hidden border-t border-zinc-800/80">
+                  <div className="flex shrink-0 items-center justify-between px-5 py-3">
                     <p className="text-xs font-medium uppercase tracking-wider text-zinc-500">
                       Linked events
                     </p>
@@ -573,54 +573,12 @@ export const CasesView = ({
                       {detail.events.length}
                     </span>
                   </div>
-                  <div className="min-h-0 overflow-y-auto px-3 pb-4">
-                    {detail.events.length === 0 ? (
-                      <div className="mx-2 rounded-lg border border-dashed border-zinc-800 bg-zinc-950/30 px-4 py-8 text-center">
-                        <Video className="mx-auto h-8 w-8 text-zinc-700" aria-hidden />
-                        <p className="mt-3 text-sm text-zinc-400">No events linked yet</p>
-                        <p className="mt-1 text-xs leading-relaxed text-zinc-600">
-                          In Library, bulk-select footage and choose Add to case.
-                        </p>
-                      </div>
-                    ) : (
-                      <ul className="space-y-2 px-2">
-                        {detail.events.map((event) => (
-                          <li
-                            key={event.id}
-                            className="flex items-center gap-3 rounded-lg border border-zinc-800/80 bg-zinc-950/50 px-3 py-3 transition hover:border-zinc-700/80"
-                          >
-                            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-zinc-900 text-zinc-500">
-                              <Video className="h-4 w-4" aria-hidden />
-                            </span>
-                            <button
-                              type="button"
-                              className="min-w-0 flex-1 text-left"
-                              onClick={() => onOpenEvent?.(event.id)}
-                            >
-                              <p className="truncate text-sm font-medium text-zinc-100">
-                                {formatEventTime(event.eventTime)}
-                              </p>
-                              <p className="mt-0.5 truncate text-xs text-zinc-500">
-                                {event.clips.length} cameras ·{" "}
-                                {event.tags.join(", ") || "No tags"}
-                              </p>
-                            </button>
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="icon"
-                              className="shrink-0 text-zinc-500 hover:text-red-300"
-                              aria-label={`Remove ${formatEventTime(event.eventTime)} from case`}
-                              onClick={() => void handleRemoveEvent(event.id)}
-                              disabled={saving}
-                            >
-                              <Trash2 className="h-4 w-4" aria-hidden />
-                            </Button>
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                  </div>
+                  <CaseLinkedEventsList
+                    events={detail.events}
+                    saving={saving}
+                    onOpenEvent={onOpenEvent}
+                    onRemoveEvent={(eventId) => void handleRemoveEvent(eventId)}
+                  />
                 </div>
               </div>
             ) : null}
@@ -712,7 +670,7 @@ const CaseEditor = ({
   const isEditing = mode === "create" || mode === "edit";
 
   return (
-    <div className="flex flex-col">
+    <div className="flex shrink-0 flex-col">
       <div className="space-y-4 px-5 py-4">
         {mode === "create" ? <CaseTitlePresets value={title} onSelect={onTitleChange} /> : null}
 
