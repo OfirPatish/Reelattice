@@ -32,3 +32,5 @@ src-tauri/gen/schemas
 
 # OS
 Thumbs.db
+
+.vercel
