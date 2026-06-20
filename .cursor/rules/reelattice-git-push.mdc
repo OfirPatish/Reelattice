@@ -1,13 +1,13 @@
 ---
-description: Before every git push — update user-facing changelog when anything users would notice changed
+description: Before every git push — changelog, and tag a release when the desktop app changed
 alwaysApply: true
 ---
 
 # Reelattice git push checklist
 
-Before **committing and pushing** to `main` (or any shared branch), always review whether the Changelog tab needs an update — even for small or minor changes.
+Before **committing and pushing** to `main` (or any shared branch), review changelog and whether a **new app release tag** is required.
 
-## When to update
+## When to update changelog
 
 Update `src/lib/changelog.ts` if the push includes anything a user might care about:
 
@@ -20,16 +20,27 @@ Skip changelog-only noise: internal refactors, CI/workflows, dev tooling, `.giti
 
 ## How to write entries
 
-- Add bullets to the **current version** entry if still shipping under that release, **or** add a new top entry when cutting a new version (see `reelattice-release.mdc`).
-- Write for end users in the Help/Changelog voice — what changed and why it matters, not file names or PR titles.
+- **New app release** → new top entry with bumped version (`1.9`, etc.); see `reelattice-release.mdc`.
+- **Website-only** on an already-shipped app version → optional website/README note; no app tag unless app code also changed.
+- Write for end users in the Help/Changelog voice — what changed and why it matters.
 - One clear bullet per user-visible change; group tiny related tweaks into one bullet.
 - Date format matches existing entries (`June 2026`).
 
+## When to tag a new app release
+
+If the push includes changes to **shipped desktop app behavior or UI** (`src/`, `src-tauri/`, app assets), you must **release a new version** so in-app updates can deliver it:
+
+1. Complete `reelattice-release.mdc` (version bumps, changelog entry, docs).
+2. Commit and `git push origin main`.
+3. `git tag vX.Y` and `git push origin vX.Y` — **same session**, do not leave app changes on `main` without a tag.
+
+Website-only pushes (`website/` only, no `src/` changes) do **not** need a new app tag — Vercel deploys from `main` automatically.
+
 ## Before push
 
-1. `git diff` — list user-visible changes since the last changelog update.
-2. Update `src/lib/changelog.ts` when needed.
-3. If update flow or Changelog tab copy changed, skim `src/components/changelog-view.tsx` and `src/components/help-view.tsx`.
-4. Commit changelog with the related changes (same commit or clearly linked).
+1. `git diff` — separate **app** vs **website-only** changes.
+2. Update `src/lib/changelog.ts` when users should know.
+3. If app code changed: bump versions and plan the tag (step 3 above).
+4. If update flow or Changelog tab copy changed, skim `src/components/changelog-view.tsx` and `src/components/help-view.tsx`.
 
-Do not push user-facing work without a changelog entry when users would benefit from knowing.
+Do not push user-facing app work without a changelog entry and release tag.

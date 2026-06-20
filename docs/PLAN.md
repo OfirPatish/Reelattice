@@ -2,7 +2,7 @@
 
 **Product:** Reelattice  
 **Type:** Local-first desktop app (Tauri 2 + React)  
-**Status:** v1.8 — daily-use ready, public releases on GitHub  
+**Status:** v1.9 — daily-use ready, public releases on GitHub  
 **Last updated:** June 2026
 
 ---
@@ -101,6 +101,12 @@
 - [x] Cancel mid-copy during import (async Rust job + Cancel import in wizard)
 - [x] Custom library location (Settings → Change location; new imports use chosen folder)
 - [x] Cases / incident bundles (Cases tab, link events from bulk select)
+
+### Shipped (v1.9)
+
+- [x] Public website live at reelattice.vercel.app (overview + Windows download)
+- [x] Privacy Policy and Terms of Use — website pages + Settings → About → Legal
+- [x] Website link chip — subtle animated corner link on every app screen
 
 ### Shipped (v1.8)
 

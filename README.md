@@ -200,7 +200,7 @@ Add the private key to GitHub repository secrets as `TAURI_SIGNING_PRIVATE_KEY` 
 
 Follow the release checklist in `.cursor/rules/reelattice-release.mdc` (or ask the agent to run it).
 
-1. Bump version in `package.json` (`1.8`), `src-tauri/Cargo.toml` and `src-tauri/tauri.conf.json` (`1.8.0` — semver required by Rust/Tauri). The app displays **1.8** to users.
+1. Bump version in `package.json` (`1.9`), `src-tauri/Cargo.toml` and `src-tauri/tauri.conf.json` (`1.9.0` — semver required by Rust/Tauri). The app displays **1.9** to users.
 2. Add a `CHANGELOG` entry in `src/lib/changelog.ts` and update Help/Changelog copy if the feature is user-facing.
 3. Bump `website/package.json` and `website/src/lib/constants.ts` (`APP_VERSION`) for the landing page.
 4. Update `docs/PLAN.md` shipped section and status line.

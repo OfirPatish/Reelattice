@@ -2,7 +2,7 @@
   "name": "reelattice",
   "description": "Reelattice — local-first Tesla Dashcam and Sentry footage organizer",
   "private": true,
-  "version": "1.8",
+  "version": "1.9",
   "packageManager": "npm@11.17.0",
   "type": "module",
   "scripts": {
