@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { AppUpdateOverlay } from "@/components/app-update-overlay";
 import { getAppSettings } from "@/lib/api";
 import { useAppUpdate } from "@/hooks/use-app-update";
 import type { AppUpdateState } from "@/lib/app-update";
@@ -40,6 +41,7 @@ export const AppUpdateProvider = ({ children }: AppUpdateProviderProps) => {
       }}
     >
       {children}
+      <AppUpdateOverlay state={state} />
     </AppUpdateContext.Provider>
   );
 };

@@ -74,13 +74,23 @@ export const useAppUpdate = ({ currentVersion, checkOnStartup = false }: UseAppU
     }));
 
     try {
-      await installAppUpdate(update, (downloadPercent) => {
-        setState((prev) => ({
-          ...prev,
-          status: downloadPercent === 100 ? "installing" : "downloading",
-          downloadPercent,
-        }));
-      });
+      await installAppUpdate(
+        update,
+        (downloadPercent) => {
+          setState((prev) => ({
+            ...prev,
+            status: "downloading",
+            downloadPercent,
+          }));
+        },
+        (phase) => {
+          setState((prev) => ({
+            ...prev,
+            status: phase,
+            downloadPercent: phase === "installing" ? 100 : prev.downloadPercent,
+          }));
+        },
+      );
     } catch (error) {
       setState((prev) => ({
         ...prev,

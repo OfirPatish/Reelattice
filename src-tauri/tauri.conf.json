@@ -75,7 +75,7 @@
         "https://github.com/OfirPatish/Reelattice/releases/latest/download/latest.json"
       ],
       "windows": {
-        "installMode": "passive"
+        "installMode": "quiet"
       }
     }
   }

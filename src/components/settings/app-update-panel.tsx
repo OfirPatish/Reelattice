@@ -82,20 +82,10 @@ export const AppUpdatePanel = ({ state, onCheck, onInstall }: AppUpdatePanelProp
         </div>
       </div>
 
-      {state.status === "downloading" && state.downloadPercent !== null && (
-        <div
-          className="mt-3 h-1.5 overflow-hidden rounded-full bg-zinc-800"
-          role="progressbar"
-          aria-valuenow={state.downloadPercent}
-          aria-valuemin={0}
-          aria-valuemax={100}
-          aria-label="Download progress"
-        >
-          <div
-            className="h-full rounded-full bg-sky-400 transition-[width] duration-200"
-            style={{ width: `${state.downloadPercent}%` }}
-          />
-        </div>
+      {(state.status === "downloading" || state.status === "installing") && (
+        <p className="mt-2 text-[11px] text-zinc-600">
+          Progress is shown in the full-screen update overlay.
+        </p>
       )}
     </div>
   );

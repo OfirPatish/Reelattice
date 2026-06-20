@@ -86,11 +86,31 @@ export const checkForAppUpdate = async (): Promise<Update | null> => {
   return check();
 };
 
+const waitForNextPaint = () =>
+  new Promise<void>((resolve) => {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => resolve());
+    });
+  });
+
+export type AppUpdateInstallPhase = "downloading" | "installing";
+
+export const isUpdateOverlayVisible = (status: AppUpdateStatus) =>
+  status === "downloading" || status === "installing";
+
 export const installAppUpdate = async (
   update: Update,
   onProgress: (percent: number | null) => void,
+  onPhaseChange?: (phase: AppUpdateInstallPhase) => void,
 ) => {
-  await update.downloadAndInstall(createDownloadHandler(onProgress));
+  onPhaseChange?.("downloading");
+  await update.download(createDownloadHandler(onProgress));
+
+  onProgress(100);
+  onPhaseChange?.("installing");
+  await waitForNextPaint();
+
+  await update.install();
   await update.close();
   await relaunch();
 };
