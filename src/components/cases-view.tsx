@@ -20,8 +20,10 @@ import {
 import { formatRelativeTime } from "@/lib/format";
 import type { CaseDetail, CaseSummary } from "@/lib/types";
 import { CaseLinkedEventsList } from "@/components/cases/case-linked-events-list";
+import { CaseDetailSkeleton, CaseListSkeleton } from "@/components/cases/cases-skeleton";
 import { CaseTitlePresets } from "@/components/cases/case-title-presets";
 import { Button } from "@/components/ui/button";
+import { IndeterminateBar } from "@/components/ui/indeterminate-bar";
 import { cn } from "@/lib/utils";
 
 type CasesViewProps = {
@@ -44,7 +46,7 @@ export const CasesView = ({
   const [cases, setCases] = useState<CaseSummary[]>([]);
   const [selectedCaseId, setSelectedCaseId] = useState<string | null>(null);
   const [detail, setDetail] = useState<CaseDetail | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [detailLoading, setDetailLoading] = useState(false);
   const [detailRefreshing, setDetailRefreshing] = useState(false);
@@ -78,7 +80,7 @@ export const CasesView = ({
     const requestId = ++casesRequestIdRef.current;
 
     if (!options.silent && !hasLoadedOnceRef.current) {
-      setLoading(true);
+      setIsInitialLoad(true);
     } else if (options.silent) {
       setRefreshing(true);
     }
@@ -101,7 +103,7 @@ export const CasesView = ({
       setError(String(err));
     } finally {
       if (requestId === casesRequestIdRef.current) {
-        setLoading(false);
+        setIsInitialLoad(false);
         setRefreshing(false);
       }
     }
@@ -328,12 +330,15 @@ export const CasesView = ({
   };
 
   const showDetailContent = detail?.id === selectedCaseId;
-  const showDetailSpinner = detailLoading && !showDetailContent;
+  const showDetailSkeleton =
+    isInitialLoad || (detailLoading && !showDetailContent);
   const isDetailBusy = detailRefreshing;
   const hasCases = cases.length > 0;
 
   return (
     <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
+      {isInitialLoad && <IndeterminateBar />}
+
       <div className="mx-auto flex min-h-0 w-full max-w-6xl flex-1 flex-col gap-4 overflow-hidden p-5 lg:p-6">
         <header className="shrink-0">
           <h1 className="text-lg font-semibold tracking-tight text-zinc-100">Cases</h1>
@@ -356,17 +361,19 @@ export const CasesView = ({
           <aside
             className={cn(
               "relative flex min-h-0 flex-col overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900/30",
-              refreshing && "pointer-events-none opacity-60",
+              (isInitialLoad || refreshing) && "pointer-events-none",
+              isInitialLoad && "opacity-90",
+              refreshing && !isInitialLoad && "opacity-60",
               creating && "opacity-80",
             )}
-            aria-busy={refreshing}
+            aria-busy={isInitialLoad || refreshing}
           >
             <div className="flex items-center justify-between gap-3 border-b border-zinc-800/80 px-4 py-3">
               <div>
                 <p className="text-xs font-medium uppercase tracking-wider text-zinc-500">
                   Your cases
                 </p>
-                {!loading && (
+                {!isInitialLoad && (
                   <p className="mt-0.5 text-[11px] text-zinc-600">
                     {hasCases
                       ? `${cases.length} bundle${cases.length === 1 ? "" : "s"}`
@@ -374,7 +381,7 @@ export const CasesView = ({
                   </p>
                 )}
               </div>
-              {hasCases ? (
+              {hasCases && !isInitialLoad ? (
                 <Button
                   type="button"
                   size="sm"
@@ -388,11 +395,8 @@ export const CasesView = ({
             </div>
 
             <div className="min-h-0 flex-1 overflow-y-auto p-2">
-              {loading ? (
-                <div className="flex items-center gap-2 px-3 py-8 text-sm text-zinc-500">
-                  <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
-                  Loading cases…
-                </div>
+              {isInitialLoad ? (
+                <CaseListSkeleton />
               ) : cases.length === 0 ? (
                 <div className="flex flex-col items-center px-4 py-10 text-center">
                   <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-zinc-800/80 text-zinc-600">
@@ -465,7 +469,7 @@ export const CasesView = ({
               )}
             </div>
 
-            {refreshing && !loading && (
+            {refreshing && !isInitialLoad && (
               <div
                 className="pointer-events-none absolute inset-x-0 top-14 flex justify-center"
                 aria-hidden
@@ -480,10 +484,10 @@ export const CasesView = ({
 
           <section
             className={cn(
-              "relative flex min-h-0 flex-col overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900/30 transition-opacity duration-200 ease-out",
+              "relative flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900/30 transition-opacity duration-200 ease-out",
               isDetailBusy && showDetailContent && "opacity-70",
             )}
-            aria-busy={detailRefreshing}
+            aria-busy={isInitialLoad || detailLoading || detailRefreshing}
           >
             {creating ? (
               <>
@@ -505,13 +509,10 @@ export const CasesView = ({
                   onCancel={handleCancelCreate}
                 />
               </>
+            ) : showDetailSkeleton ? (
+              <CaseDetailSkeleton />
             ) : !selectedCaseId ? (
               <CasesEmptyDetail hasCases={hasCases} onCreate={handleStartCreate} />
-            ) : showDetailSpinner ? (
-              <div className="flex flex-1 items-center justify-center gap-2 p-8 text-sm text-zinc-500">
-                <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
-                Loading case…
-              </div>
             ) : showDetailContent && detail ? (
               <div
                 className={cn(
@@ -532,39 +533,41 @@ export const CasesView = ({
                   </p>
                 </div>
 
-                <CaseEditor
-                  mode={editingCase ? "edit" : "view"}
-                  title={titleDraft}
-                  description={descriptionDraft}
-                  saving={saving}
-                  submitBusy={false}
-                  onTitleChange={setTitleDraft}
-                  onDescriptionChange={setDescriptionDraft}
-                  onSubmit={() => void handleSaveCase()}
-                  onEdit={() => setEditingCase(true)}
-                  onCancel={() => {
-                    setTitleDraft(detail.title);
-                    setDescriptionDraft(detail.description);
-                    setEditingCase(false);
-                  }}
-                  extraActions={
-                    !editingCase ? (
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        className="text-red-300 hover:bg-red-500/10 hover:text-red-200"
-                        onClick={() => void handleDeleteCase()}
-                        disabled={saving}
-                      >
-                        <Trash2 className="h-3.5 w-3.5" aria-hidden />
-                        Delete
-                      </Button>
-                    ) : null
-                  }
-                />
+                <div className="min-h-0 shrink overflow-y-auto">
+                  <CaseEditor
+                    mode={editingCase ? "edit" : "view"}
+                    title={titleDraft}
+                    description={descriptionDraft}
+                    saving={saving}
+                    submitBusy={false}
+                    onTitleChange={setTitleDraft}
+                    onDescriptionChange={setDescriptionDraft}
+                    onSubmit={() => void handleSaveCase()}
+                    onEdit={() => setEditingCase(true)}
+                    onCancel={() => {
+                      setTitleDraft(detail.title);
+                      setDescriptionDraft(detail.description);
+                      setEditingCase(false);
+                    }}
+                    extraActions={
+                      !editingCase ? (
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="text-red-300 hover:bg-red-500/10 hover:text-red-200"
+                          onClick={() => void handleDeleteCase()}
+                          disabled={saving}
+                        >
+                          <Trash2 className="h-3.5 w-3.5" aria-hidden />
+                          Delete
+                        </Button>
+                      ) : null
+                    }
+                  />
+                </div>
 
-                <div className="flex min-h-0 flex-1 flex-col overflow-hidden border-t border-zinc-800/80">
+                <div className="flex min-h-36 flex-1 flex-col overflow-hidden border-t border-zinc-800/80">
                   <div className="flex shrink-0 items-center justify-between px-5 py-3">
                     <p className="text-xs font-medium uppercase tracking-wider text-zinc-500">
                       Linked events
@@ -670,7 +673,7 @@ const CaseEditor = ({
   const isEditing = mode === "create" || mode === "edit";
 
   return (
-    <div className="flex shrink-0 flex-col">
+    <div className="flex flex-col">
       <div className="space-y-4 px-5 py-4">
         {mode === "create" ? <CaseTitlePresets value={title} onSelect={onTitleChange} /> : null}
 
