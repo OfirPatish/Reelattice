@@ -259,4 +259,10 @@ Full details: [docs/README.md](./docs/README.md) · Roadmap: [docs/PLAN.md](./do
 
 ## License
 
-All rights reserved — see repository for usage terms.
+Copyright © 2026 Ofir Patish. All rights reserved.
+
+- **Terms of Use:** [reelattice.vercel.app/terms](https://reelattice.vercel.app/terms)
+- **Privacy Policy:** [reelattice.vercel.app/privacy](https://reelattice.vercel.app/privacy)
+- See also [`LICENSE`](./LICENSE) in this repository.
+
+Reelattice is not affiliated with Tesla, Inc.

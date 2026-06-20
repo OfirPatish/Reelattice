@@ -4,7 +4,6 @@ import {
   TimelineIdleIllustration,
 } from "@/components/empty-illustrations";
 import { Input } from "@/components/ui/input";
-import { WebsiteLink } from "@/components/website-link";
 import { LIBRARY_VIEW_OPTIONS, SOURCE_PILL_OPTIONS, type LibraryView } from "@/lib/library-filters";
 import { sourceFilterPillClass } from "@/lib/format";
 import { cn } from "@/lib/utils";
@@ -64,7 +63,6 @@ export const LibraryToolbar = ({
               </span>
             )}
           </p>
-          <WebsiteLink className="mt-1.5" />
         </div>
         {canCollapse && onCollapse && (
           <button

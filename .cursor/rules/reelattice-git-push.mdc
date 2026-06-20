@@ -1,0 +1,35 @@
+---
+description: Before every git push — update user-facing changelog when anything users would notice changed
+alwaysApply: true
+---
+
+# Reelattice git push checklist
+
+Before **committing and pushing** to `main` (or any shared branch), always review whether the Changelog tab needs an update — even for small or minor changes.
+
+## When to update
+
+Update `src/lib/changelog.ts` if the push includes anything a user might care about:
+
+- New UI, changed workflows, fixes they would notice
+- Website, download, legal, or privacy changes
+- Import, playback, export, Cases, Settings, or Help behavior
+- Performance or reliability improvements users would feel
+
+Skip changelog-only noise: internal refactors, CI/workflows, dev tooling, `.gitignore`, docs for developers only.
+
+## How to write entries
+
+- Add bullets to the **current version** entry if still shipping under that release, **or** add a new top entry when cutting a new version (see `reelattice-release.mdc`).
+- Write for end users in the Help/Changelog voice — what changed and why it matters, not file names or PR titles.
+- One clear bullet per user-visible change; group tiny related tweaks into one bullet.
+- Date format matches existing entries (`June 2026`).
+
+## Before push
+
+1. `git diff` — list user-visible changes since the last changelog update.
+2. Update `src/lib/changelog.ts` when needed.
+3. If update flow or Changelog tab copy changed, skim `src/components/changelog-view.tsx` and `src/components/help-view.tsx`.
+4. Commit changelog with the related changes (same commit or clearly linked).
+
+Do not push user-facing work without a changelog entry when users would benefit from knowing.

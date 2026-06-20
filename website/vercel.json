@@ -5,6 +5,11 @@
   "framework": "vite",
   "rewrites": [
     { "source": "/download", "destination": "/download.html" },
-    { "source": "/((?!download\\.html|assets|icons|og-image\\.svg|robots\\.txt|sitemap\\.xml).*)", "destination": "/index.html" }
+    { "source": "/privacy", "destination": "/privacy.html" },
+    { "source": "/terms", "destination": "/terms.html" },
+    {
+      "source": "/((?!download\\.html|privacy\\.html|terms\\.html|assets|icons|og-image\\.svg|robots\\.txt|sitemap\\.xml).*)",
+      "destination": "/index.html"
+    }
   ]
 }

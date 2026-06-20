@@ -22,7 +22,6 @@ import type { CaseDetail, CaseSummary } from "@/lib/types";
 import { CaseLinkedEventsList } from "@/components/cases/case-linked-events-list";
 import { CaseDetailSkeleton, CaseListSkeleton } from "@/components/cases/cases-skeleton";
 import { CaseTitlePresets } from "@/components/cases/case-title-presets";
-import { WebsiteLink } from "@/components/website-link";
 import { Button } from "@/components/ui/button";
 import { IndeterminateBar } from "@/components/ui/indeterminate-bar";
 import { cn } from "@/lib/utils";
@@ -346,7 +345,6 @@ export const CasesView = ({
           <p className="mt-0.5 max-w-2xl text-sm text-zinc-400">
             Group related events into incident bundles for review and export planning.
           </p>
-          <WebsiteLink className="mt-2" />
         </header>
 
         {error && (

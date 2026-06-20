@@ -222,6 +222,31 @@ body {
   --rarity: #ffe600;
 }
 
+.legal-prose h2 {
+  font-family: var(--font-display);
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgb(226 232 240);
+}
+
+.legal-prose p {
+  @apply text-slate-400;
+}
+
+.legal-prose ul {
+  @apply list-disc space-y-2 pl-5 text-slate-400;
+}
+
+.legal-prose a {
+  @apply text-cyan-400/90 underline decoration-cyan-500/30 underline-offset-2 transition-colors hover:text-cyan-300;
+}
+
+.legal-prose code {
+  @apply rounded bg-slate-900 px-1 py-0.5 font-mono text-[0.85em] text-slate-300;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;

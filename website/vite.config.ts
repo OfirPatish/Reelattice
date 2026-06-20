@@ -50,6 +50,8 @@ export default defineConfig({
       input: {
         main: path.resolve(rootDir, "index.html"),
         download: path.resolve(rootDir, "download.html"),
+        privacy: path.resolve(rootDir, "privacy.html"),
+        terms: path.resolve(rootDir, "terms.html"),
       },
     },
   },

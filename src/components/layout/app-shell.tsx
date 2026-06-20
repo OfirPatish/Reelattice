@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { CircleHelp, FolderOpen, Briefcase, Library, ScrollText, Settings } from "lucide-react";
 import { AppLogo } from "@/components/app-logo";
 import { WindowControls } from "@/components/layout/window-controls";
-import { WebsiteLink } from "@/components/website-link";
+import { WebsitePresence } from "@/components/website-presence";
 import { sourceBadgeClass, sourceLabel } from "@/lib/format";
 import { handleTitleBarMouseDown, stopTitleBarMouseDown } from "@/lib/title-bar";
 import type { AppView, EventSource } from "@/lib/types";
@@ -156,10 +156,7 @@ export const AppShell = ({ activeView, onNavigate, children }: AppShellProps) =>
       >
         <div className="flex shrink-0 items-center gap-2 px-4">
           <AppLogo size={22} />
-          <div className="flex min-w-0 flex-col">
-            <span className="text-sm font-semibold tracking-tight leading-tight">Reelattice</span>
-            <WebsiteLink className="mt-0.5 hidden sm:inline-flex" />
-          </div>
+          <span className="text-sm font-semibold tracking-tight">Reelattice</span>
         </div>
 
         <nav
@@ -195,7 +192,6 @@ export const AppShell = ({ activeView, onNavigate, children }: AppShellProps) =>
           data-no-drag
           onMouseDown={stopTitleBarMouseDown}
         >
-          <WebsiteLink className="sm:hidden" />
           <div className="hidden sm:block">
             <HeaderContext activeView={activeView} />
           </div>
@@ -205,6 +201,7 @@ export const AppShell = ({ activeView, onNavigate, children }: AppShellProps) =>
       </header>
 
       <main className="flex min-h-0 flex-1 flex-col">{children}</main>
+      <WebsitePresence />
     </div>
   );
 };

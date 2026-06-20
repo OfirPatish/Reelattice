@@ -46,3 +46,7 @@ GitHub Actions builds the signed installer and `latest.json`. Do **not** tag wit
 ## Skip unless relevant
 
 Website deploy auto-runs on push; no extra step unless download URL or env vars changed.
+
+## Every push (not only releases)
+
+See `reelattice-git-push.mdc` — update `src/lib/changelog.ts` for any user-visible change before pushing, even minor ones.

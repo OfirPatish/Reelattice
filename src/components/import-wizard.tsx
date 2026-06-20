@@ -13,7 +13,6 @@ import {
 import { ImportSourceSelect } from "@/components/import-source-select";
 import { ImportDropIllustration } from "@/components/empty-illustrations";
 import { EncryptedClipsBanner } from "@/components/encrypted-clips-banner";
-import { WebsiteLink } from "@/components/website-link";
 import {
   cancelImport,
   scanImportPaths,
@@ -440,7 +439,6 @@ export const ImportWizard = ({
                 Copies clips into your Reelattice library — safe to remove the source afterward.
               </p>
             )}
-            <WebsiteLink className="mt-2" />
           </div>
           {canCancel && (
             <Button

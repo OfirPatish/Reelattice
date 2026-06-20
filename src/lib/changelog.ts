@@ -13,6 +13,9 @@ export const CHANGELOG: ChangelogEntry[] = [
       "Cases linked-events list scrolls inside the panel — large bundles no longer stretch the layout",
       "Fixed linked events sometimes missing from case detail",
       "Cases tab loading matches Library — skeleton placeholders instead of hidden spinner text",
+      "Public website at reelattice.vercel.app — product overview and Windows download",
+      "Privacy Policy and Terms of Use — Settings → About → Legal, and on the website",
+      "Website link chip in the bottom-right corner on every screen",
     ],
   },
   {
