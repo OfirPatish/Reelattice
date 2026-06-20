@@ -14,7 +14,7 @@ export const KeyboardShortcutRow = ({
             {group.map((key, keyIndex) => (
               <span key={`${description}-${key}-${keyIndex}`} className="flex items-center gap-1">
                 {keyIndex > 0 && <span className="text-[10px] text-zinc-600">+</span>}
-                <kbd className="rounded-md border border-zinc-700/80 bg-zinc-900 px-1.5 py-0.5 font-mono text-[11px] text-zinc-400">
+                <kbd className="rounded-md border border-zinc-700/60 bg-zinc-900/80 px-1.5 py-0.5 font-mono text-[11px] text-zinc-300">
                   {key}
                 </kbd>
               </span>

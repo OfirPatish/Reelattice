@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { Archive, ArchiveRestore, Download, Loader2, Tag, Trash2, X } from "lucide-react";
+import { Archive, ArchiveRestore, Briefcase, Download, Loader2, Tag, Trash2, X } from "lucide-react";
 import { BulkSelectIllustration } from "@/components/empty-illustrations";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
@@ -29,6 +29,7 @@ type LibraryBulkPanelProps = {
   onExport: () => void;
   onArchive: () => void;
   onToggleTag: (tagName: string) => void;
+  onAddToCase: () => void;
 };
 
 const selectAllLabel: Record<SelectAllState, string> = {
@@ -107,6 +108,7 @@ export const LibraryBulkPanel = ({
   onExport,
   onArchive,
   onToggleTag,
+  onAddToCase,
 }: LibraryBulkPanelProps) => {
   const selectedCount = selectedEvents.length;
   const visibleCount = filteredEvents.length;
@@ -227,7 +229,7 @@ export const LibraryBulkPanel = ({
                 <p className="mb-3 px-1 text-[10px] font-semibold uppercase tracking-wider text-zinc-600">
                   Actions
                 </p>
-                <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
                   <ActionCard
                     label={viewingArchived ? "Restore" : "Archive"}
                     description={
@@ -253,6 +255,13 @@ export const LibraryBulkPanel = ({
                     onClick={onExport}
                     disabled={isBusy}
                     busy={busyAction === "export"}
+                  />
+                  <ActionCard
+                    label="Add to case"
+                    description="Link events to an incident bundle"
+                    icon={<Briefcase className="h-4 w-4" aria-hidden />}
+                    onClick={onAddToCase}
+                    disabled={isBusy}
                   />
                   <ActionCard
                     label="Delete"

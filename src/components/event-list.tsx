@@ -1,10 +1,11 @@
 import { CheckSquare, ChevronRight, Loader2 } from "lucide-react";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FilterEmptyIllustration } from "@/components/empty-illustrations";
 import { EventDetailPanel } from "@/components/event-detail-panel";
 import { EventDetailPlaceholder } from "@/components/event-detail-placeholder";
 import { EventDetailSkeleton, EventListSkeleton } from "@/components/event-list-skeleton";
 import { LibraryBulkPanel } from "@/components/library/library-bulk-panel";
+import { CasePickerDialog } from "@/components/library/case-picker-dialog";
 import { LibraryActiveFilters } from "@/components/library/library-active-filters";
 import { LibraryListIdleHint, LibraryToolbar } from "@/components/library/library-toolbar";
 import { LibraryFilterPanel } from "@/components/library/library-filter-panel";
@@ -22,11 +23,21 @@ import { cn } from "@/lib/utils";
 type EventListProps = {
   refreshKey: number;
   active: boolean;
+  openEventId?: string | null;
+  onOpenEventConsumed?: () => void;
   onNavigate: (view: AppView) => void;
   onReviewImport: (paths: string[]) => void;
 };
 
-export const EventList = ({ refreshKey, active, onNavigate, onReviewImport }: EventListProps) => {
+export const EventList = ({
+  refreshKey,
+  active,
+  openEventId,
+  onOpenEventConsumed,
+  onNavigate,
+  onReviewImport,
+}: EventListProps) => {
+  const [casePickerEventIds, setCasePickerEventIds] = useState<string[] | null>(null);
   const library = useLibrary(refreshKey);
   const listOpen = library.prefs.libraryListOpen;
   const hasBrowsableEvents = library.filteredEvents.length > 0;
@@ -45,6 +56,12 @@ export const EventList = ({ refreshKey, active, onNavigate, onReviewImport }: Ev
   };
 
   const listScrollRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!active || !openEventId) return;
+    library.setSelectedId(openEventId);
+    onOpenEventConsumed?.();
+  }, [active, library.setSelectedId, onOpenEventConsumed, openEventId]);
 
   return (
     <div
@@ -268,8 +285,21 @@ export const EventList = ({ refreshKey, active, onNavigate, onReviewImport }: Ev
               onExport={() => void library.handleBulkExport()}
               onArchive={() => void library.handleBulkArchive()}
               onToggleTag={(tagName) => void library.handleBulkToggleTag(tagName)}
+              onAddToCase={() => {
+                setCasePickerEventIds(Array.from(library.selectedIds));
+              }}
             />
           )}
+
+          <CasePickerDialog
+            open={casePickerEventIds !== null}
+            eventIds={casePickerEventIds ?? []}
+            onClose={() => setCasePickerEventIds(null)}
+            onSuccess={() => {
+              library.handleClearBulkSelection();
+              library.handleExitSelectionMode();
+            }}
+          />
 
           {!library.isInitialLoad &&
             !library.selectionMode &&

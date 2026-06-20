@@ -7,6 +7,27 @@ export type ChangelogEntry = {
 /** Newest first — user-facing release notes (major.minor). */
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: "1.5",
+    date: "June 2026",
+    highlights: [
+      "Cases tab redesign — sidebar list, view/edit modes, quick title labels",
+      "Bulk Add to case opens a picker (choose existing case or create one)",
+      "Smoother case editing — no list flicker or button layout shift on save",
+      "Software updates in Settings → About only (removed header update badge)",
+      "Help, Changelog, and Settings refreshed with subtle accent colors",
+    ],
+  },
+  {
+    version: "1.4",
+    date: "June 2026",
+    highlights: [
+      "Cancel import mid-copy with live progress in the Import wizard",
+      "Custom video library location in Settings (new imports only)",
+      "Cases tab — group related events into incident bundles",
+      "Bulk select → Add to case from Library",
+    ],
+  },
+  {
     version: "1.3",
     date: "June 2026",
     highlights: [

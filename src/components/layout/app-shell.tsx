@@ -1,11 +1,8 @@
 import type { ReactNode } from "react";
 import { useEffect } from "react";
-import { CircleHelp, FolderOpen, Library, ScrollText, Settings } from "lucide-react";
+import { CircleHelp, FolderOpen, Briefcase, Library, ScrollText, Settings } from "lucide-react";
 import { AppLogo } from "@/components/app-logo";
-import { UpdateStatusIndicator } from "@/components/layout/update-status-indicator";
 import { WindowControls } from "@/components/layout/window-controls";
-import { useAppUpdateContext } from "@/contexts/app-update-context";
-import { isUpdaterEnabled } from "@/lib/app-update";
 import { sourceBadgeClass, sourceLabel } from "@/lib/format";
 import { handleTitleBarMouseDown, stopTitleBarMouseDown } from "@/lib/title-bar";
 import type { AppView, EventSource } from "@/lib/types";
@@ -20,6 +17,7 @@ type NavItem = {
 const navItems: NavItem[] = [
   { id: "library", label: "Library", icon: <Library className="h-4 w-4" aria-hidden /> },
   { id: "import", label: "Import", icon: <FolderOpen className="h-4 w-4" aria-hidden /> },
+  { id: "cases", label: "Cases", icon: <Briefcase className="h-4 w-4" aria-hidden /> },
   { id: "help", label: "Help", icon: <CircleHelp className="h-4 w-4" aria-hidden /> },
   { id: "changelog", label: "Changelog", icon: <ScrollText className="h-4 w-4" aria-hidden /> },
   { id: "settings", label: "Settings", icon: <Settings className="h-4 w-4" aria-hidden /> },
@@ -51,6 +49,14 @@ const HeaderContext = ({ activeView }: { activeView: AppView }) => {
     return (
       <p className="max-w-xs text-right text-[11px] leading-snug text-zinc-600">
         Groups clips by timestamp · front, repeaters & rear
+      </p>
+    );
+  }
+
+  if (activeView === "cases") {
+    return (
+      <p className="max-w-xs text-right text-[11px] leading-snug text-zinc-600">
+        Bundle related events into incident cases
       </p>
     );
   }
@@ -116,10 +122,6 @@ const isTextEntryElement = (target: EventTarget | null) => {
 };
 
 export const AppShell = ({ activeView, onNavigate, children }: AppShellProps) => {
-  const { state: updateState } = useAppUpdateContext();
-  const showSettingsUpdateDot =
-    isUpdaterEnabled() && updateState.status === "available";
-
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key !== "a" && event.key !== "A") return;
@@ -179,12 +181,6 @@ export const AppShell = ({ activeView, onNavigate, children }: AppShellProps) =>
               >
                 {item.icon}
                 {item.label}
-                {item.id === "settings" && showSettingsUpdateDot && (
-                  <span
-                    className="absolute top-1.5 right-1.5 h-1.5 w-1.5 rounded-full bg-emerald-400"
-                    aria-hidden
-                  />
-                )}
               </button>
             );
           })}
@@ -198,7 +194,6 @@ export const AppShell = ({ activeView, onNavigate, children }: AppShellProps) =>
           <div className="hidden sm:block">
             <HeaderContext activeView={activeView} />
           </div>
-          <UpdateStatusIndicator onOpenSettings={() => onNavigate("settings")} />
         </div>
 
         <WindowControls />

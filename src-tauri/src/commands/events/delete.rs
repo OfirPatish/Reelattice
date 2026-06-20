@@ -53,7 +53,7 @@ pub fn delete_event(db: &Database, event_id: &str) -> AppResult<()> {
         fs::remove_dir_all(path)?;
     }
 
-    remove_empty_parents(path.parent(), db.library_root())?;
+    remove_empty_parents(path.parent(), &db.library_root())?;
 
     Ok(())
 }

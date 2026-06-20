@@ -13,7 +13,13 @@ import {
 import { ImportSourceSelect } from "@/components/import-source-select";
 import { ImportDropIllustration } from "@/components/empty-illustrations";
 import { EncryptedClipsBanner } from "@/components/encrypted-clips-banner";
-import { importTeslaEvents, scanImportPaths } from "@/lib/api";
+import {
+  cancelImport,
+  scanImportPaths,
+  startImportTeslaEvents,
+  waitForImportCompletion,
+} from "@/lib/api";
+import type { ImportJobStatus } from "@/lib/types";
 import { formatEventTime, sourceBadgeClass, sourceLabel } from "@/lib/format";
 import {
   applyBulkUnrecognizedSource,
@@ -55,6 +61,8 @@ export const ImportWizard = ({
   const [detected, setDetected] = useState<DetectedEvent[]>([]);
   const [selectedEvents, setSelectedEvents] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(false);
+  const [importing, setImporting] = useState(false);
+  const [importProgress, setImportProgress] = useState<ImportJobStatus | null>(null);
   const [dragOver, setDragOver] = useState(false);
   const [error, setError] = useState("");
   const [scanPaths, setScanPaths] = useState<string[]>([]);
@@ -316,9 +324,10 @@ export const ImportWizard = ({
   };
 
   const handleImport = async () => {
-    if (selectedEvents.size === 0) return;
+    if (selectedEvents.size === 0 || importing) return;
 
-    setLoading(true);
+    setImporting(true);
+    setImportProgress(null);
     setError("");
 
     try {
@@ -326,15 +335,38 @@ export const ImportWizard = ({
         detected.filter((event) => selectedEvents.has(event.folderPath)),
         sourceOverrides,
       );
-      await importTeslaEvents(eventsToImport);
-      handleReset();
-      onImportComplete();
+      await startImportTeslaEvents(eventsToImport);
+      const result = await waitForImportCompletion(setImportProgress);
+
+      if (result.cancelled) {
+        setError("Import cancelled. Events already copied remain in your library.");
+        return;
+      }
+
+      if (result.errors.length > 0) {
+        setError(result.errors.join(" · "));
+      }
+
+      if (result.importedCount > 0) {
+        handleReset();
+        onImportComplete();
+      }
     } catch (err) {
       setError(String(err));
     } finally {
-      setLoading(false);
+      setImporting(false);
+      setImportProgress(null);
     }
   };
+
+  const handleCancelActiveImport = useCallback(async () => {
+    if (!importing) return;
+    try {
+      await cancelImport();
+    } catch (err) {
+      setError(String(err));
+    }
+  }, [importing]);
 
   const handleReset = useCallback(() => {
     scanGenerationRef.current += 1;
@@ -346,6 +378,8 @@ export const ImportWizard = ({
     setError("");
     setDragOver(false);
     setLoading(false);
+    setImporting(false);
+    setImportProgress(null);
     setScanPaths([]);
     setSourceOverrides({});
     setEncryptedScan(null);
@@ -358,6 +392,11 @@ export const ImportWizard = ({
   }, [active, handleReset]);
 
   const handleCancelImport = useCallback(async () => {
+    if (importing) {
+      await handleCancelActiveImport();
+      return;
+    }
+
     if (loading) return;
 
     if (detected.length > 0 && showPreview) {
@@ -369,9 +408,9 @@ export const ImportWizard = ({
     }
 
     handleReset();
-  }, [detected.length, handleReset, loading, showPreview]);
+  }, [detected.length, handleCancelActiveImport, handleReset, importing, loading, showPreview]);
 
-  const canCancel = showPreview && !loading;
+  const canCancel = (showPreview && !loading && !importing) || importing;
 
   const pageTitle = showPreview ? "Review" : "Import footage";
 
@@ -672,7 +711,20 @@ export const ImportWizard = ({
                 aria-live="polite"
               >
                 <p className="text-sm leading-snug text-zinc-400">
-                  {allAlreadyInLibrary ? (
+                  {importing && importProgress ? (
+                    <>
+                      Copying{" "}
+                      <span className="font-semibold text-zinc-100">
+                        {importProgress.completedEvents}/{importProgress.totalEvents}
+                      </span>
+                      {importProgress.currentLabel ? (
+                        <>
+                          {" · "}
+                          <span className="text-zinc-500">{importProgress.currentLabel}</span>
+                        </>
+                      ) : null}
+                    </>
+                  ) : allAlreadyInLibrary ? (
                     <span className="text-zinc-500">
                       No events selected — everything scanned is already in your library.
                     </span>
@@ -691,24 +743,36 @@ export const ImportWizard = ({
                     "Check the events you want to import"
                   )}
                 </p>
-                <Button
-                  type="button"
-                  onClick={handleImport}
-                  disabled={loading || selectionSummary.events === 0}
-                  className="shrink-0"
-                >
-                  {loading ? (
-                    <>
-                      <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
-                      Copying…
-                    </>
-                  ) : (
-                    <>
-                      Import
-                      {selectionSummary.events > 0 ? ` (${selectionSummary.events})` : ""}
-                    </>
-                  )}
-                </Button>
+                <div className="flex shrink-0 items-center gap-2">
+                  {importing ? (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      onClick={() => void handleCancelActiveImport()}
+                      className="text-zinc-400"
+                    >
+                      Cancel import
+                    </Button>
+                  ) : null}
+                  <Button
+                    type="button"
+                    onClick={handleImport}
+                    disabled={loading || importing || selectionSummary.events === 0}
+                    className="shrink-0"
+                  >
+                    {importing ? (
+                      <>
+                        <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+                        Copying…
+                      </>
+                    ) : (
+                      <>
+                        Import
+                        {selectionSummary.events > 0 ? ` (${selectionSummary.events})` : ""}
+                      </>
+                    )}
+                  </Button>
+                </div>
               </div>
             </div>
           </div>

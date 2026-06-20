@@ -1,10 +1,13 @@
 import { invoke } from "@tauri-apps/api/core";
 import type {
   AppSettings,
+  CaseDetail,
+  CaseSummary,
   DashEvent,
   DetectedEvent,
   EventFilters,
   EventSource,
+  ImportJobStatus,
   ImportResult,
   ScanImportResult,
   TagInfo,
@@ -13,8 +16,59 @@ import type {
 export const scanImportPaths = (paths: string[]) =>
   invoke<ScanImportResult>("scan_import_paths", { paths });
 
-export const importTeslaEvents = (events: DetectedEvent[]) =>
-  invoke<ImportResult>("import_tesla_events", { events });
+export const startImportTeslaEvents = (events: DetectedEvent[]) =>
+  invoke<void>("start_import_tesla_events", { events });
+
+export const cancelImport = () => invoke<void>("cancel_import");
+
+export const getImportStatus = () => invoke<ImportJobStatus>("get_import_status");
+
+export const waitForImportCompletion = async (
+  onProgress?: (status: ImportJobStatus) => void,
+): Promise<ImportResult> => {
+  const poll = async (): Promise<ImportResult> => {
+    const status = await getImportStatus();
+    onProgress?.(status);
+
+    if (status.running) {
+      await new Promise((resolve) => window.setTimeout(resolve, 200));
+      return poll();
+    }
+
+    return {
+      importedCount: status.importedCount,
+      skippedCount: status.skippedCount,
+      errors: status.errors,
+      eventIds: status.eventIds,
+      cancelled: status.cancelled,
+    };
+  };
+
+  return poll();
+};
+
+export const setLibraryLocation = (path: string) =>
+  invoke<string>("set_library_location", { path });
+
+export const getCases = () => invoke<CaseSummary[]>("get_cases");
+
+export const getCaseDetail = (caseId: string) =>
+  invoke<CaseDetail>("get_case_detail", { caseId });
+
+export const createIncidentCase = (title: string, description = "") =>
+  invoke<CaseSummary>("create_incident_case", { title, description });
+
+export const updateIncidentCase = (caseId: string, title: string, description: string) =>
+  invoke<void>("update_incident_case", { caseId, title, description });
+
+export const deleteIncidentCase = (caseId: string) =>
+  invoke<void>("delete_incident_case", { caseId });
+
+export const addEventsToIncidentCase = (caseId: string, eventIds: string[]) =>
+  invoke<number>("add_events_to_incident_case", { caseId, eventIds });
+
+export const removeEventFromIncidentCase = (caseId: string, eventId: string) =>
+  invoke<void>("remove_event_from_incident_case", { caseId, eventId });
 
 export const getEvents = (filters: EventFilters = {}) =>
   invoke<DashEvent[]>("get_events", { filters });

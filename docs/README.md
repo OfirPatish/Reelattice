@@ -9,7 +9,7 @@
 
 The **Help** tab (`src/components/help-view.tsx`) mirrors and expands on this README for end users: quick start, workflow examples, shortcuts, and storage notes. Keep it updated when adding user-facing features.
 
-Shortcut definitions live in one place: `src/lib/keyboard-shortcuts.ts` (used by Help and Settings).
+Shortcut definitions live in one place: `src/lib/keyboard-shortcuts.ts` (shown in Help).
 
 ## Project layout
 
@@ -17,8 +17,9 @@ Shortcut definitions live in one place: `src/lib/keyboard-shortcuts.ts` (used by
 reelattice/
 ├── src/                      # React UI
 │   ├── components/
-│   │   ├── library/          # Event list, filters, bulk bar, virtual rows, thumbnails
-│   │   ├── layout/           # App shell (Library · Import · Help · Settings)
+│   │   ├── library/          # Event list, filters, bulk bar, case picker, virtual rows
+│   │   ├── cases/            # Case title presets
+│   │   ├── layout/           # App shell (Library · Import · Cases · Help · Changelog · Settings)
 │   │   ├── help-view.tsx
 │   │   ├── event-header-actions.tsx
 │   │   ├── event-detail-panel.tsx
@@ -33,14 +34,16 @@ reelattice/
 │   │   ├── video-player.tsx
 │   │   ├── import-source-select.tsx
 │   │   ├── import-wizard.tsx
+│   │   ├── cases-view.tsx
 │   │   ├── settings-view.tsx
 │   │   └── ui/               # Shared primitives (button, fade-in, collapse-fade, …)
 │   ├── hooks/                # use-library, use-synced-videos, use-library-drop-import
-│   └── lib/                  # api, clip-thumbnail, types, filters, bulk-actions, keyboard-shortcuts
+│   └── lib/                  # api, accent-tones, case-presets, changelog, bulk-actions
 ├── src-tauri/src/
 │   ├── commands/
 │   │   ├── events/           # CRUD, archive, export, bulk ops, thumbnails, open
-│   │   └── import.rs
+│   │   ├── cases.rs          # Incident bundles
+│   │   └── import.rs         # Scan, async import, library location
 │   ├── tesla/
 │   │   ├── parser.rs
 │   │   ├── grouping.rs

@@ -73,3 +73,10 @@ pub const BUILTIN_TAGS: &[&str] = &[
     "Hit and Run",
     "Other",
 ];
+
+pub const MIGRATION_002: &str = r#"
+CREATE TABLE IF NOT EXISTS app_settings (
+  key   TEXT PRIMARY KEY,
+  value TEXT NOT NULL
+);
+"#;

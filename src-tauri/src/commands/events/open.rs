@@ -20,8 +20,8 @@ pub fn open_event_folder(db: &Database, app: &AppHandle, event_id: &str) -> AppR
     open_path(app, &library_path)
 }
 
-pub fn open_library_folder(app: &AppHandle) -> AppResult<()> {
-    let path = crate::paths::default_library_root();
+pub fn open_library_folder(db: &Database, app: &AppHandle) -> AppResult<()> {
+    let path = db.library_root();
     open_path(app, &path.to_string_lossy())
 }
 

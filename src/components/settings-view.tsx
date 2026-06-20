@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import { confirm } from "@tauri-apps/plugin-dialog";
+import { confirm, open } from "@tauri-apps/plugin-dialog";
 import {
   AlertCircle,
   Archive,
@@ -12,15 +12,24 @@ import {
   Film,
   FolderOpen,
   HardDrive,
-  Keyboard,
   Loader2,
   RefreshCw,
   RotateCcw,
+  Settings,
   Shield,
   Tag,
   Video,
 } from "lucide-react";
-import { getAppSettings, openDataFolder, openLibraryFolder } from "@/lib/api";
+import { getAppSettings, openDataFolder, openLibraryFolder, setLibraryLocation } from "@/lib/api";
+import {
+  accentIconBox,
+  accentPageBannerClass,
+  accentSectionClass,
+  accentSectionHeaderClass,
+  accentSoftCardClass,
+  accentStatCardClass,
+  type AccentTone,
+} from "@/lib/accent-tones";
 import { AppLogo } from "@/components/app-logo";
 import { AppUpdatePanel } from "@/components/settings/app-update-panel";
 import { useAppUpdateContext } from "@/contexts/app-update-context";
@@ -38,7 +47,6 @@ import {
 } from "@/lib/library-preferences";
 import type { AppSettings } from "@/lib/types";
 import { Button } from "@/components/ui/button";
-import { KeyboardShortcutRow } from "@/components/ui/keyboard-shortcut-row";
 import {
   Select,
   SelectContent,
@@ -46,7 +54,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { getPlaybackShortcuts, LIBRARY_SHORTCUTS } from "@/lib/keyboard-shortcuts";
 import { cn } from "@/lib/utils";
 
 type SettingsViewProps = {
@@ -59,6 +66,7 @@ type SettingsSectionProps = {
   description?: string;
   children: ReactNode;
   className?: string;
+  accent?: AccentTone;
 };
 
 type StatCardProps = {
@@ -67,6 +75,7 @@ type StatCardProps = {
   icon: ReactNode;
   loading?: boolean;
   hint?: string;
+  tone?: AccentTone;
 };
 
 const SettingsSection = ({
@@ -74,37 +83,37 @@ const SettingsSection = ({
   description,
   children,
   className,
+  accent,
 }: SettingsSectionProps) => (
-  <section
-    className={cn("overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900/30", className)}
-  >
-    <div className="border-b border-zinc-800/80 px-5 py-3">
-      <h2 className="text-xs font-medium uppercase tracking-wider text-zinc-500">{title}</h2>
+  <section className={cn(accentSectionClass(accent), className)}>
+    <div className={accentSectionHeaderClass(accent)}>
+      <h2 className="text-xs font-medium uppercase tracking-wider text-zinc-400">{title}</h2>
       {description && (
-        <p className="mt-1 text-xs leading-relaxed text-zinc-600">{description}</p>
+        <p className="mt-1 text-xs leading-relaxed text-zinc-500">{description}</p>
       )}
     </div>
     {children}
   </section>
 );
 
-const StatCard = ({ label, value, icon, loading, hint }: StatCardProps) => (
-  <div className="rounded-lg border border-zinc-800/80 bg-zinc-950/50 px-4 py-3.5">
-    <div className="flex items-center gap-2 text-zinc-500">
-      {icon}
+const StatCard = ({ label, value, icon, loading, hint, tone = "sky" }: StatCardProps) => (
+  <div className={accentStatCardClass(tone)}>
+    <div className="flex items-center gap-2 text-zinc-400">
+      <span className={accentIconBox(tone, "h-6 w-6 rounded-md")}>{icon}</span>
       <span className="text-[11px] font-medium uppercase tracking-wider">{label}</span>
     </div>
     <p className="mt-2 text-xl font-semibold tabular-nums tracking-tight text-zinc-100">
       {loading ? "…" : value}
     </p>
     {hint && !loading && (
-      <p className="mt-1 text-[11px] leading-relaxed text-zinc-600">{hint}</p>
+      <p className="mt-1 text-[11px] leading-relaxed text-zinc-500">{hint}</p>
     )}
   </div>
 );
 
 type StorageLocationCardProps = {
   icon: ReactNode;
+  iconTone?: AccentTone;
   title: string;
   description: string;
   path?: string;
@@ -114,10 +123,13 @@ type StorageLocationCardProps = {
   actionLabel: string;
   onAction: () => void;
   onCopy?: () => void;
+  secondaryActionLabel?: string;
+  onSecondaryAction?: () => void;
 };
 
 const StorageLocationCard = ({
   icon,
+  iconTone = "sky",
   title,
   description,
   path,
@@ -127,12 +139,12 @@ const StorageLocationCard = ({
   actionLabel,
   onAction,
   onCopy,
+  secondaryActionLabel,
+  onSecondaryAction,
 }: StorageLocationCardProps) => (
-  <div className="flex flex-col rounded-xl border border-zinc-800/80 bg-zinc-950/40 p-5">
+  <div className={cn("flex flex-col rounded-xl border p-5", accentSoftCardClass(iconTone))}>
     <div className="flex items-start gap-3.5">
-      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-zinc-800/80 text-sky-400">
-        {icon}
-      </div>
+      <div className={accentIconBox(iconTone, "h-11 w-11 shrink-0 rounded-xl")}>{icon}</div>
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
           <h3 className="text-base font-medium text-zinc-100">{title}</h3>
@@ -146,7 +158,7 @@ const StorageLocationCard = ({
       </div>
     </div>
 
-    <div className="mt-4 overflow-hidden rounded-xl border border-zinc-800/80 bg-zinc-900/50 px-4 py-3">
+    <div className="mt-4 overflow-hidden rounded-xl border border-zinc-800/40 bg-zinc-950/30 px-4 py-3">
       <div className="flex items-start gap-2.5">
         <p className="min-w-0 flex-1 break-all font-mono text-xs leading-relaxed text-zinc-300">
           {loading ? "Loading…" : path}
@@ -173,16 +185,29 @@ const StorageLocationCard = ({
       </div>
     </div>
 
-    <Button
-      type="button"
-      variant="outline"
-      className="mt-4 h-10 shrink-0 self-start px-4"
-      onClick={onAction}
-      disabled={loading}
-    >
-      <ExternalLink className="h-4 w-4" aria-hidden />
-      {actionLabel}
-    </Button>
+    <div className="mt-4 flex flex-wrap gap-2">
+      <Button
+        type="button"
+        variant="outline"
+        className="h-10 shrink-0 px-4"
+        onClick={onAction}
+        disabled={loading}
+      >
+        <ExternalLink className="h-4 w-4" aria-hidden />
+        {actionLabel}
+      </Button>
+      {secondaryActionLabel && onSecondaryAction ? (
+        <Button
+          type="button"
+          variant="ghost"
+          className="h-10 shrink-0 px-4 text-zinc-300"
+          onClick={onSecondaryAction}
+          disabled={loading}
+        >
+          {secondaryActionLabel}
+        </Button>
+      ) : null}
+    </div>
   </div>
 );
 
@@ -201,11 +226,6 @@ export const SettingsView = ({ active, refreshKey }: SettingsViewProps) => {
   const preferenceRows = useMemo(
     () => describeLibraryPreferences(libraryPrefs),
     [libraryPrefs],
-  );
-
-  const playbackShortcuts = useMemo(
-    () => getPlaybackShortcuts(libraryPrefs.seekStepSecs),
-    [libraryPrefs.seekStepSecs],
   );
 
   const handlePlaybackPrefChange = useCallback((patch: Partial<LibraryPreferences>) => {
@@ -272,6 +292,29 @@ export const SettingsView = ({ active, refreshKey }: SettingsViewProps) => {
     }
   };
 
+  const handleChangeLibraryLocation = async () => {
+    const picked = await open({
+      directory: true,
+      multiple: false,
+      title: "Choose video library folder",
+    });
+    if (!picked || Array.isArray(picked)) return;
+
+    const confirmed = await confirm(
+      "New imports will copy footage into this folder. Events already in your library stay at their current paths.",
+      { title: "Change library location", kind: "warning", okLabel: "Use folder" },
+    );
+    if (!confirmed) return;
+
+    setError("");
+    try {
+      await setLibraryLocation(picked);
+      await loadSettings({ silent: true });
+    } catch (err) {
+      setError(String(err));
+    }
+  };
+
   const handleOpenData = async () => {
     setError("");
     try {
@@ -309,32 +352,39 @@ export const SettingsView = ({ active, refreshKey }: SettingsViewProps) => {
   return (
     <div className="flex min-h-0 flex-1 flex-col overflow-x-hidden overflow-y-auto">
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 p-5 lg:p-6">
-        <header className="flex items-start justify-between gap-4">
-          <div>
-            <h1 className="text-lg font-semibold tracking-tight">Settings</h1>
-            <p className="mt-0.5 text-sm text-zinc-400">
-              Storage, library stats, display preferences, export, and shortcuts.
-            </p>
+        <header className={accentPageBannerClass("teal")}>
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex items-start gap-3">
+              <span className={accentIconBox("teal", "mt-0.5 h-9 w-9 shrink-0 rounded-lg")}>
+                <Settings className="h-4 w-4" aria-hidden />
+              </span>
+              <div>
+                <h1 className="text-lg font-semibold tracking-tight text-zinc-100">Settings</h1>
+                <p className="mt-0.5 text-sm text-zinc-400">
+                  Storage, library stats, display preferences, export, and shortcuts.
+                </p>
+              </div>
+            </div>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                setLibraryPrefs(loadLibraryPreferences());
+                void loadSettings({ silent: true });
+              }}
+              disabled={isBusy}
+              className="shrink-0 text-zinc-400"
+              aria-label="Refresh settings"
+            >
+              {refreshing ? (
+                <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+              ) : (
+                <RefreshCw className="h-4 w-4" aria-hidden />
+              )}
+              Refresh
+            </Button>
           </div>
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            onClick={() => {
-              setLibraryPrefs(loadLibraryPreferences());
-              void loadSettings({ silent: true });
-            }}
-            disabled={isBusy}
-            className="shrink-0 text-zinc-400"
-            aria-label="Refresh settings"
-          >
-            {refreshing ? (
-              <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
-            ) : (
-              <RefreshCw className="h-4 w-4" aria-hidden />
-            )}
-            Refresh
-          </Button>
         </header>
 
         {error && (
@@ -360,6 +410,7 @@ export const SettingsView = ({ active, refreshKey }: SettingsViewProps) => {
           <SettingsSection
             title="Library overview"
             description="Active events, archived items, and storage used on this device."
+            accent="sky"
             className="lg:col-span-2 xl:col-span-8"
           >
             <div className="grid gap-3 p-5 sm:grid-cols-2 xl:grid-cols-3">
@@ -367,6 +418,7 @@ export const SettingsView = ({ active, refreshKey }: SettingsViewProps) => {
                 label="Active events"
                 value={String(stats?.eventCount ?? 0)}
                 icon={<Video className="h-3.5 w-3.5" aria-hidden />}
+                tone="sky"
                 loading={loading}
                 hint={
                   !loading && (stats?.archivedCount ?? 0) > 0
@@ -378,6 +430,7 @@ export const SettingsView = ({ active, refreshKey }: SettingsViewProps) => {
                 label="Archived"
                 value={String(stats?.archivedCount ?? 0)}
                 icon={<Archive className="h-3.5 w-3.5" aria-hidden />}
+                tone="amber"
                 loading={loading}
                 hint={!loading && totalEvents > 0 ? `${totalEvents} total events` : undefined}
               />
@@ -385,24 +438,28 @@ export const SettingsView = ({ active, refreshKey }: SettingsViewProps) => {
                 label="Clips"
                 value={String(stats?.clipCount ?? 0)}
                 icon={<Camera className="h-3.5 w-3.5" aria-hidden />}
+                tone="teal"
                 loading={loading}
               />
               <StatCard
                 label="Tags"
                 value={String(stats?.tagCount ?? 0)}
                 icon={<Tag className="h-3.5 w-3.5" aria-hidden />}
+                tone="violet"
                 loading={loading}
               />
               <StatCard
                 label="Video storage"
                 value={formatFileSize(stats?.libraryBytes)}
                 icon={<HardDrive className="h-3.5 w-3.5" aria-hidden />}
+                tone="emerald"
                 loading={loading}
               />
               <StatCard
                 label="Database"
                 value={formatFileSize(stats?.dbBytes)}
                 icon={<Database className="h-3.5 w-3.5" aria-hidden />}
+                tone="rose"
                 loading={loading}
               />
             </div>
@@ -430,7 +487,7 @@ export const SettingsView = ({ active, refreshKey }: SettingsViewProps) => {
             )}
           </SettingsSection>
 
-          <SettingsSection title="About" className="lg:col-span-2 xl:col-span-4">
+          <SettingsSection title="About" accent="violet" className="lg:col-span-2 xl:col-span-4">
             <div className="space-y-4 p-5">
               <div className="flex items-center gap-3">
                 <AppLogo size={40} />
@@ -451,8 +508,8 @@ export const SettingsView = ({ active, refreshKey }: SettingsViewProps) => {
                 onInstall={() => void installUpdate()}
               />
 
-              <div className="flex items-start gap-3 rounded-lg border border-zinc-800/80 bg-zinc-950/40 px-4 py-3">
-                <Shield className="mt-0.5 h-4 w-4 shrink-0 text-zinc-500" aria-hidden />
+              <div className={cn("flex items-start gap-3 px-4 py-3", accentSoftCardClass("emerald"))}>
+                <Shield className="mt-0.5 h-4 w-4 shrink-0 text-emerald-300" aria-hidden />
                 <div>
                   <p className="text-sm font-medium text-zinc-300">Local-first & private</p>
                   <p className="mt-0.5 text-xs leading-relaxed text-zinc-500">
@@ -466,12 +523,14 @@ export const SettingsView = ({ active, refreshKey }: SettingsViewProps) => {
 
           <SettingsSection
             title="Storage"
-            description="Imported clips are copied here. Playback always uses the library copy."
+            description="Imported clips are copied here. New imports use the folder below; existing events keep their original paths."
+            accent="emerald"
             className="lg:col-span-2 xl:col-span-6"
           >
             <div className="flex flex-col gap-4 p-5">
               <StorageLocationCard
                 icon={<FolderOpen className="h-5 w-5" aria-hidden />}
+                iconTone="sky"
                 title="Video library"
                 description="MP4 files organized by event timestamp and camera angle."
                 path={settings?.libraryPath}
@@ -481,9 +540,12 @@ export const SettingsView = ({ active, refreshKey }: SettingsViewProps) => {
                 actionLabel="Open folder"
                 onAction={() => void handleOpenLibrary()}
                 onCopy={() => void handleCopyPath("library", settings?.libraryPath ?? "")}
+                secondaryActionLabel="Change location"
+                onSecondaryAction={() => void handleChangeLibraryLocation()}
               />
               <StorageLocationCard
                 icon={<Database className="h-5 w-5" aria-hidden />}
+                iconTone="teal"
                 title="Database"
                 description="Events, tags, notes, archive state, and import history."
                 path={settings?.dbPath}
@@ -500,9 +562,10 @@ export const SettingsView = ({ active, refreshKey }: SettingsViewProps) => {
           <SettingsSection
             title="Library display"
             description="Filter, sort, layout, and playback preferences saved locally."
+            accent="amber"
             className="lg:col-span-2 xl:col-span-6"
           >
-            <div className="divide-y divide-zinc-800/80">
+            <div className="divide-y divide-zinc-800/50">
               <div className="p-5">
                 <p className="mb-3 text-[11px] font-medium uppercase tracking-wider text-zinc-500">
                   Current preferences
@@ -511,7 +574,7 @@ export const SettingsView = ({ active, refreshKey }: SettingsViewProps) => {
                   {preferenceRows.map(({ label, value }) => (
                     <div
                       key={label}
-                      className="flex items-center justify-between gap-3 rounded-lg border border-zinc-800/80 bg-zinc-950/40 px-3 py-2"
+                      className="flex items-center justify-between gap-3 rounded-lg border border-zinc-800/40 bg-zinc-950/25 px-3 py-2"
                     >
                       <dt className="text-xs text-zinc-500">{label}</dt>
                       <dd className="text-xs font-medium text-zinc-200">{value}</dd>
@@ -526,7 +589,7 @@ export const SettingsView = ({ active, refreshKey }: SettingsViewProps) => {
 
               <div className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex gap-3">
-                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-zinc-800/80 text-sky-400">
+                  <div className={accentIconBox("amber", "h-9 w-9 shrink-0 rounded-lg")}>
                     <Clapperboard className="h-4 w-4" aria-hidden />
                   </div>
                   <div>
@@ -553,7 +616,8 @@ export const SettingsView = ({ active, refreshKey }: SettingsViewProps) => {
 
           <SettingsSection
             title="Playback"
-            description="Keyboard seek distance and export segment length. Saved locally on this device."
+            description="Keyboard seek distance and export segment length. Saved locally on this device. Full shortcut list is in Help."
+            accent="fuchsia"
             className="lg:col-span-2 xl:col-span-6"
           >
             <div className="grid gap-4 p-5 sm:grid-cols-2">
@@ -622,11 +686,12 @@ export const SettingsView = ({ active, refreshKey }: SettingsViewProps) => {
           <SettingsSection
             title="Export & processes"
             description="What runs on your machine beyond normal browsing and playback."
+            accent="violet"
             className="lg:col-span-1 xl:col-span-6"
           >
-            <div className="divide-y divide-zinc-800/80">
+            <div className="divide-y divide-zinc-800/50">
               <div className="flex gap-3 p-5">
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-zinc-800/80 text-violet-400">
+                <div className={accentIconBox("violet", "h-9 w-9 shrink-0 rounded-lg")}>
                   <Film className="h-4 w-4" aria-hidden />
                 </div>
                 <div className="min-w-0">
@@ -638,7 +703,7 @@ export const SettingsView = ({ active, refreshKey }: SettingsViewProps) => {
                 </div>
               </div>
               <div className="flex gap-3 p-5">
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-zinc-800/80 text-emerald-400">
+                <div className={accentIconBox("emerald", "h-9 w-9 shrink-0 rounded-lg")}>
                   <Clapperboard className="h-4 w-4" aria-hidden />
                 </div>
                 <div className="min-w-0">
@@ -648,29 +713,6 @@ export const SettingsView = ({ active, refreshKey }: SettingsViewProps) => {
                   </p>
                 </div>
               </div>
-            </div>
-          </SettingsSection>
-
-          <SettingsSection
-            title="Keyboard shortcuts"
-            description="Library shortcuts when focus is not in a text field. Playback shortcuts when an event is open."
-            className="lg:col-span-1 xl:col-span-6"
-          >
-            <div className="divide-y divide-zinc-800/80 px-5">
-              <div className="flex items-center gap-2 py-3 text-zinc-500">
-                <Keyboard className="h-3.5 w-3.5" aria-hidden />
-                <span className="text-[11px] font-medium uppercase tracking-wider">Library</span>
-              </div>
-              {LIBRARY_SHORTCUTS.map((shortcut) => (
-                <KeyboardShortcutRow key={shortcut.description} {...shortcut} />
-              ))}
-              <div className="flex items-center gap-2 py-3 text-zinc-500">
-                <Keyboard className="h-3.5 w-3.5" aria-hidden />
-                <span className="text-[11px] font-medium uppercase tracking-wider">Playback</span>
-              </div>
-              {playbackShortcuts.map((shortcut) => (
-                <KeyboardShortcutRow key={shortcut.description} {...shortcut} />
-              ))}
             </div>
           </SettingsSection>
         </div>

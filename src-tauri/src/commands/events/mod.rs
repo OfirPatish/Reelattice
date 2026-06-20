@@ -246,7 +246,7 @@ pub fn list_tags(db: &Database) -> AppResult<Vec<TagInfo>> {
 }
 
 pub fn get_settings(db: &Database) -> AppResult<AppSettings> {
-    let library_path = crate::paths::default_library_root();
+    let library_path = db.library_root();
     let db_path = crate::paths::default_db_path();
 
     let stats = db.with_conn(|conn| {
@@ -277,13 +277,18 @@ pub fn get_settings(db: &Database) -> AppResult<AppSettings> {
             [],
             |row| row.get(0),
         )?;
+        let library_bytes: u64 = conn.query_row(
+            "SELECT COALESCE(SUM(file_size), 0) FROM clips",
+            [],
+            |row| row.get(0),
+        )?;
 
         Ok(LibraryStats {
             event_count,
             archived_count,
             clip_count,
             tag_count,
-            library_bytes: directory_size(&library_path),
+            library_bytes,
             db_bytes: file_size(&db_path),
             sentry_count,
             recent_count,
@@ -385,20 +390,6 @@ fn load_event_clips(conn: &rusqlite::Connection, event_id: &str) -> AppResult<Ve
         })?
         .collect::<Result<Vec<_>, _>>()?;
     Ok(clips)
-}
-
-fn directory_size(path: &Path) -> u64 {
-    if !path.exists() {
-        return 0;
-    }
-
-    walkdir::WalkDir::new(path)
-        .into_iter()
-        .filter_map(|entry| entry.ok())
-        .filter(|entry| entry.file_type().is_file())
-        .filter_map(|entry| entry.metadata().ok())
-        .map(|metadata| metadata.len())
-        .sum()
 }
 
 fn file_size(path: &Path) -> u64 {

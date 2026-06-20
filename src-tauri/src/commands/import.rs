@@ -9,6 +9,7 @@ use uuid::Uuid;
 
 use crate::db::Database;
 use crate::error::{AppError, AppResult};
+use crate::state::ImportJob;
 use crate::tesla::grouping::{
     scan_import_paths as scan_import_paths_inner, DetectedEvent, ImportDedupIndex, ScanImportResult,
 };
@@ -20,6 +21,7 @@ pub struct ImportResult {
     pub skipped_count: usize,
     pub errors: Vec<String>,
     pub event_ids: Vec<String>,
+    pub cancelled: bool,
 }
 
 pub fn get_imported_paths(db: &Database) -> AppResult<Vec<String>> {
@@ -50,12 +52,14 @@ pub fn scan_import_paths(db: &Database, paths: Vec<String>) -> AppResult<ScanImp
 pub fn import_detected_events(
     db: &Database,
     events: Vec<DetectedEvent>,
+    job: Option<&ImportJob>,
 ) -> AppResult<ImportResult> {
     let mut result = ImportResult {
         imported_count: 0,
         skipped_count: 0,
         errors: Vec::new(),
         event_ids: Vec::new(),
+        cancelled: false,
     };
 
     let mut imported_paths: HashSet<String> = get_imported_paths(db)?.into_iter().collect();
@@ -63,33 +67,65 @@ pub fn import_detected_events(
         get_imported_event_times(db)?.into_iter().collect();
 
     for event in events {
+        if job.is_some_and(|job| job.is_cancelled()) {
+            result.cancelled = true;
+            break;
+        }
+
         if event.already_imported
             || imported_paths.contains(&event.folder_path)
             || imported_event_times.contains(&event.event_time)
         {
             result.skipped_count += 1;
+            if let Some(job) = job {
+                job.increment_completed();
+            }
             continue;
         }
 
-        match import_detected_event(db, &event) {
+        if let Some(job) = job {
+            job.set_current_label(&event.event_time);
+        }
+
+        match import_detected_event(db, &event, job) {
             Ok(event_id) => {
                 result.imported_count += 1;
                 result.event_ids.push(event_id);
                 imported_paths.insert(event.folder_path.clone());
                 imported_event_times.insert(event.event_time.clone());
             }
-            Err(err) => {
-                result.errors.push(format!("{}: {err}", event.folder_path));
+            Err(AppError::Message(message)) if message == IMPORT_CANCELLED => {
+                result.cancelled = true;
+                break;
             }
+            Err(err) => {
+                result
+                    .errors
+                    .push(format!("{}: {err}", event.folder_path));
+            }
+        }
+
+        if let Some(job) = job {
+            job.increment_completed();
         }
     }
 
     Ok(result)
 }
 
-fn import_detected_event(db: &Database, detected: &DetectedEvent) -> AppResult<String> {
+const IMPORT_CANCELLED: &str = "Import cancelled";
+
+fn import_detected_event(
+    db: &Database,
+    detected: &DetectedEvent,
+    job: Option<&ImportJob>,
+) -> AppResult<String> {
     if detected.clips.is_empty() {
         return Err(AppError::Message("No MP4 clips found".to_string()));
+    }
+
+    if job.is_some_and(|job| job.is_cancelled()) {
+        return Err(AppError::Message(IMPORT_CANCELLED.into()));
     }
 
     let event_id = Uuid::new_v4().to_string();
@@ -100,8 +136,14 @@ fn import_detected_event(db: &Database, detected: &DetectedEvent) -> AppResult<S
 
     let mut clip_rows = Vec::new();
     for clip in &detected.clips {
+        if job.is_some_and(|job| job.is_cancelled()) {
+            let _ = fs::remove_dir_all(&library_event_dir);
+            return Err(AppError::Message(IMPORT_CANCELLED.into()));
+        }
+
         let src = PathBuf::from(&clip.file_path);
         if !src.is_file() {
+            let _ = fs::remove_dir_all(&library_event_dir);
             return Err(AppError::Message(format!(
                 "Clip not found: {}",
                 clip.file_path
@@ -174,4 +216,22 @@ fn build_library_event_dir(db: &Database, event_time: &str, event_id: &str) -> A
     let dir = db.library_root().join(&folder_name).join(&event_id[..8]);
 
     Ok(dir)
+}
+
+pub fn set_library_location(db: &Database, path: String, import_running: bool) -> AppResult<String> {
+    if import_running {
+        return Err(AppError::Message(
+            "Cannot change the library location while an import is running.".into(),
+        ));
+    }
+
+    let path = PathBuf::from(path.trim());
+    if !path.is_absolute() {
+        return Err(AppError::Message(
+            "Library location must be an absolute folder path.".into(),
+        ));
+    }
+
+    db.set_library_root(path.clone())?;
+    Ok(path.to_string_lossy().to_string())
 }

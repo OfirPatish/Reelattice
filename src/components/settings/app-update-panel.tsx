@@ -45,7 +45,7 @@ export const AppUpdatePanel = ({ state, onCheck, onInstall }: AppUpdatePanelProp
   };
 
   return (
-    <div className="rounded-lg border border-zinc-800/80 bg-zinc-950/40 px-4 py-3">
+    <div className="rounded-lg border border-sky-500/20 bg-sky-500/[0.06] px-4 py-3">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0 space-y-1">
           <p className="text-sm font-medium text-zinc-300">Software updates</p>

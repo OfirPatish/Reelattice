@@ -56,6 +56,37 @@ export type ImportResult = {
   skippedCount: number;
   errors: string[];
   eventIds: string[];
+  cancelled: boolean;
+};
+
+export type ImportJobStatus = {
+  running: boolean;
+  totalEvents: number;
+  completedEvents: number;
+  currentLabel: string;
+  importedCount: number;
+  skippedCount: number;
+  cancelled: boolean;
+  errors: string[];
+  eventIds: string[];
+};
+
+export type CaseSummary = {
+  id: string;
+  title: string;
+  description: string;
+  eventCount: number;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type CaseDetail = {
+  id: string;
+  title: string;
+  description: string;
+  createdAt: string;
+  updatedAt: string;
+  events: DashEvent[];
 };
 
 export type EventFilters = {
@@ -92,4 +123,4 @@ export type AppSettings = {
   stats: LibraryStats;
 };
 
-export type AppView = "library" | "import" | "settings" | "help" | "changelog";
+export type AppView = "library" | "import" | "cases" | "settings" | "help" | "changelog";

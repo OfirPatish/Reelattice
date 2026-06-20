@@ -37,6 +37,7 @@ Local-first desktop app for organizing Tesla Dashcam, Sentry Mode, and Saved cli
 
 ### Import
 - TeslaCam USB folder scan — **RecentClips** (flat MP4s), **SentryClips** / **SavedClips** (timestamp subfolders)
+- **Cancel import** mid-copy with progress counter in the Import wizard
 - Timestamp subfolder batches (generic parent folders) import as **one event per subfolder**
 - Loose MP4 files and arbitrary folder trees (recursive scan); flat MP4s in one folder group by filename timestamp
 - **Encrypted clip detection** (Tesla 2026.20+) — skips `EncryptedClips` paths and non-playable loose MP4s; links to [dashcam.tesla.com](https://dashcam.tesla.com/)
@@ -54,20 +55,29 @@ Local-first desktop app for organizing Tesla Dashcam, Sentry Mode, and Saved cli
 - **Changelog** tab: concise release notes per version
 - Complements Settings (paths, stats, prefs) for onboarding new users
 
+### Cases
+- **Cases** tab — incident bundles with title, description, and linked events
+- Quick title presets (parking lot, sentry alert, insurance claim, etc.) when creating a case
+- View/edit modes — read-only by default; **Edit** to change details, **Save** when done
+- Library bulk select → **Add to case** opens a picker (choose an existing case or create one)
+- Open linked events back in Library; remove events from a case without deleting footage
+
 ### Settings
 - Library overview: active/archived events, clips, tags, storage usage, breakdown by source
+- **Custom library location** — choose where new imports are copied (Settings → Change location)
 - **Storage** cards: video library + database paths, size badges, open folder, copy path
 - Current display preferences summary + reset (sort, filters, list width, playback layout, panel state)
 - Export & processes: segment export, grid MP4, FFmpeg lifecycle
-- Keyboard shortcuts reference (library + playback)
-- App version, in-app software updates (check on startup or from About), and local-first privacy note
+- Keyboard shortcuts reference in **Help** (library + playback)
+- App version and software updates (auto-check on startup; install from Settings → About)
+- Destructive actions (delete, archive, reset) use native Windows confirm dialogs
+- Local-first privacy note — no cloud sync
 
 ### Data model
 - **Import copies files** to `Documents/Reelattice/library/{timestamp}/{event-id}/` — playback uses the copy, not the original USB path
 - **Open folder** on an event opens the library copy (short hex folder is the event UUID prefix)
 - **Delete** removes library files + metadata (allows re-import)
 - Event times match Tesla filename wall-clock time (no timezone shift)
-- Legacy **Vaultline** data paths are still read if present (migration from the old app name)
 
 ## Stack
 
@@ -115,13 +125,12 @@ cargo test           # Rust parser, grouping, grid export filter tests
 | Video library | `%USERPROFILE%\Documents\Reelattice\library` |
 | Thumbnails cache | `library/.thumbnails/` (per clip, JPEG) |
 | Database | `%APPDATA%\Reelattice\data.db` |
-| Legacy (read-only fallback) | `%USERPROFILE%\Documents\Vaultline\`, `%APPDATA%\Vaultline\` |
 
 ## UI overview
 
 ```
 ┌──────────────────────────────────────────────────────────────┐
-│  Reelattice   Library · Import · Help · Settings             │
+│  Reelattice   Library · Import · Cases · Help · Settings             │
 ├─────────────┬──────────────────────────────────────|─────────┤
 │  Search     │  [Dashcam REC or video when event open] │ Details │
 │  Filters    │  Single | Grid · scissors               │ rail    │
@@ -226,6 +235,7 @@ reelattice/
 │   │   ├── playback-controls-bar.tsx
 │   │   ├── video-player.tsx
 │   │   ├── import-wizard.tsx
+│   │   ├── cases-view.tsx
 │   │   ├── settings-view.tsx
 │   │   └── ui/                   # fade-in, collapse-fade, button, …
 │   ├── hooks/                    # use-library, use-synced-videos, use-library-drop-import

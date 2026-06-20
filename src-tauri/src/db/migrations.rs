@@ -1,10 +1,10 @@
 use rusqlite::Connection;
 use uuid::Uuid;
 
-use crate::db::schema::{BUILTIN_TAGS, MIGRATION_001};
+use crate::db::schema::{BUILTIN_TAGS, MIGRATION_001, MIGRATION_002};
 use crate::error::AppResult;
 
-const CURRENT_VERSION: i32 = 1;
+const CURRENT_VERSION: i32 = 2;
 
 pub fn run_migrations(conn: &Connection) -> AppResult<()> {
     conn.execute_batch(MIGRATION_001)?;
@@ -22,10 +22,20 @@ pub fn run_migrations(conn: &Connection) -> AppResult<()> {
         return Ok(());
     }
 
-    conn.execute(
-        "INSERT INTO schema_version (version) VALUES (?1)",
-        [CURRENT_VERSION],
-    )?;
+    if version < 1 {
+        conn.execute(
+            "INSERT INTO schema_version (version) VALUES (?1)",
+            [1_i32],
+        )?;
+    }
+
+    if version < 2 {
+        conn.execute_batch(MIGRATION_002)?;
+        conn.execute(
+            "INSERT INTO schema_version (version) VALUES (?1)",
+            [2_i32],
+        )?;
+    }
 
     seed_builtin_tags(conn)?;
     Ok(())

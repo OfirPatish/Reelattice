@@ -7,6 +7,10 @@ mod tesla;
 
 use std::sync::Arc;
 
+use commands::cases::{
+    add_events_to_case, create_case, delete_case, get_case, list_cases, remove_event_from_case,
+    update_case, CaseDetail, CaseSummary,
+};
 use commands::events::{
     bulk_delete_events as bulk_delete_event_records, bulk_export_events_zip,
     bulk_set_events_archived as bulk_set_event_archive, bulk_toggle_tag as bulk_toggle_event_tag,
@@ -20,9 +24,10 @@ use commands::events::{
     TagInfo,
 };
 use commands::import::{
-    import_detected_events, scan_import_paths as scan_import_paths_cmd, ImportResult,
+    import_detected_events, scan_import_paths as scan_import_paths_cmd,
+    set_library_location as set_library_location_cmd, ImportResult,
 };
-use state::AppState;
+use state::{AppState, ImportJobStatus};
 use tauri::Manager;
 use tesla::grid_video;
 use tesla::{DetectedEvent, ScanImportResult};
@@ -40,15 +45,129 @@ async fn scan_import_paths(
 }
 
 #[tauri::command]
-async fn import_tesla_events(
+async fn start_import_tesla_events(
     state: tauri::State<'_, AppState>,
     events: Vec<DetectedEvent>,
-) -> Result<ImportResult, error::AppError> {
+) -> Result<(), error::AppError> {
     let db = Arc::clone(&state.db);
+    let job = Arc::clone(&state.import_job);
+    job.begin(events.len())?;
 
-    tauri::async_runtime::spawn_blocking(move || import_detected_events(&db, events))
-        .await
-        .map_err(|error| error::AppError::Message(format!("Import failed: {error}")))?
+    tauri::async_runtime::spawn(async move {
+        let finished = tauri::async_runtime::spawn_blocking({
+            let job = Arc::clone(&job);
+            move || import_detected_events(&db, events, Some(job.as_ref()))
+        })
+        .await;
+
+        match finished {
+            Ok(Ok(result)) => job.finish(result),
+            Ok(Err(error)) => job.finish(ImportResult {
+                imported_count: 0,
+                skipped_count: 0,
+                errors: vec![error.to_string()],
+                event_ids: vec![],
+                cancelled: false,
+            }),
+            Err(join_error) => job.finish(ImportResult {
+                imported_count: 0,
+                skipped_count: 0,
+                errors: vec![format!("Import failed: {join_error}")],
+                event_ids: vec![],
+                cancelled: false,
+            }),
+        }
+    });
+
+    Ok(())
+}
+
+#[tauri::command]
+fn cancel_import(state: tauri::State<'_, AppState>) -> Result<(), error::AppError> {
+    if !state.import_job.is_running() {
+        return Err(error::AppError::Message(
+            "No import is currently running.".into(),
+        ));
+    }
+    state.import_job.request_cancel();
+    Ok(())
+}
+
+#[tauri::command]
+fn get_import_status(state: tauri::State<'_, AppState>) -> Result<ImportJobStatus, error::AppError> {
+    Ok(state.import_job.snapshot())
+}
+
+#[tauri::command]
+fn set_library_location(
+    app: tauri::AppHandle,
+    state: tauri::State<'_, AppState>,
+    path: String,
+) -> Result<String, error::AppError> {
+    let resolved = set_library_location_cmd(&state.db, path, state.import_job.is_running())?;
+    let path_buf = std::path::PathBuf::from(&resolved);
+    app.asset_protocol_scope()
+        .allow_directory(&path_buf, true)
+        .map_err(|err| error::AppError::Message(err.to_string()))?;
+    Ok(resolved)
+}
+
+#[tauri::command]
+fn get_cases(state: tauri::State<'_, AppState>) -> Result<Vec<CaseSummary>, error::AppError> {
+    list_cases(&state.db)
+}
+
+#[tauri::command]
+fn get_case_detail(
+    state: tauri::State<'_, AppState>,
+    case_id: String,
+) -> Result<CaseDetail, error::AppError> {
+    get_case(&state.db, &case_id)
+}
+
+#[tauri::command]
+fn create_incident_case(
+    state: tauri::State<'_, AppState>,
+    title: String,
+    description: String,
+) -> Result<CaseSummary, error::AppError> {
+    create_case(&state.db, &title, &description)
+}
+
+#[tauri::command]
+fn update_incident_case(
+    state: tauri::State<'_, AppState>,
+    case_id: String,
+    title: String,
+    description: String,
+) -> Result<(), error::AppError> {
+    update_case(&state.db, &case_id, &title, &description)
+}
+
+#[tauri::command]
+fn delete_incident_case(
+    state: tauri::State<'_, AppState>,
+    case_id: String,
+) -> Result<(), error::AppError> {
+    delete_case(&state.db, &case_id)
+}
+
+#[tauri::command]
+fn add_events_to_incident_case(
+    state: tauri::State<'_, AppState>,
+    case_id: String,
+    event_ids: Vec<String>,
+) -> Result<u32, error::AppError> {
+    add_events_to_case(&state.db, &case_id, &event_ids)
+}
+
+#[tauri::command]
+fn remove_event_from_incident_case(
+    state: tauri::State<'_, AppState>,
+    case_id: String,
+    event_id: String,
+) -> Result<(), error::AppError> {
+    remove_event_from_case(&state.db, &case_id, &event_id)
 }
 
 #[tauri::command]
@@ -242,8 +361,11 @@ fn open_event_folder(
 }
 
 #[tauri::command]
-fn open_library_folder(app: tauri::AppHandle) -> Result<(), error::AppError> {
-    open_library_folder_path(&app)
+fn open_library_folder(
+    state: tauri::State<'_, AppState>,
+    app: tauri::AppHandle,
+) -> Result<(), error::AppError> {
+    open_library_folder_path(&state.db, &app)
 }
 
 #[tauri::command]
@@ -274,6 +396,13 @@ pub fn run() {
         .setup(|app| {
             let _ = crate::tesla::ffmpeg::ensure_ffmpeg_cached(app.handle());
 
+            if let Some(state) = app.try_state::<AppState>() {
+                let library_root = state.db.library_root();
+                let _ = app
+                    .asset_protocol_scope()
+                    .allow_directory(&library_root, true);
+            }
+
             if let Some(window) = app.get_webview_window("main") {
                 if let Some(icon) = app.default_window_icon() {
                     let _ = window.set_icon(icon.clone());
@@ -286,7 +415,17 @@ pub fn run() {
         })
         .invoke_handler(tauri::generate_handler![
             scan_import_paths,
-            import_tesla_events,
+            start_import_tesla_events,
+            cancel_import,
+            get_import_status,
+            set_library_location,
+            get_cases,
+            get_case_detail,
+            create_incident_case,
+            update_incident_case,
+            delete_incident_case,
+            add_events_to_incident_case,
+            remove_event_from_incident_case,
             get_events,
             ensure_clip_thumbnail,
             get_clip_thumbnail_data,

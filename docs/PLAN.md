@@ -2,7 +2,7 @@
 
 **Product:** Reelattice  
 **Type:** Local-first desktop app (Tauri 2 + React)  
-**Status:** v1.3 — daily-use ready, public releases on GitHub  
+**Status:** v1.5 — daily-use ready, public releases on GitHub  
 **Last updated:** June 2026
 
 ---
@@ -84,7 +84,7 @@
 - [x] In-app auto-updates via GitHub Releases (`latest.json`, signed NSIS bundle)
 - [x] GitHub Actions release workflow + updater signing keys
 - [x] User-facing version display as major.minor (e.g. **1.0** from `1.0.0`)
-- [x] Header update status indicator (check on startup, install from Settings → About)
+- [x] Header update status indicator (v1.0–1.4; removed in v1.5 — updates in Settings → About only)
 
 ### Shipped (v1.3)
 
@@ -96,11 +96,27 @@
 - [x] New circular transparent app icon (multi-cam reel / play motif)
 - [x] Round `AppLogo` in title bar and Settings
 
-### Next (v0.4)
+### Shipped (v1.4)
 
-- [ ] Cancel mid-copy during import (async Rust job)
-- [ ] Custom library location
-- [ ] Cases / incident bundles (`cases` table exists, unused)
+- [x] Cancel mid-copy during import (async Rust job + Cancel import in wizard)
+- [x] Custom library location (Settings → Change location; new imports use chosen folder)
+- [x] Cases / incident bundles (Cases tab, link events from bulk select)
+
+### Shipped (v1.5)
+
+- [x] Cases UI — sidebar + detail layout, view/edit modes, quick title presets
+- [x] Case picker dialog on bulk Add to case (choose case or create inline)
+- [x] Optimistic case saves (no full reload / layout shift on edit)
+- [x] Single create entry point when library has no cases
+- [x] Updates checked on startup and in Settings → About (header indicator removed)
+- [x] Removed legacy Vaultline path fallbacks (Reelattice paths only)
+- [x] Help, Changelog, and Settings — subtle accent colors and lighter section panels
+
+### Next (future)
+
+- [ ] **Grid export quality presets** — Full / Standard (1920×960) / HD / Web
+- [ ] **Telemetry overlay** — Parse Tesla SEI metadata; speed, GPS, G-force overlay on playback
+- [ ] **Insurance PDF report** — Event dossier with key frames, notes, and clip manifest
 
 ---
 
@@ -241,7 +257,7 @@ src/
     ├── bulk-actions.ts         # bulk archive / delete / export / tags
     ├── bulk-selection.ts       # shift+click range select, BulkBusyAction type
     ├── event-actions.ts        # export / archive / delete helpers
-    ├── keyboard-shortcuts.ts   # shared shortcut list (Help + Settings)
+    ├── keyboard-shortcuts.ts   # shared shortcut list (Help)
     ├── library-filters.ts      # filter & sort logic
     ├── library-preferences.ts  # localStorage (incl. playbackLayout, list inner width)
     ├── import-source.ts        # import review source overrides
@@ -279,7 +295,6 @@ See [docs/README.md](./README.md) for the full tree.
 | Single-camera frame | `object-contain` in player — full frame, side bars on wide panels are normal |
 | Window | Default 1680×945; resizable and maximizable |
 | Grid export resolution | 1920×960 (2:1), not 16:9 — avoids side pillarboxing |
-| Legacy app name | Vaultline paths still supported for existing libraries |
 
 ---
 
@@ -302,4 +317,4 @@ See [docs/README.md](./README.md) for the full tree.
 
 ---
 
-*Plan version: 1.8 — June 2026*
+*Plan version: 2.0 — June 2026*
