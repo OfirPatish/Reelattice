@@ -350,7 +350,7 @@ export const HelpView = () => {
                   <p className="mt-1 text-xs leading-relaxed text-zinc-500">
                     Reelattice checks for updates when you open the app and when you click Check for
                     updates in Settings → About. New versions download and install inside the app —
-                    no need to visit GitHub after your first install.
+                    no manual download needed after your first install.
                   </p>
                 </div>
               </div>

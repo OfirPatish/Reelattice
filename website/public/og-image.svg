@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-label="Reelattice  Tesla footage loadout">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#06080f"/>
+      <stop offset="100%" stop-color="#0a1628"/>
+    </linearGradient>
+    <linearGradient id="title" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#00f0ff"/>
+      <stop offset="50%" stop-color="#ff00aa"/>
+      <stop offset="100%" stop-color="#ffe600"/>
+    </linearGradient>
+    <pattern id="grid" width="48" height="48" patternUnits="userSpaceOnUse">
+      <path d="M 48 0 L 0 0 0 48" fill="none" stroke="#00f0ff" stroke-opacity="0.08"/>
+    </pattern>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect width="1200" height="630" fill="url(#grid)"/>
+
+  <rect x="80" y="80" width="1040" height="470" fill="none" stroke="#00f0ff" stroke-opacity="0.35" stroke-width="2"/>
+  <path d="M80 80 H120 M80 80 V120" fill="none" stroke="#00f0ff" stroke-width="4"/>
+  <path d="M1120 80 H1080 M1120 80 V120" fill="none" stroke="#00f0ff" stroke-width="4"/>
+  <path d="M80 550 H120 M80 550 V510" fill="none" stroke="#00f0ff" stroke-width="4"/>
+  <path d="M1120 550 H1080 M1120 550 V510" fill="none" stroke="#00f0ff" stroke-width="4"/>
+
+  <circle cx="600" cy="230" r="72" fill="#0a0e17" stroke="#00f0ff" stroke-opacity="0.5" stroke-width="2"/>
+  <text x="600" y="245" text-anchor="middle" font-family="system-ui,sans-serif" font-size="28" font-weight="700" fill="#00f0ff">RL</text>
+
+  <text x="600" y="340" text-anchor="middle" font-family="system-ui,sans-serif" font-size="64" font-weight="800" fill="url(#title)" letter-spacing="4">REELATTICE</text>
+  <text x="600" y="390" text-anchor="middle" font-family="system-ui,sans-serif" font-size="28" fill="#94a3b8" letter-spacing="6">TESLA FOOTAGE LOADOUT</text>
+  <text x="600" y="440" text-anchor="middle" font-family="system-ui,sans-serif" font-size="22" fill="#64748b">6 cameras · synced grid · 100% offline · Windows</text>
+
+  <rect x="420" y="480" width="360" height="44" rx="0" fill="#00f0ff" fill-opacity="0.15" stroke="#00f0ff" stroke-opacity="0.6"/>
+  <text x="600" y="510" text-anchor="middle" font-family="system-ui,sans-serif" font-size="18" font-weight="700" fill="#00f0ff" letter-spacing="3">PRESS START  FREE DOWNLOAD</text>
+</svg>

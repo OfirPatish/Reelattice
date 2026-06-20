@@ -11,6 +11,9 @@ node_modules
 dist
 dist-ssr
 *.local
+reelattice-icon-work.png
+reelattice-icon-work.png.tmp
+reelattice-icon-source.png.tmp
 
 # Rust / Tauri
 src-tauri/target/

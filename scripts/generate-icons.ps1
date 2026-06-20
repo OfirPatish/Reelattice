@@ -1,18 +1,60 @@
 # Fix source transparency, regenerate Tauri icons, sync to public/ for the web UI.
 
 $ErrorActionPreference = "Stop"
+Add-Type -AssemblyName System.Drawing
 $root = Split-Path $PSScriptRoot -Parent
 Set-Location $root
 
-& "$PSScriptRoot\fix-icon-transparency.ps1"
-npm run tauri -- icon reelattice-icon-source.png
+$sourcePath = Join-Path $root "reelattice-icon-source.png"
+$workPath = Join-Path $root "reelattice-icon-work.png"
+
+if (-not (Test-Path $sourcePath)) {
+    throw "Icon source not found: $sourcePath"
+}
+
+Copy-Item -Force $sourcePath $workPath
+
+$source = [System.Drawing.Image]::FromFile($workPath)
+$targetSize = 1024
+
+if ($source.Width -ne $source.Height -or $source.Width -ne $targetSize) {
+    $square = New-Object System.Drawing.Bitmap $targetSize, $targetSize
+    $graphics = [System.Drawing.Graphics]::FromImage($square)
+    $graphics.InterpolationMode = [System.Drawing.Drawing2D.InterpolationMode]::HighQualityBicubic
+    $graphics.Clear([System.Drawing.Color]::FromArgb(0, 0, 0, 0))
+    $scale = [Math]::Min($targetSize / $source.Width, $targetSize / $source.Height)
+    $drawWidth = [int][Math]::Round($source.Width * $scale)
+    $drawHeight = [int][Math]::Round($source.Height * $scale)
+    $offsetX = [int](($targetSize - $drawWidth) / 2)
+    $offsetY = [int](($targetSize - $drawHeight) / 2)
+    $graphics.DrawImage($source, $offsetX, $offsetY, $drawWidth, $drawHeight)
+    $graphics.Dispose()
+    $source.Dispose()
+    $tempPath = "$workPath.tmp"
+    $square.Save($tempPath, [System.Drawing.Imaging.ImageFormat]::Png)
+    $square.Dispose()
+    Remove-Item -Force $workPath -ErrorAction SilentlyContinue
+    Move-Item -Force $tempPath $workPath
+    Write-Host "Normalized icon source to ${targetSize}x${targetSize}: $workPath"
+} else {
+    $source.Dispose()
+}
+
+& "$PSScriptRoot\fix-icon-transparency.ps1" -InputPath $workPath
+Copy-Item -Force $workPath $sourcePath
+npm run tauri -- icon $workPath
 
 $publicIcons = Join-Path $root "public\icons"
+$websiteIcons = Join-Path $root "website\public\icons"
 New-Item -ItemType Directory -Force -Path $publicIcons | Out-Null
+New-Item -ItemType Directory -Force -Path $websiteIcons | Out-Null
 
 $srcIcons = Join-Path $root "src-tauri\icons"
-Copy-Item (Join-Path $srcIcons "32x32.png") (Join-Path $publicIcons "32x32.png") -Force
-Copy-Item (Join-Path $srcIcons "128x128.png") (Join-Path $publicIcons "128x128.png") -Force
-Copy-Item (Join-Path $srcIcons "128x128@2x.png") (Join-Path $publicIcons "app-logo.png") -Force
 
-Write-Host "Synced icons to public/icons"
+foreach ($targetRoot in @($publicIcons, $websiteIcons)) {
+    Copy-Item (Join-Path $srcIcons "32x32.png") (Join-Path $targetRoot "32x32.png") -Force
+    Copy-Item (Join-Path $srcIcons "128x128.png") (Join-Path $targetRoot "128x128.png") -Force
+    Copy-Item (Join-Path $srcIcons "128x128@2x.png") (Join-Path $targetRoot "app-logo.png") -Force
+}
+
+Write-Host "Synced icons to public/icons and website/public/icons"

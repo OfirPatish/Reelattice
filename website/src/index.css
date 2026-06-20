@@ -1,0 +1,242 @@
+@import "tailwindcss";
+
+:root {
+  color-scheme: dark;
+  --font-display: "Orbitron", system-ui, sans-serif;
+  --font-body: "Rajdhani", system-ui, sans-serif;
+  --bg: #06080f;
+  --cyan: #00f0ff;
+  --magenta: #ff00aa;
+  --yellow: #ffe600;
+}
+
+html {
+  scroll-behavior: smooth;
+  background-color: var(--bg);
+}
+
+body {
+  @apply m-0 min-h-screen text-slate-200 antialiased;
+  font-family: var(--font-body);
+  font-size: 17px;
+  background-color: var(--bg);
+}
+
+#root {
+  @apply min-h-screen;
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+@keyframes rec-blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.2;
+  }
+}
+
+@keyframes scan-line {
+  0% {
+    transform: translateX(-120%);
+  }
+  100% {
+    transform: translateX(360%);
+  }
+}
+
+@keyframes progress-scrub {
+  0% {
+    width: 6%;
+  }
+  100% {
+    width: 78%;
+  }
+}
+
+@keyframes grid-scroll {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 0 48px;
+  }
+}
+
+@keyframes glitch {
+  0%,
+  100% {
+    transform: translate(0);
+    text-shadow: 2px 0 var(--magenta), -2px 0 var(--cyan);
+  }
+  25% {
+    transform: translate(-2px, 1px);
+    text-shadow: -2px 0 var(--magenta), 2px 0 var(--cyan);
+  }
+  50% {
+    transform: translate(2px, -1px);
+    text-shadow: 2px 2px var(--magenta), -2px -2px var(--cyan);
+  }
+  75% {
+    transform: translate(-1px, -1px);
+  }
+}
+
+@keyframes press-start {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+
+@keyframes float-badge {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes stat-bar-fill {
+  from {
+    width: 0%;
+  }
+}
+
+@keyframes achievement-pop {
+  0% {
+    opacity: 0;
+    transform: translateX(20px) scale(0.9);
+  }
+  15%,
+  85% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+}
+
+.rec-blink {
+  animation: rec-blink 1s step-end infinite;
+}
+
+.scan-line {
+  animation: scan-line 2.5s linear infinite;
+}
+
+.progress-scrub {
+  animation: progress-scrub 4s ease-in-out infinite alternate;
+}
+
+.grid-floor {
+  background-image:
+    linear-gradient(rgba(0, 240, 255, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 240, 255, 0.07) 1px, transparent 1px);
+  background-size: 48px 48px;
+  animation: grid-scroll 4s linear infinite;
+}
+
+.glitch-title {
+  animation: glitch 4s infinite;
+}
+
+.glitch-title:hover {
+  animation-duration: 0.8s;
+}
+
+.press-start {
+  animation: press-start 1.2s step-end infinite;
+}
+
+.float-badge {
+  animation: float-badge 3s ease-in-out infinite;
+}
+
+.stat-bar-fill {
+  animation: stat-bar-fill 1.2s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.achievement-pop {
+  animation: achievement-pop 4s ease-in-out infinite;
+}
+
+.scanlines {
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgb(0 0 0 / 0.12) 2px,
+    rgb(0 0 0 / 0.12) 4px
+  );
+}
+
+.text-neon-cyan {
+  color: var(--cyan);
+  text-shadow: 0 0 12px rgba(0, 240, 255, 0.5);
+}
+
+.text-neon-magenta {
+  color: var(--magenta);
+  text-shadow: 0 0 12px rgba(255, 0, 170, 0.45);
+}
+
+.text-neon-yellow {
+  color: var(--yellow);
+  text-shadow: 0 0 12px rgba(255, 230, 0, 0.4);
+}
+
+.game-btn:active {
+  transform: scale(0.97);
+}
+
+.cycle-text {
+  transition: opacity 0.28s ease, transform 0.28s ease;
+}
+
+.cycle-text-hidden {
+  opacity: 0;
+  transform: translateY(6px);
+}
+
+.rarity-rare {
+  --rarity: #00f0ff;
+}
+
+.rarity-epic {
+  --rarity: #ff00aa;
+}
+
+.rarity-legendary {
+  --rarity: #ffe600;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .glitch-title {
+    animation: none;
+    text-shadow: none;
+  }
+}

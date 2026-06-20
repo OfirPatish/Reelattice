@@ -15,6 +15,7 @@ export const CHANGELOG: ChangelogEntry[] = [
       "Smoother case editing — no list flicker or button layout shift on save",
       "Software updates in Settings → About only (removed header update badge)",
       "Help, Changelog, and Settings refreshed with subtle accent colors",
+      "New Tesla multi-cam app icon across desktop, installer, and website",
     ],
   },
   {
@@ -55,7 +56,7 @@ export const CHANGELOG: ChangelogEntry[] = [
     version: "1.0",
     date: "June 2026",
     highlights: [
-      "First public Windows release with GitHub-hosted updates",
+      "First public Windows release with signed in-app auto-updates",
       "Branded NSIS installer and in-app auto-updates (check on startup, install from Settings)",
       "Header update status indicator and custom frameless window",
       "TeslaCam import: Recent, Sentry, Saved folders, drag-and-drop, async copy",

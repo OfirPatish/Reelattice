@@ -93,7 +93,7 @@
 
 ### Shipped (v1.2)
 
-- [x] New circular transparent app icon (multi-cam reel / play motif)
+- [x] New circular transparent app icon (Tesla multi-cam wheel + play motif)
 - [x] Round `AppLogo` in title bar and Settings
 
 ### Shipped (v1.4)
@@ -111,6 +111,9 @@
 - [x] Updates checked on startup and in Settings → About (header indicator removed)
 - [x] Removed legacy Vaultline path fallbacks (Reelattice paths only)
 - [x] Help, Changelog, and Settings — subtle accent colors and lighter section panels
+- [x] Marketing website (`website/`) — game-themed landing page, mobile nav, branded `/download` route
+- [x] Public-facing UI de-linked from GitHub (downloads + in-app update panel)
+- [x] New circular Tesla multi-cam app icon (regenerated via `npm run icons:generate`)
 
 ### Next (future)
 

@@ -1,6 +1,4 @@
-import { Download, ExternalLink, Loader2, RefreshCw } from "lucide-react";
-import { openUrl } from "@tauri-apps/plugin-opener";
-import { GITHUB_RELEASES_URL } from "@/lib/app-update";
+import { Download, Loader2, RefreshCw } from "lucide-react";
 import type { AppUpdateState } from "@/lib/app-update";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -28,7 +26,7 @@ const statusLabel = (state: AppUpdateState) => {
     case "error":
       return state.errorMessage ?? "Update check failed";
     default:
-      return "Check GitHub for new releases";
+      return "Updates download and install from inside the app";
   }
 };
 
@@ -39,10 +37,6 @@ export const AppUpdatePanel = ({ state, onCheck, onInstall }: AppUpdatePanelProp
     state.status === "installing";
 
   const canInstall = state.status === "available" && !busy;
-
-  const handleOpenReleases = () => {
-    void openUrl(GITHUB_RELEASES_URL);
-  };
 
   return (
     <div className="rounded-lg border border-sky-500/20 bg-sky-500/[0.06] px-4 py-3">
@@ -85,17 +79,6 @@ export const AppUpdatePanel = ({ state, onCheck, onInstall }: AppUpdatePanelProp
               Install {state.availableVersion}
             </Button>
           )}
-
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            onClick={handleOpenReleases}
-            aria-label="Open GitHub releases page"
-          >
-            <ExternalLink className="h-4 w-4" aria-hidden />
-            GitHub
-          </Button>
         </div>
       </div>
 

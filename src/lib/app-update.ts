@@ -2,9 +2,6 @@ import { confirm } from "@tauri-apps/plugin-dialog";
 import { relaunch } from "@tauri-apps/plugin-process";
 import { check, type DownloadEvent, type Update } from "@tauri-apps/plugin-updater";
 
-export const GITHUB_REPO = "OfirPatish/Reelattice";
-export const GITHUB_RELEASES_URL = `https://github.com/${GITHUB_REPO}/releases`;
-
 /** How long transient statuses stay visible in the header before hiding. */
 export const UPDATE_STATUS_VISIBLE_MS = 8_000;
 

@@ -2,6 +2,8 @@
 
 Local-first desktop app for organizing Tesla Dashcam, Sentry Mode, and Saved clips — multi-camera events woven into one review grid.
 
+**Website:** Marketing landing page in [`website/`](./website/) (Vite + React). Deploy to Vercel when ready — see [`website/README.md`](./website/README.md). Downloads use a branded `/download` route; the public site does not link to the GitHub repo.
+
 ## Features
 
 ### Library
@@ -170,18 +172,18 @@ Import (copy), playback, and ZIP export do **not** require FFmpeg during import.
 
 ## App icon
 
-Source: `reelattice-icon-source.png` (1024×1024 PNG, transparent background, circular artwork). Regenerate all sizes and sync to the UI:
+Source: `reelattice-icon-source.png` (1024×1024 PNG, transparent background, circular Tesla multi-cam artwork). Regenerate all sizes and sync to the app + website:
 
 ```powershell
 npm run icons:generate
 npm run installer:assets   # refresh NSIS sidebar/header from the new icon
 ```
 
-Icons are used in: window title bar / `.exe`, `public/icons/` (favicon + header via `AppLogo`, displayed as a circle).
+Icons are used in: window title bar / `.exe`, `public/icons/`, and `website/public/icons/` (via `AppLogo`, displayed as a circle).
 
 ## Releases & in-app updates
 
-Reelattice checks [GitHub Releases](https://github.com/OfirPatish/Reelattice/releases) for updates. Installed apps download and install signed updates in-app from **Settings → About** or when prompted on startup. Use **Check for updates** anytime while the app is open; there is no background polling between checks.
+Installed apps check for updates on startup and in **Settings → About**, then download and install signed updates in-app. There is no background polling between checks. Release builds and `latest.json` are produced by GitHub Actions when you push a version tag (see below).
 
 ### First-time setup (signing keys)
 
@@ -221,6 +223,7 @@ Ship `src-tauri/target/release/bundle/nsis/Reelattice_<version>_x64-setup.exe` f
 
 ```
 reelattice/
+├── website/                      # Landing page (Vite + React) — see website/README.md
 ├── src/
 │   ├── components/
 │   │   ├── library/              # list UI, filters, bulk bar, virtual rows, thumbnails

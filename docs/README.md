@@ -15,6 +15,7 @@ Shortcut definitions live in one place: `src/lib/keyboard-shortcuts.ts` (shown i
 
 ```
 reelattice/
+├── website/                  # Marketing landing page (Vite + React) — see website/README.md
 ├── src/                      # React UI
 │   ├── components/
 │   │   ├── library/          # Event list, filters, bulk bar, case picker, virtual rows

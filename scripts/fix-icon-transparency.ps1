@@ -1,11 +1,15 @@
 # Removes baked-in checkerboard / white background from the icon source PNG.
 # Makes corner pixels truly transparent so tauri icon + in-app logo render cleanly.
 
+param(
+    [string]$InputPath
+)
+
 $ErrorActionPreference = "Stop"
 Add-Type -AssemblyName System.Drawing
 
 $root = Split-Path $PSScriptRoot -Parent
-$sourcePath = Join-Path $root "reelattice-icon-source.png"
+$sourcePath = if ($InputPath) { $InputPath } else { Join-Path $root "reelattice-icon-source.png" }
 
 if (-not (Test-Path $sourcePath)) {
     throw "Icon source not found: $sourcePath"
@@ -30,6 +34,21 @@ function Test-BackgroundPixel {
     )
 
     return ($avg -gt 155 -and $maxDiff -lt 35)
+}
+
+function Test-DarkBackgroundPixel {
+    param(
+        [byte]$R,
+        [byte]$G,
+        [byte]$B,
+        [byte]$A
+    )
+
+    if ($A -eq 0) {
+        return $true
+    }
+
+    return ($R -lt 50 -and $G -lt 50 -and $B -lt 50)
 }
 
 $bitmap = [System.Drawing.Bitmap]::FromFile($sourcePath)
@@ -68,7 +87,11 @@ $queue = [System.Collections.Generic.Queue[System.ValueTuple[int, int]]]::new()
 $visited = New-Object "System.Collections.Generic.HashSet[int]"
 
 function Enqueue-Seed {
-    param([int]$X, [int]$Y)
+    param(
+        [int]$X,
+        [int]$Y,
+        [scriptblock]$PixelTest
+    )
 
     if ($X -lt 0 -or $Y -lt 0 -or $X -ge $width -or $Y -ge $height) {
         return
@@ -80,12 +103,33 @@ function Enqueue-Seed {
     }
 
     $pixel = Get-Pixel -X $X -Y $Y
-    if (-not (Test-BackgroundPixel $pixel.R $pixel.G $pixel.B $pixel.A)) {
+    if (-not (& $PixelTest $pixel.R $pixel.G $pixel.B $pixel.A)) {
         return
     }
 
     $visited.Add($key) | Out-Null
     $queue.Enqueue([System.ValueTuple[int, int]]::new($X, $Y))
+}
+
+function Clear-Background {
+    param([scriptblock]$PixelTest)
+
+    $queue.Clear()
+    $visited.Clear()
+    foreach ($seed in $seedPoints) {
+        Enqueue-Seed -X $seed[0] -Y $seed[1] -PixelTest $PixelTest
+    }
+
+    while ($queue.Count -gt 0) {
+        $point = $queue.Dequeue()
+        $pixel = Get-Pixel -X $point.Item1 -Y $point.Item2
+        Set-Transparent -Index $pixel.Index
+
+        Enqueue-Seed -X ($point.Item1 - 1) -Y $point.Item2 -PixelTest $PixelTest
+        Enqueue-Seed -X ($point.Item1 + 1) -Y $point.Item2 -PixelTest $PixelTest
+        Enqueue-Seed -X $point.Item1 -Y ($point.Item2 - 1) -PixelTest $PixelTest
+        Enqueue-Seed -X $point.Item1 -Y ($point.Item2 + 1) -PixelTest $PixelTest
+    }
 }
 
 $right = $width - 1
@@ -99,20 +143,8 @@ $seedPoints = @(
     @(0, $centerY), @($right, $centerY)
 )
 
-foreach ($seed in $seedPoints) {
-    Enqueue-Seed -X $seed[0] -Y $seed[1]
-}
-
-while ($queue.Count -gt 0) {
-    $point = $queue.Dequeue()
-    $pixel = Get-Pixel -X $point.Item1 -Y $point.Item2
-    Set-Transparent -Index $pixel.Index
-
-    Enqueue-Seed -X ($point.Item1 - 1) -Y $point.Item2
-    Enqueue-Seed -X ($point.Item1 + 1) -Y $point.Item2
-    Enqueue-Seed -X $point.Item1 -Y ($point.Item2 - 1)
-    Enqueue-Seed -X $point.Item1 -Y ($point.Item2 + 1)
-}
+Clear-Background -PixelTest ${function:Test-BackgroundPixel}
+Clear-Background -PixelTest ${function:Test-DarkBackgroundPixel}
 
 [System.Runtime.InteropServices.Marshal]::Copy($buffer, 0, $data.Scan0, $bytes)
 $bitmap.UnlockBits($data)
