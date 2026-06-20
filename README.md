@@ -183,7 +183,7 @@ Icons are used in: window title bar / `.exe`, `public/icons/`, and `website/publ
 
 ## Releases & in-app updates
 
-Installed apps check for updates on startup and in **Settings → About**, then download and install signed updates in-app. There is no background polling between checks. Release builds and `latest.json` are produced by GitHub Actions when you push a version tag (see below).
+Installed apps check for updates on startup and in **Settings → About**, then download and install signed updates in-app with a full-screen progress overlay (no NSIS popup). There is no background polling between checks. Release builds and `latest.json` are produced by GitHub Actions when you push a version tag (see below).
 
 ### First-time setup (signing keys)
 
@@ -198,9 +198,14 @@ Add the private key to GitHub repository secrets as `TAURI_SIGNING_PRIVATE_KEY` 
 
 ### Publish a new version
 
-1. Bump version in `package.json` (`1.2`), `src-tauri/Cargo.toml` and `src-tauri/tauri.conf.json` (`1.2.0` — semver required by Rust/Tauri). The app displays **1.2** to users.
-2. Commit and push to GitHub
-3. Tag and push:
+Follow the release checklist in `.cursor/rules/reelattice-release.mdc` (or ask the agent to run it).
+
+1. Bump version in `package.json` (`1.7`), `src-tauri/Cargo.toml` and `src-tauri/tauri.conf.json` (`1.7.0` — semver required by Rust/Tauri). The app displays **1.7** to users.
+2. Add a `CHANGELOG` entry in `src/lib/changelog.ts` and update Help/Changelog copy if the feature is user-facing.
+3. Bump `website/package.json` and `website/src/lib/constants.ts` (`APP_VERSION`) for the landing page.
+4. Update `docs/PLAN.md` shipped section and status line.
+5. Commit and push to GitHub
+6. Tag and push:
 
 ```bash
 git tag v1.2

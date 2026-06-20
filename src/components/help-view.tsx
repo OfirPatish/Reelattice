@@ -349,8 +349,9 @@ export const HelpView = () => {
                   <p className="text-sm font-medium text-zinc-200">Software updates</p>
                   <p className="mt-1 text-xs leading-relaxed text-zinc-500">
                     Reelattice checks for updates when you open the app and when you click Check for
-                    updates in Settings → About. New versions download and install inside the app —
-                    no manual download needed after your first install.
+                    updates in Settings → About. New versions download and install inside the app with
+                    a full-screen progress overlay — no separate installer window after your first
+                    install.
                   </p>
                 </div>
               </div>

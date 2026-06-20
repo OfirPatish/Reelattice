@@ -2,7 +2,7 @@
 
 **Product:** Reelattice  
 **Type:** Local-first desktop app (Tauri 2 + React)  
-**Status:** v1.5 — daily-use ready, public releases on GitHub  
+**Status:** v1.7 — daily-use ready, public releases on GitHub  
 **Last updated:** June 2026
 
 ---
@@ -101,6 +101,11 @@
 - [x] Cancel mid-copy during import (async Rust job + Cancel import in wizard)
 - [x] Custom library location (Settings → Change location; new imports use chosen folder)
 - [x] Cases / incident bundles (Cases tab, link events from bulk select)
+
+### Shipped (v1.7)
+
+- [x] Custom full-screen in-app update overlay (download progress + installing state)
+- [x] Quiet NSIS install mode — no separate installer window during in-app updates
 
 ### Shipped (v1.5)
 

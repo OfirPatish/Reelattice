@@ -7,6 +7,15 @@ export type ChangelogEntry = {
 /** Newest first — user-facing release notes (major.minor). */
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: "1.7",
+    date: "June 2026",
+    highlights: [
+      "Custom full-screen update overlay with download progress",
+      "In-app updates no longer show the NSIS installer window",
+      "App restarts automatically when the update finishes",
+    ],
+  },
+  {
     version: "1.5",
     date: "June 2026",
     highlights: [

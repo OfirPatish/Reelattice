@@ -9,6 +9,10 @@
 
 The **Help** tab (`src/components/help-view.tsx`) mirrors and expands on this README for end users: quick start, workflow examples, shortcuts, and storage notes. Keep it updated when adding user-facing features.
 
+The **Changelog** tab reads from `src/lib/changelog.ts` — add an entry for every release.
+
+Before tagging, follow `.cursor/rules/reelattice-release.mdc`.
+
 Shortcut definitions live in one place: `src/lib/keyboard-shortcuts.ts` (shown in Help).
 
 ## Project layout
