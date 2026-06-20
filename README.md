@@ -2,7 +2,7 @@
 
 Local-first desktop app for organizing Tesla Dashcam, Sentry Mode, and Saved clips — multi-camera events woven into one review grid.
 
-**Website:** Marketing landing page in [`website/`](./website/) (Vite + React). Deploy to Vercel when ready — see [`website/README.md`](./website/README.md). Downloads use a branded `/download` route; the public site does not link to the GitHub repo.
+**Website:** [reelattice.vercel.app](https://reelattice.vercel.app) — marketing landing page in [`website/`](./website/) (Vite + React), deployed on Vercel. See [`website/README.md`](./website/README.md). Downloads use a branded `/download` route; the public site does not link to the GitHub repo.
 
 ## Features
 

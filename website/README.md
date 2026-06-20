@@ -2,6 +2,8 @@
 
 Marketing landing page for Reelattice — built with Vite, React, and Tailwind CSS.
 
+**Live:** [reelattice.vercel.app](https://reelattice.vercel.app)
+
 ## Development
 
 ```bash
@@ -27,7 +29,7 @@ Copy `.env.example` to `.env` when deploying:
 
 | Variable | Description | Example |
 |----------|-------------|---------|
-| `VITE_SITE_URL` | Public site URL (SEO, Open Graph) | `https://reelattice.app` |
+| `VITE_SITE_URL` | Public site URL (SEO, Open Graph) | `https://reelattice.vercel.app` |
 | `VITE_BASE` | Vite `base` path | `/` |
 | `VITE_DOWNLOAD_URL` | Download button target | `/download` (default) |
 
@@ -35,18 +37,16 @@ Defaults if unset: `VITE_SITE_URL=https://reelattice.app`, `VITE_BASE=/`, `VITE_
 
 ## Deploy
 
-### Vercel (recommended)
+Production is on **Vercel** (`patish/reelattice`, root directory `website`). Pushes to `main` that touch `website/` auto-deploy via the Git integration.
 
-1. Import the repo in [Vercel](https://vercel.com).
+1. Import the repo in [Vercel](https://vercel.com) (or connect Git on an existing project).
 2. Set **Root Directory** to `website`.
-3. Add `VITE_SITE_URL` to match your production domain (e.g. `https://reelattice.app`).
+3. Set `VITE_SITE_URL` to your production URL (e.g. `https://reelattice.vercel.app`).
 4. Deploy — `vercel.json` handles SPA routing and `/download` → `download.html`.
 
 The `/download` page resolves the latest Windows installer without exposing GitHub links in the marketing UI.
 
-### GitHub Pages (optional)
-
-A workflow at `.github/workflows/deploy-website.yml` deploys to GitHub Pages if you prefer that over Vercel. It sets `VITE_BASE=/Reelattice/` and `VITE_DOWNLOAD_URL=/Reelattice/download.html`.
+CI: `.github/workflows/website-build.yml` verifies `npm run build` on pull requests and `main` pushes.
 
 ## Assets
 

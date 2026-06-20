@@ -128,6 +128,7 @@
 
 ### Next (future)
 
+- [ ] **Single-instance launch** — Prevent opening a second `reelattice.exe`. On a repeat launch (shortcut, Start menu, installer), **focus the existing window** (show, unminimize, bring to front) and exit the new process silently — do not show an error dialog. Use Tauri `single-instance` plugin (or equivalent mutex + IPC). Avoids duplicate SQLite writers, parallel imports, and twin windows; matches standard desktop UX (VS Code, Spotify, etc.).
 - [ ] **Grid export quality presets** — Full / Standard (1920×960) / HD / Web
 - [ ] **Telemetry overlay** — Parse Tesla SEI metadata; speed, GPS, G-force overlay on playback
 - [ ] **Insurance PDF report** — Event dossier with key frames, notes, and clip manifest

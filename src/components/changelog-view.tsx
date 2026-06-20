@@ -1,5 +1,6 @@
 import { ScrollText } from "lucide-react";
 import { CHANGELOG } from "@/lib/changelog";
+import { WebsiteLink } from "@/components/website-link";
 import {
   accentBulletClass,
   accentPageBannerClass,
@@ -81,6 +82,7 @@ export const ChangelogView = () => (
           full-screen progress overlay — no need to download installers manually after your first
           install.
         </p>
+        <WebsiteLink className="mt-2" />
       </header>
 
       <div className={cn("rounded-xl border px-4 py-3 text-xs leading-relaxed text-zinc-500", accentSoftCardClass("sky"))}>

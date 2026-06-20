@@ -15,6 +15,7 @@ import {
   Upload,
 } from "lucide-react";
 import { KeyboardShortcutRow } from "@/components/ui/keyboard-shortcut-row";
+import { WebsiteLink } from "@/components/website-link";
 import {
   accentIconBox,
   accentPageBannerClass,
@@ -247,6 +248,7 @@ export const HelpView = () => {
             Quick guides for importing Tesla footage, reviewing multi-camera events, and exporting
             clips. Everything stays on your machine — no account or cloud required.
           </p>
+          <WebsiteLink className="mt-2" />
         </header>
 
         <HelpSection

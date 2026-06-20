@@ -32,6 +32,7 @@ import {
 } from "@/lib/accent-tones";
 import { AppLogo } from "@/components/app-logo";
 import { AppUpdatePanel } from "@/components/settings/app-update-panel";
+import { WebsiteLink } from "@/components/website-link";
 import { useAppUpdateContext } from "@/contexts/app-update-context";
 import { formatFileSize, sourceBadgeClass, sourceLabel } from "@/lib/format";
 import {
@@ -363,6 +364,7 @@ export const SettingsView = ({ active, refreshKey }: SettingsViewProps) => {
                 <p className="mt-0.5 text-sm text-zinc-400">
                   Storage, library stats, display preferences, export, and shortcuts.
                 </p>
+                <WebsiteLink className="mt-2" />
               </div>
             </div>
             <Button
@@ -499,6 +501,7 @@ export const SettingsView = ({ active, refreshKey }: SettingsViewProps) => {
                   <p className="mt-0.5 text-xs text-zinc-600">
                     Local-first Tesla Dashcam & Sentry organizer
                   </p>
+                  <WebsiteLink className="mt-1.5" />
                 </div>
               </div>
 
