@@ -13,7 +13,7 @@ type Skill = {
 const SKILLS: Skill[] = [
   {
     name: "Event Radar",
-    desc: "Search, filter, and scroll massive libraries without lag.",
+    desc: "Search, filter, archive, and scroll huge libraries without lag.",
     rarity: "rare",
     hotkey: "Q",
     span: "md:col-span-2",
@@ -26,25 +26,25 @@ const SKILLS: Skill[] = [
   },
   {
     name: "USB Drop",
-    desc: "Drag TeslaCam folders in. Timestamps auto-group.",
+    desc: "Drop TeslaCam folders or MP4s. Built-in guide shows what to import.",
     rarity: "epic",
     hotkey: "I",
   },
   {
     name: "Tag & Case",
-    desc: "Mark incidents. Bundle events for claims.",
+    desc: "Tag events, add notes, and bundle incidents into Cases.",
     rarity: "rare",
     hotkey: "T",
   },
   {
     name: "Export Burst",
-    desc: "ZIP all cams or render one grid MP4. Trim 30s.",
+    desc: "ZIP all cams or render one grid MP4. Trim a 30s segment.",
     rarity: "epic",
     hotkey: "E",
   },
   {
     name: "Offline Shield",
-    desc: "Zero cloud. Zero account. Files stay on your PC.",
+    desc: "Zero cloud. Zero account. Help, changelog, and files stay on your PC.",
     rarity: "legendary",
     hotkey: "∞",
     span: "md:col-span-2",

@@ -9,9 +9,9 @@ import { cn } from "@/lib/utils";
 
 const CYCLE_LINES = [
   "▸ 6 cameras · synced grid playback",
-  "▸ Sentry alerts · tagged & archived",
+  "▸ Cases · tags · archive · bulk export",
   "▸ 100% offline · zero cloud uploads",
-  "▸ Export ZIP or grid MP4 · instantly",
+  "▸ In-app updates · no manual reinstall",
 ] as const;
 
 const QUICK_STATS = [

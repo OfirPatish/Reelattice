@@ -29,6 +29,17 @@ App display version comes from `CARGO_PKG_VERSION` in Rust — Cargo.toml must m
 - [ ] `src/components/help-view.tsx` — if behavior changed for users
 - [ ] `src/components/changelog-view.tsx` — intro copy if update flow changed
 
+## Website (public marketing site)
+
+Run the **Website check** in `reelattice-git-push.mdc` before every push — do not ship a tagged release without it.
+
+- [ ] `website/package.json` + `website/src/lib/constants.ts` — `APP_VERSION` matches this release
+- [ ] `website/src/lib/release-highlights.ts` — bullets match the top entry in `src/lib/changelog.ts`
+- [ ] Hero, download, features, workflow — copy still accurate if the release changed user-facing behavior
+- [ ] Legal / download URL — only if those changed
+
+The website has no changelog page; version badges and marketing copy are the visitor-facing surface. In-app changelog remains the source of truth for release notes.
+
 ## Docs
 
 - [ ] `docs/PLAN.md` — status line + new **Shipped (vX.Y)** section
@@ -45,10 +56,6 @@ git push origin v1.9
 
 GitHub Actions builds the signed installer and `latest.json`. Do **not** tag without version bumps and changelog.
 
-## Skip unless relevant
-
-Website deploy auto-runs on push; no extra step unless download URL or env vars changed.
-
-## Every push (not only releases)
+Vercel deploys `website/` from `main` on every push — complete the website checklist above in the same commit when shipping an app release.
 
 See `reelattice-git-push.mdc` — changelog + **release tag** whenever `src/` or `src-tauri/` user-facing work ships on `main`.

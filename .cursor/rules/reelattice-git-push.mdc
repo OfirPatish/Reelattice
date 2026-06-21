@@ -42,5 +42,47 @@ Website-only pushes (`website/` only, no `src/` changes) do **not** need a new a
 2. Update `src/lib/changelog.ts` when users should know.
 3. If app code changed: bump versions and plan the tag (step 3 above).
 4. If update flow or Changelog tab copy changed, skim `src/components/changelog-view.tsx` and `src/components/help-view.tsx`.
+5. **Website check** — see below (do not skip on app releases).
 
 Do not push user-facing app work without a changelog entry and release tag.
+
+## Website check (before every push)
+
+The public site at `reelattice.vercel.app` deploys from `main` automatically. Before pushing, confirm the website still matches what you are shipping.
+
+### Always on app release (new tag)
+
+Bump version strings so hero, download, and footer stay in sync:
+
+| File | Field |
+|------|-------|
+| `website/package.json` | `"version": "X.Y.0"` |
+| `website/src/lib/constants.ts` | `APP_VERSION = "X.Y"` |
+
+These must match the app release version in `reelattice-release.mdc`.
+
+### Review copy when user-facing behavior changed
+
+Skim the site for stale or missing marketing copy. Update only when the release adds, removes, or materially changes something visitors would care about:
+
+| Area | File(s) |
+|------|---------|
+| Hero / live badge | `website/src/components/hero-section.tsx` |
+| Download CTA + what's new | `website/src/components/download-section.tsx`, `website/src/lib/release-highlights.ts` |
+| Feature cards | `website/src/components/features-section.tsx` |
+| Workflow steps | `website/src/components/workflow-section.tsx` |
+| App preview / screenshots | `website/src/components/app-preview.tsx` |
+| Footer tagline | `website/src/components/site-footer.tsx` |
+| Legal pages | `website/src/pages/privacy-page.tsx`, `terms-page.tsx` — only if privacy/terms behavior changed |
+
+There is **no website changelog page** — release notes live in-app (`src/lib/changelog.ts`). The site only needs version bumps plus copy updates when marketed features or workflows change.
+
+### Website-only pushes
+
+If the push is `website/` only (no `src/` app changes): update site copy as needed, bump `APP_VERSION` only when advertising a new downloadable release, and **do not** tag a new app version unless app code also changed.
+
+### Quick decision
+
+- **Bug fix / internal refactor** → version bump only (if releasing), skip marketing copy.
+- **New or changed user workflow** (Import, Export, Cases, Settings, etc.) → check hero, features, and workflow sections.
+- **Legal / download URL / env** → check `constants.ts`, download section, and legal pages.

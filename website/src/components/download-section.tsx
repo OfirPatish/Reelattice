@@ -3,6 +3,7 @@ import { GameButton } from "@/components/game-button";
 import { HudFrame } from "@/components/hud-frame";
 import { Reveal } from "@/components/reveal";
 import { APP_VERSION, DOWNLOAD_URL } from "@/lib/constants";
+import { RELEASE_HIGHLIGHTS, releaseHighlightsHeading } from "@/lib/release-highlights";
 
 export const DownloadSection = () => (
   <section id="download" className="px-4 py-20 md:px-6 md:py-28">
@@ -19,9 +20,28 @@ export const DownloadSection = () => (
               <span className="text-neon-yellow">Windows</span>
             </h2>
             <p className="mx-auto mt-4 max-w-sm text-sm text-slate-400">
-              Reelattice v{APP_VERSION} · Signed installer · Free ·
+              Reelattice v{APP_VERSION} · Signed installer · In-app updates · Free ·
               Your footage never leaves your machine
             </p>
+
+            <div className="mx-auto mt-6 max-w-md rounded border border-yellow-500/20 bg-yellow-500/[0.04] px-4 py-3 text-left">
+              <p className="font-display text-[10px] font-bold uppercase tracking-widest text-yellow-400/90">
+                {releaseHighlightsHeading()}
+              </p>
+              <ul className="mt-2 space-y-1.5">
+                {RELEASE_HIGHLIGHTS.map((item) => (
+                  <li
+                    key={item}
+                    className="flex gap-2 text-xs leading-relaxed text-slate-400 before:shrink-0 before:text-yellow-500/70 before:content-['▸']"
+                  >
+                    {item}
+                  </li>
+                ))}
+              </ul>
+              <p className="mt-2 text-[10px] leading-relaxed text-slate-600">
+                Full release history is in the app under Changelog.
+              </p>
+            </div>
 
             <div className="mt-10 flex flex-col items-center gap-4">
               <GameButton
