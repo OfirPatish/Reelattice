@@ -31,7 +31,7 @@ export const CaseLinkedEventsList = ({
   }
 
   return (
-    <div className="min-h-0 flex-1 overflow-y-auto px-3 pb-4">
+    <div data-scroll-root className="min-h-0 flex-1 overflow-y-auto px-3 pb-4">
       <ul className="space-y-2 px-2" aria-label="Linked events">
         {events.map((event) => (
           <li

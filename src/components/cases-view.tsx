@@ -394,7 +394,7 @@ export const CasesView = ({
               ) : null}
             </div>
 
-            <div className="min-h-0 flex-1 overflow-y-auto p-2">
+            <div data-scroll-root className="min-h-0 flex-1 overflow-y-auto p-2">
               {isInitialLoad ? (
                 <CaseListSkeleton />
               ) : cases.length === 0 ? (
@@ -533,7 +533,7 @@ export const CasesView = ({
                   </p>
                 </div>
 
-                <div className="min-h-0 shrink overflow-y-auto">
+                <div data-scroll-root className="min-h-0 shrink overflow-y-auto">
                   <CaseEditor
                     mode={editingCase ? "edit" : "view"}
                     title={titleDraft}

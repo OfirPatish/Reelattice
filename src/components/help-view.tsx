@@ -236,7 +236,10 @@ export const HelpView = () => {
   );
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col overflow-x-hidden overflow-y-auto">
+    <div
+      data-scroll-root
+      className="flex min-h-0 flex-1 flex-col overflow-x-hidden overflow-y-auto"
+    >
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 p-5 lg:p-6">
         <header className={accentPageBannerClass("sky")}>
           <div className="flex items-center gap-2">

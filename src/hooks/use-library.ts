@@ -44,7 +44,6 @@ export const useLibrary = (refreshKey: number) => {
   const [noteDraft, setNoteDraft] = useState("");
 
   const [isViewRefreshing, setIsViewRefreshing] = useState(false);
-  const lastSelectedEventRef = useRef<DashEvent | null>(null);
   const eventsCacheRef = useRef<Partial<Record<LibraryView, DashEvent[]>>>({});
 
   const setFiltersExpanded = useCallback((value: boolean | ((prev: boolean) => boolean)) => {
@@ -91,15 +90,6 @@ export const useLibrary = (refreshKey: number) => {
     () => events.find((event) => event.id === selectedId) ?? null,
     [events, selectedId],
   );
-
-  useEffect(() => {
-    if (selectedEvent) {
-      lastSelectedEventRef.current = selectedEvent;
-    }
-  }, [selectedEvent]);
-
-  const displayEvent =
-    selectedEvent ?? (isViewRefreshing ? lastSelectedEventRef.current : null);
 
   const bulkSelectedEvents = useMemo(
     () => filteredEvents.filter((event) => selectedIds.has(event.id)),
@@ -164,7 +154,7 @@ export const useLibrary = (refreshKey: number) => {
       setTags(tagData);
       setSelectedId((prev) => {
         if (prev && eventData.some((event) => event.id === prev)) return prev;
-        return eventData[0]?.id ?? null;
+        return null;
       });
       hasLoadedOnceRef.current = true;
     } catch (err) {
@@ -324,7 +314,7 @@ export const useLibrary = (refreshKey: number) => {
   useEffect(() => {
     if (!selectedId) return;
     if (filteredEvents.some((event) => event.id === selectedId)) return;
-    setSelectedId(filteredEvents[0]?.id ?? null);
+    setSelectedId(null);
   }, [filteredEvents, selectedId]);
 
   useEffect(() => {
@@ -470,12 +460,10 @@ export const useLibrary = (refreshKey: number) => {
     setLibraryView(view);
     handleExitSelectionMode();
 
+    setSelectedId(null);
+
     if (cachedEvents) {
       setEvents(cachedEvents);
-      setSelectedId((prev) => {
-        if (prev && cachedEvents.some((event) => event.id === prev)) return prev;
-        return cachedEvents[0]?.id ?? null;
-      });
     }
   };
 
@@ -566,7 +554,6 @@ export const useLibrary = (refreshKey: number) => {
     setNoteDraft,
     filteredEvents,
     selectedEvent,
-    displayEvent,
     isViewRefreshing,
     bulkSelectedEvents,
     hasActiveFilters,

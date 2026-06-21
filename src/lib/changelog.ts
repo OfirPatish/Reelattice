@@ -7,6 +7,16 @@ export type ChangelogEntry = {
 /** Newest first — user-facing release notes (major.minor). */
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: "1.10",
+    date: "June 2026",
+    highlights: [
+      "Library opens with no event selected — pick one when you're ready; per-event camera memory still applies",
+      "Active / Archived and returning from other tabs no longer restore the last event",
+      "Each tab scrolls back to the top when you switch views",
+      "Show notes in list displays a “No note” placeholder when an event has no note",
+    ],
+  },
+  {
     version: "1.9",
     date: "June 2026",
     highlights: [

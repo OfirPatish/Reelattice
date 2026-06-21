@@ -351,7 +351,10 @@ export const SettingsView = ({ active, refreshKey }: SettingsViewProps) => {
   const totalEvents = (stats?.eventCount ?? 0) + (stats?.archivedCount ?? 0);
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col overflow-x-hidden overflow-y-auto">
+    <div
+      data-scroll-root
+      className="flex min-h-0 flex-1 flex-col overflow-x-hidden overflow-y-auto"
+    >
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 p-5 lg:p-6">
         <header className={accentPageBannerClass("teal")}>
           <div className="flex items-start justify-between gap-4">

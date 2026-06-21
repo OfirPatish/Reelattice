@@ -56,12 +56,25 @@ export const EventList = ({
   };
 
   const listScrollRef = useRef<HTMLDivElement>(null);
+  const wasActiveRef = useRef(active);
 
   useEffect(() => {
-    if (!active || !openEventId) return;
-    library.setSelectedId(openEventId);
-    onOpenEventConsumed?.();
+    const becameActive = active && !wasActiveRef.current;
+    wasActiveRef.current = active;
+    if (!becameActive) return;
+
+    if (openEventId) {
+      library.setSelectedId(openEventId);
+      onOpenEventConsumed?.();
+    } else {
+      library.setSelectedId(null);
+    }
+    listScrollRef.current?.scrollTo({ top: 0 });
   }, [active, library.setSelectedId, onOpenEventConsumed, openEventId]);
+
+  useEffect(() => {
+    listScrollRef.current?.scrollTo({ top: 0 });
+  }, [library.libraryView]);
 
   return (
     <div
@@ -191,6 +204,7 @@ export const EventList = ({
 
               <div
                 ref={listScrollRef}
+                data-scroll-root
                 className={cn(
                   "min-h-0 flex-1 overflow-y-auto transition-opacity duration-200 ease-out",
                   library.isViewRefreshing && "pointer-events-none opacity-50",
@@ -303,7 +317,7 @@ export const EventList = ({
 
           {!library.isInitialLoad &&
             !library.selectionMode &&
-            !library.displayEvent &&
+            !library.selectedEvent &&
             !library.error && (
               <div
                 className={cn(
@@ -332,9 +346,9 @@ export const EventList = ({
               </div>
             )}
 
-          {!library.isInitialLoad && !library.selectionMode && library.displayEvent && (
+          {!library.isInitialLoad && !library.selectionMode && library.selectedEvent && (
             <EventDetailPanel
-              event={library.displayEvent}
+              event={library.selectedEvent}
               isViewRefreshing={library.isViewRefreshing}
               tags={library.tags}
               noteDraft={library.noteDraft}

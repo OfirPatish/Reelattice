@@ -2,7 +2,7 @@
 
 **Product:** Reelattice  
 **Type:** Local-first desktop app (Tauri 2 + React)  
-**Status:** v1.9 — daily-use ready, public releases on GitHub  
+**Status:** v1.10 — daily-use ready, public releases on GitHub  
 **Last updated:** June 2026
 
 ---
@@ -102,6 +102,12 @@
 - [x] Custom library location (Settings → Change location; new imports use chosen folder)
 - [x] Cases / incident bundles (Cases tab, link events from bulk select)
 
+### Shipped (v1.10)
+
+- [x] Library no longer auto-selects an event on open, tab return, or Active / Archived switch
+- [x] Main tabs scroll back to the top when switching views
+- [x] Show notes in list — “No note” placeholder for events without a note
+
 ### Shipped (v1.9)
 
 - [x] Public website live at reelattice.vercel.app (overview + Windows download)
@@ -134,6 +140,7 @@
 
 ### Next (future)
 
+- [ ] **Update overlay — richer download progress** — Show downloaded/total size (e.g. `21 / 30 MB`) and optional ETA on the in-app update overlay, not just integer percent. Makes slow GitHub downloads easier to read when progress ticks 1% at a time.
 - [ ] **Single-instance launch** — Prevent opening a second `reelattice.exe`. On a repeat launch (shortcut, Start menu, installer), **focus the existing window** (show, unminimize, bring to front) and exit the new process silently — do not show an error dialog. Use Tauri `single-instance` plugin (or equivalent mutex + IPC). Avoids duplicate SQLite writers, parallel imports, and twin windows; matches standard desktop UX (VS Code, Spotify, etc.).
 - [ ] **Grid export quality presets** — Full / Standard (1920×960) / HD / Web
 - [ ] **Telemetry overlay** — Parse Tesla SEI metadata; speed, GPS, G-force overlay on playback

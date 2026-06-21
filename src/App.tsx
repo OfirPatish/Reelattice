@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import type { AppView } from "@/lib/types";
+import { scrollAppViewToTop } from "@/lib/scroll-app-view";
 import { AppShell } from "@/components/layout/app-shell";
 import { AppUpdateProvider } from "@/contexts/app-update-context";
 import { CasesView } from "@/components/cases-view";
@@ -32,10 +33,15 @@ const App = () => {
     setView("library");
   };
 
+  useEffect(() => {
+    scrollAppViewToTop(view);
+  }, [view]);
+
   return (
     <AppUpdateProvider>
       <AppShell activeView={view} onNavigate={setView}>
         <div
+          data-app-view="library"
           className={cn(
             "min-h-0 flex-1 flex-col",
             view === "library" ? "flex" : "hidden",
@@ -51,6 +57,7 @@ const App = () => {
           />
         </div>
         <div
+          data-app-view="import"
           className={cn(
             "min-h-0 flex-1 flex-col",
             view === "import" ? "flex" : "hidden",
@@ -64,6 +71,7 @@ const App = () => {
           />
         </div>
         <div
+          data-app-view="cases"
           className={cn(
             "min-h-0 flex-1 flex-col",
             view === "cases" ? "flex" : "hidden",
@@ -76,6 +84,7 @@ const App = () => {
           />
         </div>
         <div
+          data-app-view="help"
           className={cn(
             "min-h-0 flex-1 flex-col",
             view === "help" ? "flex" : "hidden",
@@ -84,6 +93,7 @@ const App = () => {
           <HelpView />
         </div>
         <div
+          data-app-view="changelog"
           className={cn(
             "min-h-0 flex-1 flex-col",
             view === "changelog" ? "flex" : "hidden",
@@ -92,6 +102,7 @@ const App = () => {
           <ChangelogView />
         </div>
         <div
+          data-app-view="settings"
           className={cn(
             "min-h-0 flex-1 flex-col",
             view === "settings" ? "flex" : "hidden",

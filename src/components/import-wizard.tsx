@@ -429,7 +429,7 @@ export const ImportWizard = ({
   }, [canCancel, handleCancelImport, loading]);
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
+    <div data-scroll-root className="flex min-h-0 flex-1 flex-col overflow-y-auto">
       <div className="mx-auto flex w-full max-w-2xl flex-col gap-5 p-6">
         <header className="flex items-center justify-between gap-4">
           <div>

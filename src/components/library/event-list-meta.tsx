@@ -35,10 +35,9 @@ export const EventListMeta = ({ event, showNotes }: EventListMetaProps) => (
     {showNotes && (
       <p
         className={cn(
-          "mt-1.5 line-clamp-2 min-h-[2.5rem] text-xs leading-relaxed text-zinc-400",
-          !event.note.trim() && "opacity-0",
+          "mt-1.5 line-clamp-2 min-h-[2.5rem] text-xs leading-relaxed",
+          event.note.trim() ? "text-zinc-400" : "italic text-zinc-600",
         )}
-        aria-hidden={!event.note.trim()}
       >
         {event.note.trim() || "No note"}
       </p>
