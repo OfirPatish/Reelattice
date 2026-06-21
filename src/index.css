@@ -242,6 +242,62 @@ textarea,
   animation: import-zone-glow 2.2s ease-in-out infinite;
 }
 
+@keyframes import-guide-row-highlight {
+  0%,
+  100% {
+    border-color: rgb(63 63 70 / 0.6);
+    background-color: transparent;
+    color: rgb(161 161 170);
+  }
+  8%,
+  18% {
+    border-color: rgb(56 189 248 / 0.55);
+    background-color: rgb(56 189 248 / 0.08);
+    color: rgb(228 228 231);
+  }
+}
+
+@keyframes import-guide-filename-glow {
+  0%,
+  100% {
+    border-color: rgb(63 63 70 / 0.7);
+    box-shadow: none;
+  }
+  50% {
+    border-color: rgb(52 211 153 / 0.45);
+    box-shadow: inset 0 0 12px rgb(52 211 153 / 0.06);
+  }
+}
+
+.import-guide-row {
+  animation: import-guide-row-highlight 10s ease-in-out infinite;
+}
+
+.import-guide-row-0 {
+  animation-delay: 0s;
+}
+
+.import-guide-row-1 {
+  animation-delay: 2s;
+}
+
+.import-guide-row-2 {
+  animation-delay: 4s;
+}
+
+.import-guide-row-3 {
+  animation-delay: 5.5s;
+}
+
+.import-guide-row-4 {
+  animation-delay: 7s;
+}
+
+.import-guide-filename {
+  animation: import-guide-filename-glow 10s ease-in-out infinite;
+  animation-delay: 8.5s;
+}
+
 @keyframes bulk-check-pop {
   0%,
   100% {
@@ -310,6 +366,16 @@ textarea,
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .import-guide-row,
+  .import-guide-filename {
+    animation: none;
+  }
+
+  .import-guide-row-0 {
+    border-color: rgb(56 189 248 / 0.55);
+    background-color: rgb(56 189 248 / 0.08);
+  }
+
   .website-presence-ring {
     animation: none;
     box-shadow: 0 0 0 1px rgb(6 182 212 / 0.2);

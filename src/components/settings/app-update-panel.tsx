@@ -14,19 +14,19 @@ const statusLabel = (state: AppUpdateState) => {
     case "checking":
       return "Checking for updates…";
     case "available":
-      return `Update ${state.availableVersion} is available`;
+      return `Version ${state.availableVersion} is available`;
     case "up-to-date":
       return "You're on the latest version";
     case "downloading":
       return state.downloadPercent === null
         ? "Downloading update…"
-        : `Downloading update… ${state.downloadPercent}%`;
+        : `Downloading… ${state.downloadPercent}%`;
     case "installing":
       return "Installing update…";
     case "error":
       return state.errorMessage ?? "Update check failed";
     default:
-      return "Updates download and install from inside the app";
+      return "Check for new releases anytime";
   }
 };
 
@@ -39,24 +39,29 @@ export const AppUpdatePanel = ({ state, onCheck, onInstall }: AppUpdatePanelProp
   const canInstall = state.status === "available" && !busy;
 
   return (
-    <div className="rounded-lg border border-sky-500/20 bg-sky-500/[0.06] px-4 py-3">
-      <div className="flex flex-wrap items-start justify-between gap-3">
+    <div className="rounded-xl border border-zinc-800/80 bg-zinc-950/30 px-4 py-3.5">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0 space-y-1">
-          <p className="text-sm font-medium text-zinc-300">Software updates</p>
+          <p className="text-sm font-medium text-zinc-200">Software updates</p>
           <p
             className={cn(
-              "text-xs",
+              "text-xs leading-relaxed",
               state.status === "error" ? "text-rose-400" : "text-zinc-500",
             )}
           >
             {statusLabel(state)}
           </p>
           {state.releaseNotes && state.status === "available" && (
-            <p className="pt-1 text-xs leading-relaxed text-zinc-500">{state.releaseNotes}</p>
+            <p className="text-xs leading-relaxed text-zinc-600">{state.releaseNotes}</p>
+          )}
+          {(state.status === "downloading" || state.status === "installing") && (
+            <p className="text-[11px] text-zinc-600">
+              Progress appears in the full-screen update overlay.
+            </p>
           )}
         </div>
 
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex shrink-0 flex-wrap items-center gap-2">
           <Button
             type="button"
             variant="outline"
@@ -81,12 +86,6 @@ export const AppUpdatePanel = ({ state, onCheck, onInstall }: AppUpdatePanelProp
           )}
         </div>
       </div>
-
-      {(state.status === "downloading" || state.status === "installing") && (
-        <p className="mt-2 text-[11px] text-zinc-600">
-          Progress is shown in the full-screen update overlay.
-        </p>
-      )}
     </div>
   );
 };

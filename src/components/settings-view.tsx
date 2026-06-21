@@ -16,7 +16,6 @@ import {
   RefreshCw,
   RotateCcw,
   Settings,
-  Shield,
   Tag,
   Video,
 } from "lucide-react";
@@ -30,9 +29,7 @@ import {
   accentStatCardClass,
   type AccentTone,
 } from "@/lib/accent-tones";
-import { AppLogo } from "@/components/app-logo";
-import { AppUpdatePanel } from "@/components/settings/app-update-panel";
-import { LegalLinks } from "@/components/legal-links";
+import { SettingsAboutSection } from "@/components/settings/settings-about-section";
 import { useAppUpdateContext } from "@/contexts/app-update-context";
 import { formatFileSize, sourceBadgeClass, sourceLabel } from "@/lib/format";
 import {
@@ -415,7 +412,7 @@ export const SettingsView = ({ active, refreshKey }: SettingsViewProps) => {
             title="Library overview"
             description="Active events, archived items, and storage used on this device."
             accent="sky"
-            className="lg:col-span-2 xl:col-span-8"
+            className="xl:col-span-12"
           >
             <div className="grid gap-3 p-5 sm:grid-cols-2 xl:grid-cols-3">
               <StatCard
@@ -491,47 +488,21 @@ export const SettingsView = ({ active, refreshKey }: SettingsViewProps) => {
             )}
           </SettingsSection>
 
-          <SettingsSection title="About" accent="violet" className="lg:col-span-2 xl:col-span-4">
-            <div className="space-y-4 p-5">
-              <div className="flex items-center gap-3">
-                <AppLogo size={40} />
-                <div>
-                  <p className="text-sm font-semibold text-zinc-100">Reelattice</p>
-                  <p className="text-xs text-zinc-500">
-                    Version {loading ? "…" : settings?.version}
-                  </p>
-                  <p className="mt-0.5 text-xs text-zinc-600">
-                    Local-first Tesla Dashcam & Sentry organizer
-                  </p>
-                </div>
-              </div>
-
-              <AppUpdatePanel
-                state={updateState}
-                onCheck={() => void checkForUpdate()}
-                onInstall={() => void installUpdate()}
-              />
-
-              <div className={cn("flex items-start gap-3 px-4 py-3", accentSoftCardClass("emerald"))}>
-                <Shield className="mt-0.5 h-4 w-4 shrink-0 text-emerald-300" aria-hidden />
-                <div>
-                  <p className="text-sm font-medium text-zinc-300">Local-first & private</p>
-                  <p className="mt-0.5 text-xs leading-relaxed text-zinc-500">
-                    All footage and metadata stay on your machine. Nothing is uploaded or synced to
-                    the cloud.
-                  </p>
-                </div>
-              </div>
-
-              <LegalLinks />
-            </div>
+          <SettingsSection title="About" accent="violet" className="xl:col-span-12">
+            <SettingsAboutSection
+              version={settings?.version}
+              loading={loading}
+              updateState={updateState}
+              onCheck={() => void checkForUpdate()}
+              onInstall={() => void installUpdate()}
+            />
           </SettingsSection>
 
           <SettingsSection
             title="Storage"
             description="Imported clips are copied here. New imports use the folder below; existing events keep their original paths."
             accent="emerald"
-            className="lg:col-span-2 xl:col-span-6"
+            className="xl:col-span-6"
           >
             <div className="flex flex-col gap-4 p-5">
               <StorageLocationCard
@@ -569,7 +540,7 @@ export const SettingsView = ({ active, refreshKey }: SettingsViewProps) => {
             title="Library display"
             description="Filter, sort, layout, and playback preferences saved locally."
             accent="amber"
-            className="lg:col-span-2 xl:col-span-6"
+            className="xl:col-span-6"
           >
             <div className="divide-y divide-zinc-800/50">
               <div className="p-5">
@@ -624,7 +595,7 @@ export const SettingsView = ({ active, refreshKey }: SettingsViewProps) => {
             title="Playback"
             description="Keyboard seek distance and export segment length. Saved locally on this device. Full shortcut list is in Help."
             accent="fuchsia"
-            className="lg:col-span-2 xl:col-span-6"
+            className="xl:col-span-6"
           >
             <div className="grid gap-4 p-5 sm:grid-cols-2">
               <div className="space-y-2">
@@ -693,7 +664,7 @@ export const SettingsView = ({ active, refreshKey }: SettingsViewProps) => {
             title="Export & processes"
             description="What runs on your machine beyond normal browsing and playback."
             accent="violet"
-            className="lg:col-span-1 xl:col-span-6"
+            className="xl:col-span-6"
           >
             <div className="divide-y divide-zinc-800/50">
               <div className="flex gap-3 p-5">

@@ -7,6 +7,14 @@ export type ChangelogEntry = {
 /** Newest first — user-facing release notes (major.minor). */
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: "1.11",
+    date: "June 2026",
+    highlights: [
+      "Import tab simplified — drop zone first, optional “What can I import?” guide collapsed by default",
+      "Settings About section — full-width layout with updates beside app info, compact legal footer",
+    ],
+  },
+  {
     version: "1.10",
     date: "June 2026",
     highlights: [

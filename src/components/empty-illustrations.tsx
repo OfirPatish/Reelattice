@@ -108,6 +108,50 @@ export const BulkSelectIllustration = ({
   </div>
 );
 
+/** Import guide — TeslaCam folder tree with cycling highlights. */
+export const ImportGuideIllustration = ({
+  className,
+  size = "default",
+}: IllustrationProps) => (
+  <div
+    className={cn(
+      "relative flex items-center justify-center",
+      size === "compact" ? "h-36 w-full max-w-[15rem]" : "h-44 w-44",
+      className,
+    )}
+    aria-hidden
+  >
+    <div className="w-full space-y-1 font-mono text-[10px] leading-tight">
+      <div className="import-guide-row import-guide-row-0 flex items-center gap-1.5 rounded border border-zinc-700/80 px-2 py-1 text-zinc-300">
+        <span className="h-2.5 w-3 shrink-0 rounded-sm border border-amber-500/50 bg-amber-500/15" />
+        <span>TeslaCam/</span>
+      </div>
+      <div className="ml-3 space-y-1">
+        <div className="import-guide-row import-guide-row-1 flex items-center gap-1.5 rounded border border-zinc-700/60 px-2 py-1 text-zinc-400">
+          <span className="text-sky-400/80">├─</span>
+          <span>RecentClips/</span>
+          <span className="ml-auto text-[9px] text-zinc-600">flat .mp4</span>
+        </div>
+        <div className="import-guide-row import-guide-row-2 flex items-center gap-1.5 rounded border border-zinc-700/60 px-2 py-1 text-zinc-400">
+          <span className="text-sky-400/80">├─</span>
+          <span>SentryClips/</span>
+        </div>
+        <div className="ml-4 import-guide-row import-guide-row-3 rounded border border-zinc-700/50 px-2 py-0.5 text-[9px] text-zinc-500">
+          2026-06-16_02-11-07/
+        </div>
+        <div className="import-guide-row import-guide-row-4 flex items-center gap-1.5 rounded border border-zinc-700/60 px-2 py-1 text-zinc-400">
+          <span className="text-sky-400/80">└─</span>
+          <span>SavedClips/</span>
+        </div>
+      </div>
+      <div className="import-guide-filename mt-2 flex items-center gap-1.5 rounded border border-dashed border-zinc-700/70 bg-zinc-900/60 px-2 py-1 text-[9px] text-emerald-400/90">
+        <span className="text-zinc-600">↳</span>
+        <span>2026-06-16_02-11-07-front.mp4</span>
+      </div>
+    </div>
+  </div>
+);
+
 /** Import drop zone — floating file cue. */
 export const ImportDropIllustration = ({
   className,
