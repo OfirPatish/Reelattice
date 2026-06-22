@@ -365,6 +365,109 @@ textarea,
   animation: website-presence-pulse 2.8s ease-in-out infinite;
 }
 
+/* Header companion — walking pet in navbar */
+@keyframes companion-leg-left {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(2px);
+  }
+}
+
+@keyframes companion-leg-right {
+  0%,
+  100% {
+    transform: translateY(2px);
+  }
+  50% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes companion-walk-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-1px);
+  }
+}
+
+.companion-leg-left {
+  animation: companion-leg-left 0.38s ease-in-out infinite;
+}
+
+.companion-leg-right {
+  animation: companion-leg-right 0.38s ease-in-out infinite;
+}
+
+.companion-walk-bob {
+  animation: companion-walk-bob 0.38s ease-in-out infinite;
+}
+
+@keyframes companion-ring-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes companion-core-pulse {
+  0%,
+  100% {
+    opacity: 0.72;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes companion-scanline {
+  0% {
+    transform: translateY(-120%);
+  }
+  100% {
+    transform: translateY(120%);
+  }
+}
+
+@keyframes companion-rec-blink {
+  0%,
+  100% {
+    opacity: 0.85;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+
+.companion-ring {
+  animation: companion-ring-spin 10s linear infinite;
+}
+
+.companion-core-pulse {
+  animation: companion-core-pulse 2.8s ease-in-out infinite;
+}
+
+.companion-scanline::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: 40%;
+  background: linear-gradient(to bottom, transparent, rgb(255 255 255 / 0.06), transparent);
+  animation: companion-scanline 3.6s linear infinite;
+}
+
+.companion-rec-dot {
+  animation: companion-rec-blink 1.4s ease-in-out infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .import-guide-row,
   .import-guide-filename {
@@ -379,5 +482,15 @@ textarea,
   .website-presence-ring {
     animation: none;
     box-shadow: 0 0 0 1px rgb(6 182 212 / 0.2);
+  }
+
+  .companion-ring,
+  .companion-core-pulse,
+  .companion-rec-dot,
+  .companion-scanline::after,
+  .companion-leg-left,
+  .companion-leg-right,
+  .companion-walk-bob {
+    animation: none;
   }
 }

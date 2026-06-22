@@ -7,6 +7,14 @@ export type ChangelogEntry = {
 /** Newest first. User-facing release notes (major.minor). */
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: "1.14",
+    date: "June 2026",
+    highlights: [
+      "Meet Reel — a tiny dashcam buddy patrolling the header; click for contextual tips",
+      "Reel pauses where you click, shows hints below the navbar, then keeps walking",
+    ],
+  },
+  {
     version: "1.13",
     date: "June 2026",
     highlights: [

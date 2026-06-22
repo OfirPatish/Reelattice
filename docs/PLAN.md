@@ -2,7 +2,7 @@
 
 **Product:** Reelattice  
 **Type:** Local-first desktop app (Tauri 2 + React)  
-**Status:** v1.13 — daily-use ready, public releases on GitHub  
+**Status:** v1.14 — daily-use ready, public releases on GitHub  
 **Last updated:** June 2026
 
 ---
@@ -159,6 +159,10 @@
 - [x] **Custom in-app dialogs** — `ConfirmProvider` + `showConfirm()`; migrated archive/delete, bulk actions, settings, import discard, case delete, startup update prompt
 - [x] **Grid export quality presets** — Full / Standard / HD / Web with Rust encode settings; quality dialog before save location
 - [x] **Library & secondary views polish** — note previews and toolbar refresh; fixed selection highlight overlap; neutral Help, Settings, and Cases layout
+
+### Shipped (v1.14)
+
+- [x] **Reel header companion** — pixel dashcam buddy patrols the navbar gap; click for tab-specific tips; pauses in place with tooltip below the header
 
 ### Next (future)
 

@@ -1,0 +1,66 @@
+---
+description: Before every app push — audit README and website against the latest changelog
+alwaysApply: true
+---
+
+# Reelattice marketing sync
+
+Before **committing or pushing** app changes (`src/`, `src-tauri/`), compare the **top changelog entry** in `src/lib/changelog.ts` with public-facing copy so first-time visitors and GitHub readers do not miss major features.
+
+Run this in the same session as `reelattice-git-push.mdc` and `reelattice-release.mdc`.
+
+## Surfaces to audit
+
+| Surface | What it advertises |
+|---------|-------------------|
+| `README.md` | Highlights, Quick start, positioning table |
+| `website/src/lib/release-highlights.ts` | Download “What’s new” bullets |
+| `website/src/lib/release-highlights.ts` → `MARKETED_CAPABILITIES` | Feature cards / workflow copy source of truth |
+| `website/src/components/hero-section.tsx` | Hero promise + live badge |
+| `website/src/components/features-section.tsx` | Capability cards |
+| `website/src/components/workflow-section.tsx` | Step-by-step workflow |
+| `website/src/components/download-section.tsx` | CTA + highlights block |
+
+In-app Help/Changelog are **not** a substitute — many users see README or the website first.
+
+## Classify each changelog bullet
+
+**Marketing-visible** (must appear somewhere public if new or materially changed):
+
+- New tab, workflow, export mode, import behavior, Cases, Settings area
+- Platform support, privacy/download/legal behavior
+- Headline UX (USB prompt, grid export quality, in-app updates)
+
+**Usually skip for marketing** (changelog + release notes only):
+
+- Visual polish, dialog style swaps, selection highlight fixes
+- Performance, tests, single-instance, keyboard tweaks
+- Copy-only or internal refactors
+
+When unsure, treat as marketing-visible.
+
+## Gap check (do this every release)
+
+1. Read the newest `CHANGELOG` entry (all bullets).
+2. For each **marketing-visible** bullet, confirm it is reflected in **at least one** of: README Highlights/Quick start, `RELEASE_HIGHLIGHTS`, `MARKETED_CAPABILITIES`, hero, features, or workflow.
+3. Scan README + website for **stale claims** (removed features, wrong steps, old version promises).
+4. If a gap exists → update README and/or website **in the same commit** as the app release. Do not tag until public copy matches.
+
+## What to update when
+
+| Gap type | Update |
+|----------|--------|
+| New user workflow | README Highlights + Quick start; website features + workflow |
+| New export/import option | README Highlights; `MARKETED_CAPABILITIES.export` or `.import`; release highlights |
+| New settings behavior visitors care about | README or website features if it is a selling point |
+| Patch / polish only | Changelog only; version bump on website if releasing |
+
+## Release highlights rule
+
+`website/src/lib/release-highlights.ts` bullets should summarize the **marketing-visible** items from the top changelog entry — not every bullet. README Highlights can stay broader (evergreen) while release highlights stay version-specific.
+
+## Done when
+
+- [ ] Every marketing-visible changelog item is represented publicly, or consciously deferred with a note in the commit message
+- [ ] README and website contain no contradictions with current app behavior
+- [ ] `APP_VERSION` and release highlights match the shipped tag (see `reelattice-release.mdc`)

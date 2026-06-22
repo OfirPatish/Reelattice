@@ -42,7 +42,8 @@ Website-only pushes (`website/` only, no `src/` changes) do **not** need a new a
 2. Update `src/lib/changelog.ts` when users should know.
 3. If app code changed: bump versions and plan the tag (step 3 above).
 4. If update flow or Changelog tab copy changed, skim `src/components/changelog-view.tsx` and `src/components/help-view.tsx`.
-5. **Website check** — see below (do not skip on app releases).
+5. **Marketing sync** — run `reelattice-marketing-sync.mdc`: compare top changelog entry with `README.md` and website copy; update public surfaces before push when marketing-visible features are missing.
+6. **Website check** — see below (do not skip on app releases).
 
 Do not push user-facing app work without a changelog entry and release tag.
 

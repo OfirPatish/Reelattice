@@ -26,6 +26,7 @@ App display version comes from `CARGO_PKG_VERSION` in Rust — Cargo.toml must m
 ## Release notes & user-facing copy
 
 - [ ] `src/lib/changelog.ts` — new entry at top (newest first)
+- [ ] **Marketing sync** — `reelattice-marketing-sync.mdc`: README + website reflect marketing-visible changelog items
 - [ ] `src/components/help-view.tsx` — if behavior changed for users
 - [ ] `src/components/changelog-view.tsx` — intro copy if update flow changed
 
@@ -44,7 +45,7 @@ The website has no changelog page; version badges and marketing copy are the vis
 
 - [ ] `docs/PLAN.md` — status line + new **Shipped (vX.Y)** section
 - [ ] `docs/USER_GUIDE.md` — if user workflows, settings, or paths changed
-- [ ] `README.md` — only if positioning, download link, or highlights changed materially
+- [ ] `README.md` — update when marketing sync finds gaps (see `reelattice-marketing-sync.mdc`); not optional for headline features
 
 ## Tag & publish
 

@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { useEffect } from "react";
 import { CircleHelp, FolderOpen, Briefcase, Library, ScrollText, Settings } from "lucide-react";
 import { AppLogo } from "@/components/app-logo";
+import { HeaderCompanion } from "@/components/layout/header-companion";
 import { WindowControls } from "@/components/layout/window-controls";
 import { WebsitePresence } from "@/components/website-presence";
 import { sourceBadgeClass, sourceLabel } from "@/lib/format";
@@ -154,7 +155,11 @@ export const AppShell = ({ activeView, onNavigate, children }: AppShellProps) =>
         data-tauri-drag-region
         onMouseDown={handleTitleBarMouseDown}
       >
-        <div className="flex shrink-0 items-center gap-2 px-4">
+        <div
+          className="flex shrink-0 items-center gap-2.5 px-4"
+          data-no-drag
+          onMouseDown={stopTitleBarMouseDown}
+        >
           <AppLogo size={22} />
           <span className="text-sm font-semibold tracking-tight">Reelattice</span>
         </div>
@@ -188,11 +193,12 @@ export const AppShell = ({ activeView, onNavigate, children }: AppShellProps) =>
         </nav>
 
         <div
-          className="flex min-w-0 flex-1 items-center justify-end gap-3 px-4"
+          className="flex min-h-0 min-w-0 flex-1 self-stretch items-end gap-3 px-2"
           data-no-drag
           onMouseDown={stopTitleBarMouseDown}
         >
-          <div className="hidden sm:block">
+          <HeaderCompanion activeView={activeView} />
+          <div className="hidden shrink-0 pb-3 sm:block">
             <HeaderContext activeView={activeView} />
           </div>
         </div>
