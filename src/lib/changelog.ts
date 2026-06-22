@@ -7,6 +7,15 @@ export type ChangelogEntry = {
 /** Newest first — user-facing release notes (major.minor). */
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: "1.12",
+    date: "June 2026",
+    highlights: [
+      "TeslaCam USB detection — plug in a drive while Reelattice is open and get an opt-in Import prompt (never auto-imports)",
+      "Settings → Import — toggle drive detection on or off (on by default); dismiss per drive for this session",
+      "Branded confirm dialogs — drive import prompt uses the new in-app dialog style (more flows coming)",
+    ],
+  },
+  {
     version: "1.11",
     date: "June 2026",
     highlights: [

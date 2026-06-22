@@ -26,7 +26,7 @@ const SKILLS: Skill[] = [
   },
   {
     name: "USB Drop",
-    desc: "Drop TeslaCam folders or MP4s. Built-in guide shows what to import.",
+    desc: "Plug in TeslaCam USB for an import prompt, or drop folders and MP4s manually.",
     rarity: "epic",
     hotkey: "I",
   },

@@ -2,7 +2,7 @@
 
 **Product:** Reelattice  
 **Type:** Local-first desktop app (Tauri 2 + React)  
-**Status:** v1.11 — daily-use ready, public releases on GitHub  
+**Status:** v1.12 — daily-use ready, public releases on GitHub  
 **Last updated:** June 2026
 
 ---
@@ -360,4 +360,4 @@ See [Developer Guide](./DEVELOPER.md) for build commands and project layout.
 
 ---
 
-*Document revision: 2.0 — June 2026 (Reelattice app **v1.11**; Tauri **2.11.x**)*
+*Document revision: 2.1 — June 2026 (Reelattice app **v1.12**; Tauri **2.11.x**)*

@@ -5,8 +5,9 @@ import { APP_VERSION } from "@/lib/constants";
  * Keep in sync with the top entry in `src/lib/changelog.ts` when shipping an app release.
  */
 export const RELEASE_HIGHLIGHTS: readonly string[] = [
-  "Simplified Import — drop zone first, optional “What can I import?” guide",
-  "Settings About — updates beside app info, privacy & legal in one footer strip",
+  "TeslaCam USB detection — plug in a drive, get an opt-in Import prompt",
+  "Settings → Import — toggle drive detection; dismiss per drive for this session",
+  "Branded in-app confirm dialogs — starting with the drive import prompt",
 ];
 
 export const releaseHighlightsHeading = () => `What's new in v${APP_VERSION}`;

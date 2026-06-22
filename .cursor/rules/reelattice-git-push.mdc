@@ -46,6 +46,17 @@ Website-only pushes (`website/` only, no `src/` changes) do **not** need a new a
 
 Do not push user-facing app work without a changelog entry and release tag.
 
+## After push — verify tag (required)
+
+If the push included `src/` or `src-tauri/` changes, **do not end the session** until a release tag exists on the remote:
+
+```bash
+git fetch origin --tags
+git describe --tags --exact-match HEAD   # must succeed (e.g. v1.12)
+```
+
+If `git describe` shows `vX.Y-N-g<hash>` (commits ahead of the latest tag), the release is incomplete — finish `reelattice-release.mdc`, commit version bumps if needed, push `main`, then `git tag vX.Y && git push origin vX.Y` in the **same session** as the app push.
+
 ## Website check (before every push)
 
 The public site at `reelattice.vercel.app` deploys from `main` automatically. Before pushing, confirm the website still matches what you are shipping.
