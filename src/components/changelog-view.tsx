@@ -81,7 +81,7 @@ export const ChangelogView = () => (
         </div>
         <p className="mt-1 max-w-2xl text-sm leading-relaxed text-zinc-400">
           What changed in each release. Updates install in-app from Settings → About with a
-          full-screen progress overlay — no need to download installers manually after your first
+          full-screen progress overlay. No need to download installers manually after your first
           install.
         </p>
       </header>

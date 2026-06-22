@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { getCurrentWindow } from "@tauri-apps/api/window";
-import { confirm, open } from "@tauri-apps/plugin-dialog";
+import { open } from "@tauri-apps/plugin-dialog";
+import { showConfirm } from "@/lib/show-confirm";
 import {
   AlertCircle,
   Loader2,
@@ -394,10 +395,12 @@ export const ImportWizard = ({
     if (loading) return;
 
     if (detected.length > 0 && showPreview) {
-      const confirmed = await confirm(
-        "Discard the scanned events and start over?",
-        { title: "Discard import", kind: "warning", okLabel: "Discard" },
-      );
+      const confirmed = await showConfirm({
+        title: "Discard import",
+        description: "Discard the scanned events and start over?",
+        confirmLabel: "Discard",
+        variant: "warning",
+      });
       if (!confirmed) return;
     }
 

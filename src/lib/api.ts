@@ -1,4 +1,5 @@
 import { invoke } from "@tauri-apps/api/core";
+import type { GridExportQuality } from "@/lib/grid-export-quality";
 import type {
   AppSettings,
   CaseDetail,
@@ -118,7 +119,9 @@ export const exportEvent = (
     durationSecs: segment?.durationSecs ?? null,
   });
 
-export type GridExportOptions = ExportSegmentOptions;
+export type GridExportOptions = Partial<ExportSegmentOptions> & {
+  quality?: GridExportQuality;
+};
 
 export const exportEventGridVideo = (
   eventId: string,
@@ -130,6 +133,7 @@ export const exportEventGridVideo = (
     destPath,
     startSecs: options?.startSecs ?? null,
     durationSecs: options?.durationSecs ?? null,
+    quality: options?.quality ?? null,
   });
 
 export const bulkExportEvents = (eventIds: string[], destPath: string) =>

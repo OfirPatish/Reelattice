@@ -29,6 +29,7 @@ Reelattice groups Tesla clips into **events** (one timestamp, up to six cameras)
 - Search with `/`, move between events with `j` / `k` or arrow keys.
 - Filter by source (Recent / Sentry / Saved), tag, or date.
 - Open an event → switch cameras or use **Grid** for all angles synced.
+- Toggle **Notes** in the library toolbar to preview note text in the list (500 character limit per event).
 - Add tags, notes, archive, or delete from the detail panel.
 
 ### 3. Cases (incident bundles)
@@ -44,7 +45,7 @@ Use **Cases** when several events belong to one incident (insurance claim, parki
 From an open event (header icons):
 
 - **ZIP** — all camera files plus metadata.
-- **Grid MP4** — one video matching the in-app 6-camera grid (1920×960).
+- **Grid MP4** — one video matching the in-app 6-camera grid (1920×960). Choose quality (Full, Standard, HD, or Web) before picking a save location.
 
 Use **scissors** on the playback bar to trim a short segment (default 30 seconds; change in Settings → Playback) before exporting.
 
@@ -106,7 +107,9 @@ Full list: **Help** tab in the app.
 
 ## Updates
 
-Installed apps check for updates on startup and in **Settings → About**. Updates install in-app with a progress overlay.
+Installed apps check for updates on startup and in **Settings → About**. Updates install in-app with a progress overlay (download size and estimated time remaining).
+
+Opening Reelattice while it is already running focuses the existing window instead of starting a second copy.
 
 ---
 

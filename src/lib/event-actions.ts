@@ -1,11 +1,13 @@
-import { confirm, save } from "@tauri-apps/plugin-dialog";
+import { save } from "@tauri-apps/plugin-dialog";
 import { deleteEvent, exportEvent, exportEventGridVideo, setEventArchive } from "@/lib/api";
 import type { GridExportOptions } from "@/lib/api";
+import type { GridExportQuality } from "@/lib/grid-export-quality";
 import {
   EXPORT_SEGMENT_WINDOW_SECS,
   segmentFileSuffix,
   type ExportSegment,
 } from "@/lib/playback-metrics";
+import { showConfirm } from "@/lib/show-confirm";
 import type { DashEvent } from "@/lib/types";
 
 const eventSlug = (eventTime: string) => eventTime.replace(/[: ]/g, "-");
@@ -22,9 +24,13 @@ export const exportGridVideoFileName = (eventTime: string, segment?: ExportSegme
   return `Reelattice-${slug}-grid-${segmentFileSuffix(segment)}.mp4`;
 };
 
-export const segmentToExportOptions = (segment: ExportSegment): GridExportOptions => ({
+export const segmentToExportOptions = (
+  segment: ExportSegment,
+  quality?: GridExportQuality,
+): GridExportOptions => ({
   startSecs: segment.startSecs,
   durationSecs: segment.durationSecs,
+  quality,
 });
 
 export const runExportEvent = async (
@@ -62,21 +68,25 @@ export const exportGridVideoToPath = async (
   eventId: string,
   destPath: string,
   segment?: ExportSegment | null,
+  quality?: GridExportQuality,
 ): Promise<string> =>
   exportEventGridVideo(
     eventId,
     destPath,
-    segment ? segmentToExportOptions(segment) : undefined,
+    segment ? segmentToExportOptions(segment, quality) : quality ? { quality } : undefined,
   );
 
 export const runToggleArchiveEvent = async (event: DashEvent): Promise<boolean> => {
   const nextArchived = !event.archived;
 
   if (nextArchived) {
-    const confirmed = await confirm(
-      "Archive hides this event from your active library. You can restore it anytime from Archived.",
-      { title: "Archive event", kind: "info", okLabel: "Archive" },
-    );
+    const confirmed = await showConfirm({
+      title: "Archive event",
+      description:
+        "Archive hides this event from your active library. You can restore it anytime from Archived.",
+      confirmLabel: "Archive",
+      variant: "default",
+    });
     if (!confirmed) return false;
   }
 
@@ -85,10 +95,13 @@ export const runToggleArchiveEvent = async (event: DashEvent): Promise<boolean> 
 };
 
 export const runDeleteEvent = async (event: DashEvent): Promise<boolean> => {
-  const confirmed = await confirm(
-    "This permanently removes the event and all copied video files from your library. You can import the footage again later.",
-    { title: "Delete event", kind: "warning", okLabel: "Delete" },
-  );
+  const confirmed = await showConfirm({
+    title: "Delete event",
+    description:
+      "This permanently removes the event and all copied video files from your library. You can import the footage again later.",
+    confirmLabel: "Delete",
+    variant: "warning",
+  });
 
   if (!confirmed) return false;
 

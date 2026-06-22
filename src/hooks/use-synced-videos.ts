@@ -124,7 +124,7 @@ export const useSyncedVideos = (
     }
   }, []);
 
-  const handleTogglePlay = useCallback(async () => {
+  const handleTogglePlay = useCallback(async (options?: { gridMode?: boolean }) => {
     const videos = [...videoRefs.current.values()];
     const anyPlaying = videos.some((video) => !video.paused);
 
@@ -136,7 +136,16 @@ export const useSyncedVideos = (
       return;
     }
 
-    await Promise.all(videos.map((video) => video.play().catch(() => undefined)));
+    const targets =
+      options?.gridMode && masterClipIdRef.current
+        ? videos.filter(
+            (video) =>
+              video === videoRefs.current.get(masterClipIdRef.current ?? "") ||
+              video.readyState >= HTMLMediaElement.HAVE_METADATA,
+          )
+        : videos;
+
+    await Promise.all(targets.map((video) => video.play().catch(() => undefined)));
     setIsPlaying(true);
   }, []);
 

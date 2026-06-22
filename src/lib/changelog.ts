@@ -4,30 +4,43 @@ export type ChangelogEntry = {
   highlights: string[];
 };
 
-/** Newest first — user-facing release notes (major.minor). */
+/** Newest first. User-facing release notes (major.minor). */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: "1.13",
+    date: "June 2026",
+    highlights: [
+      "Grid export quality: choose Full, Standard, HD, or Web before picking a save location",
+      "Custom in-app confirm dialogs for delete, archive, bulk actions, settings, and more",
+      "Library list: note previews, cleaner toolbar, fixed selection highlight overlapping rows",
+      "Front camera playback loads faster in single mode with smoother poster transitions",
+      "Update overlay shows downloaded size, total size, and estimated time remaining",
+      "Single-instance launch focuses the existing window when you open Reelattice again",
+      "Help, Settings, and Cases refreshed with a cleaner, more consistent layout",
+    ],
+  },
   {
     version: "1.12",
     date: "June 2026",
     highlights: [
-      "TeslaCam USB detection — plug in a drive while Reelattice is open and get an opt-in Import prompt (never auto-imports)",
-      "Settings → Import — toggle drive detection on or off (on by default); dismiss per drive for this session",
-      "Branded confirm dialogs — drive import prompt uses the new in-app dialog style (more flows coming)",
+      "TeslaCam USB detection: plug in a drive while Reelattice is open for an opt-in Import prompt (never auto-imports)",
+      "Settings → Import: toggle drive detection on or off (on by default); dismiss per drive for this session",
+      "Branded confirm dialogs: drive import prompt uses the new in-app dialog style (more flows coming)",
     ],
   },
   {
     version: "1.11",
     date: "June 2026",
     highlights: [
-      "Import tab simplified — drop zone first, optional “What can I import?” guide collapsed by default",
-      "Settings About section — full-width layout with updates beside app info, compact legal footer",
+      "Import tab simplified: drop zone first, optional “What can I import?” guide collapsed by default",
+      "Settings About: full-width layout with updates beside app info, compact legal footer",
     ],
   },
   {
     version: "1.10",
     date: "June 2026",
     highlights: [
-      "Library opens with no event selected — pick one when you're ready; per-event camera memory still applies",
+      "Library opens with no event selected. Pick one when you're ready; per-event camera memory still applies",
       "Active / Archived and returning from other tabs no longer restore the last event",
       "Each tab scrolls back to the top when you switch views",
       "Show notes in list displays a “No note” placeholder when an event has no note",
@@ -37,8 +50,8 @@ export const CHANGELOG: ChangelogEntry[] = [
     version: "1.9",
     date: "June 2026",
     highlights: [
-      "Public website at reelattice.vercel.app — product overview and Windows download",
-      "Privacy Policy and Terms of Use — Settings → About → Legal, and on the website",
+      "Public website at reelattice.vercel.app: product overview and Windows download",
+      "Privacy Policy and Terms of Use in Settings → About → Legal, and on the website",
       "Website link chip in the bottom-right corner on every screen",
     ],
   },
@@ -46,9 +59,9 @@ export const CHANGELOG: ChangelogEntry[] = [
     version: "1.8",
     date: "June 2026",
     highlights: [
-      "Cases linked-events list scrolls inside the panel — large bundles no longer stretch the layout",
+      "Cases linked-events list scrolls inside the panel so large bundles no longer stretch the layout",
       "Fixed linked events sometimes missing from case detail",
-      "Cases tab loading matches Library — skeleton placeholders instead of hidden spinner text",
+      "Cases tab loading matches Library: skeleton placeholders instead of hidden spinner text",
     ],
   },
   {
@@ -64,9 +77,9 @@ export const CHANGELOG: ChangelogEntry[] = [
     version: "1.5",
     date: "June 2026",
     highlights: [
-      "Cases tab redesign — sidebar list, view/edit modes, quick title labels",
+      "Cases tab redesign: sidebar list, view/edit modes, quick title labels",
       "Bulk Add to case opens a picker (choose existing case or create one)",
-      "Smoother case editing — no list flicker or button layout shift on save",
+      "Smoother case editing with no list flicker or button layout shift on save",
       "Software updates in Settings → About only (removed header update badge)",
       "Help, Changelog, and Settings refreshed with subtle accent colors",
       "New Tesla multi-cam app icon across desktop, installer, and website",
@@ -78,7 +91,7 @@ export const CHANGELOG: ChangelogEntry[] = [
     highlights: [
       "Cancel import mid-copy with live progress in the Import wizard",
       "Custom video library location in Settings (new imports only)",
-      "Cases tab — group related events into incident bundles",
+      "Cases tab: group related events into incident bundles",
       "Bulk select → Add to case from Library",
     ],
   },

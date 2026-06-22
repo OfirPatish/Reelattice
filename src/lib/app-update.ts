@@ -1,5 +1,6 @@
-import { confirm } from "@tauri-apps/plugin-dialog";
 import { relaunch } from "@tauri-apps/plugin-process";
+import { formatFileSize } from "@/lib/format";
+import { showConfirm } from "@/lib/show-confirm";
 import { check, type DownloadEvent, type Update } from "@tauri-apps/plugin-updater";
 
 /** How long transient statuses stay visible in the header before hiding. */
@@ -16,12 +17,22 @@ export type AppUpdateStatus =
   | "installing"
   | "error";
 
+export type AppDownloadProgress = {
+  percent: number | null;
+  downloadedBytes: number;
+  totalBytes: number | null;
+  etaSeconds: number | null;
+};
+
 export type AppUpdateState = {
   status: AppUpdateStatus;
   currentVersion: string;
   availableVersion: string | null;
   releaseNotes: string | null;
   downloadPercent: number | null;
+  downloadedBytes: number;
+  totalBytes: number | null;
+  etaSeconds: number | null;
   errorMessage: string | null;
 };
 
@@ -31,6 +42,9 @@ export const initialAppUpdateState = (currentVersion: string): AppUpdateState =>
   availableVersion: null,
   releaseNotes: null,
   downloadPercent: null,
+  downloadedBytes: 0,
+  totalBytes: null,
+  etaSeconds: null,
   errorMessage: null,
 });
 
@@ -54,28 +68,81 @@ const formatDownloadPercent = (downloaded: number, total: number | undefined) =>
   return Math.min(100, Math.round((downloaded / total) * 100));
 };
 
-const createDownloadHandler = (onProgress: (percent: number | null) => void) => {
+const estimateEtaSeconds = (
+  downloaded: number,
+  total: number | undefined,
+  startedAt: number,
+) => {
+  if (!total || total <= 0 || downloaded <= 0) return null;
+
+  const elapsedSecs = (Date.now() - startedAt) / 1000;
+  if (elapsedSecs < 1) return null;
+
+  const bytesPerSec = downloaded / elapsedSecs;
+  if (bytesPerSec <= 0) return null;
+
+  return Math.max(0, Math.round((total - downloaded) / bytesPerSec));
+};
+
+const createDownloadHandler = (onProgress: (progress: AppDownloadProgress) => void) => {
   let downloaded = 0;
   let total: number | undefined;
+  let startedAt = Date.now();
+
+  const emit = () => {
+    onProgress({
+      percent: formatDownloadPercent(downloaded, total),
+      downloadedBytes: downloaded,
+      totalBytes: total ?? null,
+      etaSeconds: estimateEtaSeconds(downloaded, total, startedAt),
+    });
+  };
 
   return (event: DownloadEvent) => {
     if (event.event === "Started") {
       downloaded = 0;
       total = event.data.contentLength;
-      onProgress(formatDownloadPercent(0, total));
+      startedAt = Date.now();
+      emit();
       return;
     }
 
     if (event.event === "Progress") {
       downloaded += event.data.chunkLength;
-      onProgress(formatDownloadPercent(downloaded, total));
+      emit();
       return;
     }
 
     if (event.event === "Finished") {
-      onProgress(100);
+      onProgress({
+        percent: 100,
+        downloadedBytes: total ?? downloaded,
+        totalBytes: total ?? downloaded,
+        etaSeconds: 0,
+      });
     }
   };
+};
+
+export const formatDownloadProgressDetail = (state: AppUpdateState) => {
+  if (state.totalBytes && state.totalBytes > 0) {
+    const sizeLine = `${formatFileSize(state.downloadedBytes)} / ${formatFileSize(state.totalBytes)}`;
+    if (state.etaSeconds !== null && state.etaSeconds > 0) {
+      const minutes = Math.floor(state.etaSeconds / 60);
+      const seconds = state.etaSeconds % 60;
+      const etaLabel =
+        minutes > 0 ? `~${minutes}m ${seconds}s left` : `~${seconds}s left`;
+      return `${sizeLine} · ${etaLabel}`;
+    }
+
+    return sizeLine;
+  }
+
+  if (state.downloadedBytes > 0) {
+    return `${formatFileSize(state.downloadedBytes)} downloaded`;
+  }
+
+  return null;
 };
 
 export const checkForAppUpdate = async (): Promise<Update | null> => {
@@ -100,13 +167,18 @@ export const isUpdateOverlayVisible = (status: AppUpdateStatus) =>
 
 export const installAppUpdate = async (
   update: Update,
-  onProgress: (percent: number | null) => void,
+  onProgress: (progress: AppDownloadProgress) => void,
   onPhaseChange?: (phase: AppUpdateInstallPhase) => void,
 ) => {
   onPhaseChange?.("downloading");
   await update.download(createDownloadHandler(onProgress));
 
-  onProgress(100);
+  onProgress({
+    percent: 100,
+    downloadedBytes: 0,
+    totalBytes: null,
+    etaSeconds: 0,
+  });
   onPhaseChange?.("installing");
   await waitForNextPaint();
 
@@ -124,11 +196,17 @@ export const promptStartupUpdate = async (
   }
 
   const notes = update.body?.trim();
-  const detail = notes ? `\n\n${notes}` : "";
-  const accepted = await confirm(
-    `Reelattice ${update.version} is available (you have ${currentVersion}). Install now?${detail}`,
-    { title: "Update available", kind: "info", okLabel: "Install", cancelLabel: "Later" },
-  );
+  const description = notes
+    ? `Reelattice ${update.version} is available (you have ${currentVersion}).\n\n${notes}`
+    : `Reelattice ${update.version} is available (you have ${currentVersion}). Install now?`;
+
+  const accepted = await showConfirm({
+    title: "Update available",
+    description,
+    confirmLabel: "Install",
+    cancelLabel: "Later",
+    variant: "accent",
+  });
 
   if (!accepted) {
     dismissUpdateVersion(update.version);

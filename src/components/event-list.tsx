@@ -1,4 +1,4 @@
-import { CheckSquare, ChevronRight, Loader2 } from "lucide-react";
+import { ChevronRight, Loader2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { FilterEmptyIllustration } from "@/components/empty-illustrations";
 import { EventDetailPanel } from "@/components/event-detail-panel";
@@ -127,7 +127,7 @@ export const EventList = ({
             )}
             aria-hidden={!listOpen}
           >
-            <div className="shrink-0 space-y-3 border-b border-zinc-800 bg-zinc-950/40 p-4">
+            <div className="shrink-0 space-y-2.5 border-b border-zinc-800 bg-zinc-950/40 p-3">
               <LibraryToolbar
                 filteredCount={library.filteredEvents.length}
                 totalCount={library.events.length}
@@ -136,10 +136,18 @@ export const EventList = ({
                 searchInput={library.searchInput}
                 libraryView={library.libraryView}
                 sourceFilter={library.sourceFilter}
+                showNotesInList={library.prefs.showNotesInList}
+                selectionMode={library.selectionMode}
+                selectedCount={library.selectedIds.size}
+                isBulkBusy={library.isBulkBusy}
                 onSearchChange={library.setSearchInput}
                 onClearSearch={() => library.setSearchInput("")}
                 onLibraryViewChange={library.handleLibraryViewChange}
                 onSourceFilterChange={library.setSourceFilter}
+                onShowNotesChange={(showNotesInList) =>
+                  library.updatePrefs({ showNotesInList })
+                }
+                onToggleSelectionMode={library.handleToggleSelectionMode}
                 canCollapse={canCollapseList}
                 onCollapse={handleListToggle}
               />
@@ -176,30 +184,6 @@ export const EventList = ({
                   libraryView={library.libraryView}
                   dragOver={dragOver}
                 />
-              )}
-
-              {!library.isInitialLoad && library.filteredEvents.length > 0 && (
-                <div className="z-[1] flex shrink-0 items-center justify-between gap-2 border-b border-zinc-800/60 bg-zinc-950/95 px-4 py-2">
-                  <p className="min-w-0 truncate text-[10px] font-semibold uppercase tracking-wider text-zinc-600">
-                    {library.selectionMode
-                      ? library.selectedIds.size > 0
-                        ? `${library.selectedIds.size} selected — use panel on the right`
-                        : "Tap events to select"
-                      : "Events"}
-                  </p>
-                  <Button
-                    type="button"
-                    variant={library.selectionMode ? "outline" : "ghost"}
-                    size="sm"
-                    onClick={library.handleToggleSelectionMode}
-                    disabled={library.isBulkBusy}
-                    className="h-6 shrink-0 px-2 text-[10px]"
-                    aria-pressed={library.selectionMode}
-                  >
-                    <CheckSquare className="h-3 w-3" aria-hidden />
-                    {library.selectionMode ? "Done" : "Select"}
-                  </Button>
-                </div>
               )}
 
               <div
@@ -352,10 +336,13 @@ export const EventList = ({
               isViewRefreshing={library.isViewRefreshing}
               tags={library.tags}
               noteDraft={library.noteDraft}
-              isSavingNote={library.isSavingNote}
               playbackLayout={library.prefs.playbackLayout}
               seekStepSecs={library.prefs.seekStepSecs}
               exportSegmentSecs={library.prefs.exportSegmentSecs}
+              gridExportQuality={library.prefs.gridExportQuality}
+              onGridExportQualityChange={(quality) =>
+                library.updatePrefs({ gridExportQuality: quality })
+              }
               detailInspectorOpen={library.prefs.detailInspectorOpen}
               onPlaybackLayoutChange={(layout) => library.updatePrefs({ playbackLayout: layout })}
               onDetailInspectorOpenChange={(open) =>

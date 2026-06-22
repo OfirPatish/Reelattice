@@ -8,6 +8,7 @@ import {
   isUpdaterEnabled,
   promptStartupUpdate,
   UPDATE_STATUS_VISIBLE_MS,
+  type AppDownloadProgress,
   type AppUpdateState,
 } from "@/lib/app-update";
 
@@ -70,17 +71,23 @@ export const useAppUpdate = ({ currentVersion, checkOnStartup = false }: UseAppU
       ...prev,
       status: "downloading",
       downloadPercent: 0,
+      downloadedBytes: 0,
+      totalBytes: null,
+      etaSeconds: null,
       errorMessage: null,
     }));
 
     try {
       await installAppUpdate(
         update,
-        (downloadPercent) => {
+        (progress: AppDownloadProgress) => {
           setState((prev) => ({
             ...prev,
             status: "downloading",
-            downloadPercent,
+            downloadPercent: progress.percent,
+            downloadedBytes: progress.downloadedBytes,
+            totalBytes: progress.totalBytes,
+            etaSeconds: progress.etaSeconds,
           }));
         },
         (phase) => {
@@ -88,6 +95,7 @@ export const useAppUpdate = ({ currentVersion, checkOnStartup = false }: UseAppU
             ...prev,
             status: phase,
             downloadPercent: phase === "installing" ? 100 : prev.downloadPercent,
+            etaSeconds: phase === "installing" ? 0 : prev.etaSeconds,
           }));
         },
       );
@@ -110,6 +118,9 @@ export const useAppUpdate = ({ currentVersion, checkOnStartup = false }: UseAppU
           availableVersion: null,
           releaseNotes: null,
           downloadPercent: null,
+          downloadedBytes: 0,
+          totalBytes: null,
+          etaSeconds: null,
           errorMessage: null,
         }));
         scheduleReturnToIdle();

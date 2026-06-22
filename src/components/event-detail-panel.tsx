@@ -4,6 +4,7 @@ import { ImportSourceSelect } from "@/components/import-source-select";
 import { EventHeaderActions } from "@/components/event-header-actions";
 import { GridExportStatus } from "@/components/grid-export-status";
 import { VideoPlayer } from "@/components/video-player";
+import type { GridExportQuality } from "@/lib/grid-export-quality";
 import type { PlaybackLayout } from "@/lib/library-preferences";
 import {
   computeExportSegment,
@@ -21,6 +22,7 @@ import {
   sourceBadgeClass,
   sumClipFileSize,
 } from "@/lib/format";
+import { MAX_EVENT_NOTE_LENGTH } from "@/lib/event-notes";
 import type { DashEvent, EventSource, TagInfo } from "@/lib/types";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
@@ -29,10 +31,11 @@ type EventDetailPanelProps = {
   event: DashEvent;
   tags: TagInfo[];
   noteDraft: string;
-  isSavingNote: boolean;
   playbackLayout: PlaybackLayout;
   seekStepSecs: number;
   exportSegmentSecs: number;
+  gridExportQuality: GridExportQuality;
+  onGridExportQualityChange: (quality: GridExportQuality) => void;
   detailInspectorOpen: boolean;
   isViewRefreshing?: boolean;
   onPlaybackLayoutChange: (layout: PlaybackLayout) => void;
@@ -49,33 +52,17 @@ const INSPECTOR_PANEL_CLASS = "w-64 xl:w-72";
 
 const InspectorSection = ({
   title,
-  hint,
   children,
   className,
 }: {
   title: string;
-  hint?: string;
   children: ReactNode;
   className?: string;
 }) => (
   <section className={cn("shrink-0", className)}>
-    <div className="mb-2 flex items-baseline justify-between gap-2">
-      <h3 className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500">
-        {title}
-      </h3>
-      {hint && (
-        <span
-          className={cn(
-            "text-[10px] font-medium text-zinc-500 transition-opacity duration-300",
-            hint === "Saving" ? "opacity-100" : "opacity-0",
-          )}
-          aria-live="polite"
-          aria-hidden={hint !== "Saving"}
-        >
-          {hint}
-        </span>
-      )}
-    </div>
+    <h3 className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-zinc-500">
+      {title}
+    </h3>
     {children}
   </section>
 );
@@ -84,10 +71,11 @@ export const EventDetailPanel = ({
   event,
   tags,
   noteDraft,
-  isSavingNote,
   playbackLayout,
   seekStepSecs,
   exportSegmentSecs,
+  gridExportQuality,
+  onGridExportQualityChange,
   detailInspectorOpen,
   isViewRefreshing = false,
   onPlaybackLayoutChange,
@@ -100,6 +88,9 @@ export const EventDetailPanel = ({
   onDeleted,
 }: EventDetailPanelProps) => {
   const [gridExportPath, setGridExportPath] = useState<string | null>(null);
+  const [gridExportQualityLabel, setGridExportQualityLabel] = useState<GridExportQuality | null>(
+    null,
+  );
   const [exportSuccessPath, setExportSuccessPath] = useState<string | null>(null);
   const [actionError, setActionError] = useState("");
   const [playbackMetrics, setPlaybackMetrics] = useState<PlaybackMetrics>(
@@ -148,8 +139,13 @@ export const EventDetailPanel = ({
     return () => window.clearTimeout(timeout);
   }, [exportSuccessPath]);
 
-  const handleExportingChange = (exporting: boolean, destPath?: string) => {
+  const handleExportingChange = (
+    exporting: boolean,
+    destPath?: string,
+    quality?: GridExportQuality,
+  ) => {
     setGridExportPath(exporting && destPath ? destPath : null);
+    setGridExportQualityLabel(exporting && quality ? quality : null);
     if (exporting) setExportSuccessPath(null);
   };
 
@@ -195,6 +191,8 @@ export const EventDetailPanel = ({
           <EventHeaderActions
             event={event}
             exportSegment={exportSegment}
+            gridExportQuality={gridExportQuality}
+            onGridExportQualityChange={onGridExportQualityChange}
             onLibraryChange={onLibraryChange}
             onDeleted={onDeleted}
             onError={setActionError}
@@ -213,7 +211,9 @@ export const EventDetailPanel = ({
         </div>
       )}
 
-      {gridExportPath && <GridExportStatus destPath={gridExportPath} />}
+      {gridExportPath && (
+        <GridExportStatus destPath={gridExportPath} quality={gridExportQualityLabel} />
+      )}
 
       {exportSuccessPath && (
         <div
@@ -391,13 +391,13 @@ export const EventDetailPanel = ({
                 )}
               </InspectorSection>
 
-              <InspectorSection title="Notes" hint={isSavingNote ? "Saving" : undefined}>
+              <InspectorSection title="Notes">
                 <Textarea
                   id="event-note"
                   value={noteDraft}
                   onChange={(e) => onNoteChange(e.target.value)}
                   onBlur={onNoteSave}
-                  disabled={isSavingNote}
+                  maxLength={MAX_EVENT_NOTE_LENGTH}
                   rows={4}
                   placeholder="What happened?"
                   className="min-h-[5.5rem] resize-none border-zinc-800 bg-zinc-950/80 text-sm"

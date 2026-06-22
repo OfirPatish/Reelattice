@@ -288,6 +288,7 @@ async fn export_event_grid_video(
     dest_path: String,
     start_secs: Option<f64>,
     duration_secs: Option<f64>,
+    quality: Option<String>,
 ) -> Result<String, error::AppError> {
     let event = load_event_by_id(&state.db, &event_id)?;
     let clips = event.clips;
@@ -309,6 +310,7 @@ async fn export_event_grid_video(
             &active_ffmpeg,
             start_secs,
             duration_secs,
+            quality.as_deref(),
         )
     })
     .await
@@ -406,6 +408,13 @@ pub fn run() {
     let app_state = AppState::new().expect("Failed to initialize database");
 
     tauri::Builder::default()
+        .plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
+            if let Some(window) = app.get_webview_window("main") {
+                let _ = window.show();
+                let _ = window.unminimize();
+                let _ = window.set_focus();
+            }
+        }))
         .plugin(tauri_plugin_process::init())
         .plugin(tauri_plugin_updater::Builder::new().build())
         .plugin(tauri_plugin_dialog::init())

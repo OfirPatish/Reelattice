@@ -32,7 +32,7 @@ const PLACEHOLDER_COPY: Record<
   "pick-event": {
     title: "Nothing playing yet",
     subtitle: "Select an event from the library to start reviewing footage.",
-    footnote: "Dashcam's ready — waiting for your pick.",
+    footnote: "Dashcam's ready. Pick an event when you want to review.",
   },
   "empty-library": {
     title: "No footage yet",

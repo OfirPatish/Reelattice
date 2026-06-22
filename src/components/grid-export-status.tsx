@@ -1,9 +1,12 @@
 import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
+import type { GridExportQuality } from "@/lib/grid-export-quality";
+import { GRID_EXPORT_QUALITY_LABELS } from "@/lib/grid-export-quality";
 import { getPathByteSize } from "@/lib/api";
 
 type GridExportStatusProps = {
   destPath: string;
+  quality?: GridExportQuality | null;
 };
 
 type ExportProgress = {
@@ -20,7 +23,7 @@ const gridPartPath = (destPath: string) =>
 
 const formatMegabytes = (bytes: number) => (bytes / (1024 * 1024)).toFixed(1);
 
-export const GridExportStatus = ({ destPath }: GridExportStatusProps) => {
+export const GridExportStatus = ({ destPath, quality = null }: GridExportStatusProps) => {
   const [progress, setProgress] = useState<ExportProgress>({
     elapsedSec: 0,
     bytesWritten: 0,
@@ -69,21 +72,25 @@ export const GridExportStatus = ({ destPath }: GridExportStatusProps) => {
         <Loader2 className="h-3.5 w-3.5 shrink-0 animate-spin" aria-hidden />
         <div>
           {isStarting ? (
-            <p>Starting grid export… ({elapsedSec}s)</p>
+            <p>
+              Starting grid export
+              {quality ? ` (${GRID_EXPORT_QUALITY_LABELS[quality]})` : ""}… ({elapsedSec}s)
+            </p>
           ) : (
             <p>
-              Encoding grid video… {elapsedSec}s · {formatMegabytes(bytesWritten)} MB
-              written
+              Encoding grid video
+              {quality ? ` · ${GRID_EXPORT_QUALITY_LABELS[quality]}` : ""}… {elapsedSec}s ·{" "}
+              {formatMegabytes(bytesWritten)} MB written
             </p>
           )}
           {stalled ? (
             <p className="mt-0.5 text-amber-200/90">
-              No new data for 30s. FFmpeg may still be finishing — check Task Manager
+              No new data for 30s. FFmpeg may still be finishing. Check Task Manager
               for ffmpeg, or wait a bit longer.
             </p>
           ) : (
             <p className="mt-0.5 text-sky-200/70">
-              Watch the MB count rise — that means it is working. A{" "}
+              Watch the MB count rise. That means it is working. A{" "}
               <span className="font-mono">.mp4.part</span> file appears in your save
               folder while encoding.
             </p>

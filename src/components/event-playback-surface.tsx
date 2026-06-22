@@ -123,7 +123,7 @@ export const EventPlaybackSurface = ({
 
       if (event.key === " ") {
         event.preventDefault();
-        void handleTogglePlay();
+        void handleTogglePlay({ gridMode: showGrid });
         return;
       }
 
@@ -146,7 +146,7 @@ export const EventPlaybackSurface = ({
 
   const handleSurfaceClick = () => {
     if (showGrid) {
-      void handleTogglePlay();
+      void handleTogglePlay({ gridMode: true });
     }
   };
 
@@ -170,11 +170,20 @@ export const EventPlaybackSurface = ({
         {sortedClips.map((clip) => {
           const gridArea = getCameraGridArea(clip.camera);
           const isActiveSingle = clip.camera === activeCamera;
+          const isMasterClip = clip.id === masterClipId;
+          const shouldLoadVideo = showGrid || isActiveSingle || isMasterClip;
           const isReady = readyClips.has(clip.id);
           const hasFailed = failedClips.has(clip.id);
           const showVideo = isReady && (showGrid || isActiveSingle);
           const showPlaybackError =
             hasFailed && (showGrid || isActiveSingle) && !isReady;
+          const preloadLevel = showGrid
+            ? clip.camera === "front"
+              ? "auto"
+              : "metadata"
+            : isActiveSingle || isMasterClip
+              ? "auto"
+              : "none";
 
           return (
             <div
@@ -199,18 +208,20 @@ export const EventPlaybackSurface = ({
                   <CameraBadge camera={clip.camera} className="left-3 top-3 z-10" />
                 )}
 
-                {!isReady && clip.thumbnailPath && (
+                {clip.thumbnailPath && (
                   <img
                     src={convertFileSrc(clip.thumbnailPath)}
                     alt=""
                     aria-hidden
                     className={cn(
-                      "absolute inset-0 z-0 h-full w-full bg-black",
+                      "absolute inset-0 z-[1] h-full w-full bg-black transition-opacity duration-300",
                       showGrid ? "object-cover" : "object-contain",
+                      showVideo ? "opacity-0" : "opacity-100",
                     )}
                   />
                 )}
 
+                {shouldLoadVideo && (
                 <video
                   ref={(element) => {
                     registerVideoRef(clip.id, element);
@@ -221,7 +232,7 @@ export const EventPlaybackSurface = ({
                   src={convertFileSrc(clip.filePath)}
                   muted={showGrid ? clip.camera !== "front" : clip.camera !== activeCamera}
                   playsInline
-                  preload="auto"
+                  preload={preloadLevel}
                   disablePictureInPicture
                   controlsList="nodownload nofullscreen noremoteplayback"
                   onContextMenu={(event) => event.preventDefault()}
@@ -231,12 +242,12 @@ export const EventPlaybackSurface = ({
                     !showGrid && isActiveSingle
                       ? (event) => {
                           event.stopPropagation();
-                          void handleTogglePlay();
+                          void handleTogglePlay({ gridMode: false });
                         }
                       : undefined
                   }
                   className={cn(
-                    "h-full w-full bg-black transition-opacity duration-150",
+                    "h-full w-full bg-black transition-opacity duration-300",
                     showGrid ? "object-cover" : "object-contain",
                     showVideo ? "opacity-100" : "opacity-0",
                     !showGrid && isActiveSingle && "cursor-pointer",
@@ -244,6 +255,7 @@ export const EventPlaybackSurface = ({
                   aria-label={cameraAriaLabel(clip.camera)}
                   aria-hidden={!showGrid && !isActiveSingle}
                 />
+                )}
 
                 {showPlaybackError && <PlaybackClipError />}
               </div>
@@ -256,7 +268,7 @@ export const EventPlaybackSurface = ({
         isPlaying={isPlaying}
         currentTime={currentTime}
         duration={duration}
-        onTogglePlay={handleTogglePlay}
+        onTogglePlay={() => void handleTogglePlay({ gridMode: showGrid })}
         onSeek={handleSeek}
         layout={layout}
         onLayoutChange={onLayoutChange}

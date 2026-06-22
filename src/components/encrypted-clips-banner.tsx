@@ -41,7 +41,7 @@ export const EncryptedClipsBanner = ({
           Since Tesla update 2026.20, encrypted clips cannot play in Reelattice until decrypted.
           Reelattice detects files in an <span className="font-medium text-amber-100/90">EncryptedClips</span>{" "}
           folder, and also flags loose MP4s that are not valid video containers. Copy clips to your
-          computer, then open Tesla&apos;s official viewer — decryption runs locally in your browser.
+          computer, then open Tesla&apos;s official viewer. Decryption runs locally in your browser.
         </p>
         <a
           href={TESLA_DASHCAM_URL}

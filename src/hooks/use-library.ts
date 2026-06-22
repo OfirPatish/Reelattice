@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { getEvents, getAllTags, updateEvent } from "@/lib/api";
+import { clampEventNote } from "@/lib/event-notes";
 import { runBulkArchive, runBulkDelete, runBulkExport, runBulkToggleTag } from "@/lib/bulk-actions";
 import { applyRangeSelection, getTagCoverage, type BulkBusyAction } from "@/lib/bulk-selection";
 import { runDeleteEvent } from "@/lib/event-actions";
@@ -39,9 +40,11 @@ export const useLibrary = (refreshKey: number) => {
   const [prefs, setPrefs] = useState<LibraryPreferences>(loadLibraryPreferences);
   const [filtersExpanded, setFiltersExpandedState] = useState(loadFiltersExpanded);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
-  const [isSavingNote, setIsSavingNote] = useState(false);
   const [error, setError] = useState("");
-  const [noteDraft, setNoteDraft] = useState("");
+  const [noteDraft, setNoteDraftState] = useState("");
+  const setNoteDraft = useCallback((value: string) => {
+    setNoteDraftState(clampEventNote(value));
+  }, []);
 
   const [isViewRefreshing, setIsViewRefreshing] = useState(false);
   const eventsCacheRef = useRef<Partial<Record<LibraryView, DashEvent[]>>>({});
@@ -308,7 +311,7 @@ export const useLibrary = (refreshKey: number) => {
   }, [fetchLibrary, selectedEvent]);
 
   useEffect(() => {
-    setNoteDraft(selectedEvent?.note ?? "");
+    setNoteDraftState(clampEventNote(selectedEvent?.note ?? ""));
   }, [selectedEvent?.id, selectedEvent?.note]);
 
   useEffect(() => {
@@ -478,20 +481,23 @@ export const useLibrary = (refreshKey: number) => {
   };
 
   const handleSaveNote = async () => {
-    if (!selectedEvent || noteDraft === selectedEvent.note) return;
+    if (!selectedEvent) return;
+
+    const nextNote = clampEventNote(noteDraft);
+    if (nextNote !== noteDraft) {
+      setNoteDraft(nextNote);
+    }
+    if (nextNote === selectedEvent.note) return;
 
     const previousNote = selectedEvent.note;
-    patchEvent(selectedEvent.id, { note: noteDraft });
-    setIsSavingNote(true);
+    patchEvent(selectedEvent.id, { note: nextNote });
 
     try {
-      await updateEvent({ eventId: selectedEvent.id, note: noteDraft });
+      await updateEvent({ eventId: selectedEvent.id, note: nextNote });
     } catch (err) {
       patchEvent(selectedEvent.id, { note: previousNote });
       setNoteDraft(previousNote);
       setError(String(err));
-    } finally {
-      setIsSavingNote(false);
     }
   };
 
@@ -547,7 +553,6 @@ export const useLibrary = (refreshKey: number) => {
     filtersExpanded,
     setFiltersExpanded,
     isInitialLoad,
-    isSavingNote,
     error,
     setError,
     noteDraft,

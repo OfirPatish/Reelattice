@@ -78,8 +78,7 @@ export const TeslaCamDrivePrompt = ({ onImportDrive }: TeslaCamDrivePromptProps)
         <p>
           TeslaCam found on{" "}
           <span className="font-medium text-zinc-200">{formatDriveLabel(pendingDrive)}</span>
-          {" — "}
-          import new clips? Nothing is scanned until you confirm.
+          . Import new clips? Nothing is scanned until you confirm.
         </p>
       }
     />

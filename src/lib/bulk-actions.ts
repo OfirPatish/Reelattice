@@ -1,26 +1,33 @@
 import { bulkArchiveEvents, bulkDeleteEvents, bulkExportEvents, bulkToggleTags } from "@/lib/api";
-import { confirm, save } from "@tauri-apps/plugin-dialog";
+import { save } from "@tauri-apps/plugin-dialog";
+import { showConfirm } from "@/lib/show-confirm";
 
 export const confirmBulkArchive = async (count: number, archiving: boolean) => {
   if (!archiving) return true;
 
-  return confirm(
-    `Archive ${count} event${count === 1 ? "" : "s"}? They will move out of your active library.`,
-    { title: "Archive events", kind: "info", okLabel: "Archive" },
-  );
+  return showConfirm({
+    title: "Archive events",
+    description: `Archive ${count} event${count === 1 ? "" : "s"}? They will move out of your active library.`,
+    confirmLabel: "Archive",
+    variant: "default",
+  });
 };
 
 export const confirmBulkRestore = async (count: number) =>
-  confirm(
-    `Restore ${count} event${count === 1 ? "" : "s"} to your active library?`,
-    { title: "Restore events", kind: "info", okLabel: "Restore" },
-  );
+  showConfirm({
+    title: "Restore events",
+    description: `Restore ${count} event${count === 1 ? "" : "s"} to your active library?`,
+    confirmLabel: "Restore",
+    variant: "default",
+  });
 
 export const confirmBulkDelete = async (count: number) =>
-  confirm(
-    `Permanently delete ${count} event${count === 1 ? "" : "s"} and all copied video files? You can re-import the footage later.`,
-    { title: `Delete ${count} event${count === 1 ? "" : "s"}`, kind: "warning", okLabel: "Delete" },
-  );
+  showConfirm({
+    title: `Delete ${count} event${count === 1 ? "" : "s"}`,
+    description: `Permanently delete ${count} event${count === 1 ? "" : "s"} and all copied video files? You can re-import the footage later.`,
+    confirmLabel: "Delete",
+    variant: "warning",
+  });
 
 export const runBulkArchive = async (eventIds: string[], archiving: boolean) => {
   const confirmed = archiving

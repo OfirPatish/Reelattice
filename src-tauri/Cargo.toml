@@ -1,6 +1,6 @@
 [package]
 name = "reelattice"
-version = "1.12.0"
+version = "1.13.0"
 description = "Reelattice — Tesla Dashcam and Sentry Mode footage organizer"
 authors = ["ofirp"]
 edition = "2021"
@@ -32,6 +32,7 @@ thiserror = "2"
 zip = "2"
 base64 = "0.22"
 tauri-plugin-process = "2"
+tauri-plugin-single-instance = "2"
 
 [target.'cfg(windows)'.dependencies]
 windows = { version = "0.58", features = [

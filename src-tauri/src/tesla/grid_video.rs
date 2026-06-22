@@ -8,11 +8,76 @@ use crate::commands::events::Clip;
 use crate::error::{AppError, AppResult};
 use crate::tesla::ffmpeg::{self, ExportRange};
 
-/// 2:1 canvas — matches a 3×2 grid of 4:3 Tesla cameras (1920×960, cells 640×480).
-const OUTPUT_WIDTH: u32 = 1920;
-const OUTPUT_HEIGHT: u32 = 960;
 const GRID_COLS: u32 = 3;
 const GRID_ROWS: u32 = 2;
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum GridExportQuality {
+    Full,
+    Standard,
+    Hd,
+    Web,
+}
+
+impl GridExportQuality {
+    pub fn parse(value: Option<&str>) -> Self {
+        match value.map(str::to_ascii_lowercase).as_deref() {
+            Some("full") => Self::Full,
+            Some("hd") => Self::Hd,
+            Some("web") => Self::Web,
+            _ => Self::Standard,
+        }
+    }
+
+    pub fn output_size(self) -> (u32, u32) {
+        match self {
+            Self::Full | Self::Standard => (1920, 960),
+            Self::Hd => (1280, 640),
+            Self::Web => (960, 480),
+        }
+    }
+
+    pub fn crf(self) -> &'static str {
+        match self {
+            Self::Full => "18",
+            Self::Standard => "26",
+            Self::Hd => "24",
+            Self::Web => "28",
+        }
+    }
+
+    pub fn preset(self) -> &'static str {
+        match self {
+            Self::Full => "fast",
+            Self::Standard => "ultrafast",
+            Self::Hd => "ultrafast",
+            Self::Web => "fast",
+        }
+    }
+}
+
+struct GridExportConfig {
+    width: u32,
+    height: u32,
+    crf: &'static str,
+    preset: &'static str,
+}
+
+impl GridExportConfig {
+    fn from_quality(quality: GridExportQuality) -> Self {
+        let (width, height) = quality.output_size();
+        Self {
+            width,
+            height,
+            crf: quality.crf(),
+            preset: quality.preset(),
+        }
+    }
+
+    fn cell_size(&self) -> (u32, u32) {
+        (self.width / GRID_COLS, self.height / GRID_ROWS)
+    }
+}
 
 #[derive(Debug, Clone, Copy)]
 struct GridSlot {
@@ -244,12 +309,12 @@ fn sort_clips<'a>(clips: &'a [Clip]) -> Vec<&'a Clip> {
     sorted
 }
 
-fn cell_size() -> (u32, u32) {
-    (OUTPUT_WIDTH / GRID_COLS, OUTPUT_HEIGHT / GRID_ROWS)
+fn cell_size(config: &GridExportConfig) -> (u32, u32) {
+    config.cell_size()
 }
 
-fn slot_pixels(slot: GridSlot) -> (u32, u32, u32, u32) {
-    let (cell_w, cell_h) = cell_size();
+fn slot_pixels(slot: GridSlot, config: &GridExportConfig) -> (u32, u32, u32, u32) {
+    let (cell_w, cell_h) = cell_size(config);
     let width = slot.col_span * cell_w;
     let height = slot.row_span * cell_h;
     let x = slot.col * cell_w;
@@ -257,14 +322,19 @@ fn slot_pixels(slot: GridSlot) -> (u32, u32, u32, u32) {
     (x, y, width, height)
 }
 
-fn build_filter_complex(clips: &[&Clip], range: ExportRange, audio_input: Option<usize>) -> String {
+fn build_filter_complex(
+    clips: &[&Clip],
+    range: ExportRange,
+    audio_input: Option<usize>,
+    config: &GridExportConfig,
+) -> String {
     let cameras: HashSet<&str> = clips.iter().map(|clip| clip.camera.as_str()).collect();
     let slots = grid_slots(&cameras);
-    let (cell_w, cell_h) = cell_size();
+    let (cell_w, cell_h) = cell_size(config);
 
     let mut parts = vec![format!(
-        "color=c=black:s={OUTPUT_WIDTH}x{OUTPUT_HEIGHT}:r=30:d={:.3}[base]",
-        range.duration_secs
+        "color=c=black:s={}x{}:r=30:d={:.3}[base]",
+        config.width, config.height, range.duration_secs
     )];
     let mut current_label = "base".to_string();
 
@@ -280,7 +350,7 @@ fn build_filter_complex(clips: &[&Clip], range: ExportRange, audio_input: Option
                 col_span: 1,
                 row_span: 1,
             });
-        let (x, y, width, height) = slot_pixels(slot);
+        let (x, y, width, height) = slot_pixels(slot, config);
         let scaled = format!("scaled{overlay_index}");
         let next_label = if overlay_index == clips.len() - 1 {
             "outv".to_string()
@@ -352,6 +422,7 @@ pub fn export_grid_video(
     active_ffmpeg: &Arc<Mutex<Option<Child>>>,
     trim_start_secs: Option<f64>,
     trim_duration_secs: Option<f64>,
+    quality: Option<&str>,
 ) -> AppResult<String> {
     if clips.len() < 2 {
         return Err(AppError::Message(
@@ -385,12 +456,13 @@ pub fn export_grid_video(
     }
 
     let sorted = sort_clips(clips);
+    let export_config = GridExportConfig::from_quality(GridExportQuality::parse(quality));
     let ffmpeg = ffmpeg::resolve_ffmpeg(app)?;
     let full_duration_secs = shortest_clip_duration_secs(&ffmpeg, &sorted)?;
     let range =
         ffmpeg::normalize_export_range(trim_start_secs, trim_duration_secs, full_duration_secs)?;
     let audio_input = find_audio_input_index(&ffmpeg, &sorted);
-    let filter_complex = build_filter_complex(&sorted, range, audio_input);
+    let filter_complex = build_filter_complex(&sorted, range, audio_input, &export_config);
 
     let mut command = ffmpeg::ffmpeg_command(&ffmpeg);
     command
@@ -427,9 +499,9 @@ pub fn export_grid_video(
         .arg("-c:v")
         .arg("libx264")
         .arg("-preset")
-        .arg("ultrafast")
+        .arg(export_config.preset)
         .arg("-crf")
-        .arg("26")
+        .arg(export_config.crf)
         .arg("-t")
         .arg(format!("{:.3}", range.duration_secs))
         .arg("-shortest")
@@ -541,6 +613,7 @@ mod tests {
                 duration_secs: 61.0,
             },
             Some(0),
+            &GridExportConfig::from_quality(GridExportQuality::Standard),
         );
         assert!(filter.contains("overlay="));
         assert!(filter.contains(":shortest=1"));
@@ -569,6 +642,7 @@ mod tests {
                 duration_secs: 61.0,
             },
             None,
+            &GridExportConfig::from_quality(GridExportQuality::Standard),
         );
         assert!(!filter.contains("atrim="));
         assert!(filter.contains("[outv]"));
@@ -593,6 +667,7 @@ mod tests {
                 duration_secs: 30.0,
             },
             Some(0),
+            &GridExportConfig::from_quality(GridExportQuality::Standard),
         );
         assert!(filter.contains("trim=start=12.500:duration=30.000"));
         assert!(filter.contains("atrim=start=12.500:duration=30.000"));
@@ -600,9 +675,23 @@ mod tests {
 
     #[test]
     fn output_cells_are_four_by_three() {
-        let (cell_w, cell_h) = cell_size();
+        let config = GridExportConfig::from_quality(GridExportQuality::Standard);
+        let (cell_w, cell_h) = cell_size(&config);
         assert_eq!((cell_w, cell_h), (640, 480));
-        assert_eq!(OUTPUT_WIDTH, 1920);
-        assert_eq!(OUTPUT_HEIGHT, 960);
+        assert_eq!(config.width, 1920);
+        assert_eq!(config.height, 960);
+    }
+
+    #[test]
+    fn quality_presets_use_expected_dimensions() {
+        assert_eq!(GridExportQuality::Hd.output_size(), (1280, 640));
+        assert_eq!(GridExportQuality::Web.output_size(), (960, 480));
+    }
+
+    #[test]
+    fn parse_quality_defaults_to_standard() {
+        assert_eq!(GridExportQuality::parse(None), GridExportQuality::Standard);
+        assert_eq!(GridExportQuality::parse(Some("unknown")), GridExportQuality::Standard);
+        assert_eq!(GridExportQuality::parse(Some("web")), GridExportQuality::Web);
     }
 }

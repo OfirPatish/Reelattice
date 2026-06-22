@@ -1,5 +1,6 @@
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { memo, useEffect, type RefObject } from "react";
+import { secondaryListItemClass } from "@/components/layout/secondary-view-layout";
 import { formatEventTime } from "@/lib/format";
 import type { DashEvent } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -7,8 +8,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { EventListMeta } from "./event-list-meta";
 import { EventThumbnail } from "./event-thumbnail";
 
-const ROW_HEIGHT_DEFAULT = 68;
-const ROW_HEIGHT_WITH_NOTES = 108;
+const ROW_HEIGHT_DEFAULT = 72;
+const ROW_HEIGHT_WITH_NOTES = 112;
 
 type LibraryEventRowProps = {
   event: DashEvent;
@@ -24,6 +25,13 @@ type LibraryEventRowProps = {
   ) => void;
 };
 
+const rowSurfaceClass = (isHighlighted: boolean, isArchived: boolean) =>
+  cn(
+    secondaryListItemClass(isHighlighted),
+    "h-full gap-3",
+    isArchived && !isHighlighted && "opacity-75",
+  );
+
 const LibraryEventRow = memo(
   ({
     event,
@@ -38,6 +46,8 @@ const LibraryEventRow = memo(
       onToggleSelected(event.id, !isChecked, { shiftKey });
     };
 
+    const thumbClass = showNotesInList ? "h-12 w-[4.25rem] shrink-0" : "h-11 w-16 shrink-0";
+
     if (selectionMode) {
       return (
         <div
@@ -51,11 +61,7 @@ const LibraryEventRow = memo(
             keydownEvent.preventDefault();
             handleRowClick(keydownEvent.shiftKey);
           }}
-          className={cn(
-            "flex cursor-pointer items-center gap-2.5 px-4 py-3 transition-colors",
-            !isChecked && "hover:bg-zinc-900/60",
-            isChecked && "bg-sky-500/10 ring-1 ring-inset ring-sky-500/20",
-          )}
+          className={rowSurfaceClass(isChecked, event.archived)}
         >
           <Checkbox
             checked={isChecked}
@@ -63,9 +69,9 @@ const LibraryEventRow = memo(
             onClick={(clickEvent) => clickEvent.stopPropagation()}
             aria-hidden
             tabIndex={-1}
-            className="pointer-events-none shrink-0"
+            className="pointer-events-none mt-0.5 shrink-0"
           />
-          <EventThumbnail clips={event.clips} className="h-11 w-16 shrink-0" />
+          <EventThumbnail clips={event.clips} className={thumbClass} />
           <EventListMeta event={event} showNotes={false} />
         </div>
       );
@@ -76,15 +82,9 @@ const LibraryEventRow = memo(
         type="button"
         onClick={() => onSelectEvent(event.id)}
         aria-current={isActive ? "true" : undefined}
-        className={cn(
-          "flex w-full gap-2.5 px-4 py-3 text-left transition-colors",
-          isActive
-            ? "bg-sky-500/10 ring-1 ring-inset ring-sky-500/20"
-            : "hover:bg-zinc-900/60",
-          event.archived && !isActive && "opacity-80",
-        )}
+        className={rowSurfaceClass(isActive, event.archived)}
       >
-        <EventThumbnail clips={event.clips} className="h-11 w-16 shrink-0" />
+        <EventThumbnail clips={event.clips} className={thumbClass} />
         <EventListMeta event={event} showNotes={showNotesInList} />
       </button>
     );
@@ -125,7 +125,10 @@ export const LibraryEventRows = ({
     getScrollElement: () => scrollElementRef.current,
     getItemKey: (index) => events[index]?.id ?? index,
     estimateSize: () => rowHeight,
-    overscan: 10,
+    overscan: 8,
+    measureElement: showNotesInList
+      ? (element) => element.getBoundingClientRect().height
+      : undefined,
   });
 
   useEffect(() => {
@@ -141,7 +144,7 @@ export const LibraryEventRows = ({
     <div
       role="list"
       aria-label="Events"
-      className="relative w-full"
+      className="relative isolate w-full"
       style={{ height: `${virtualizer.getTotalSize()}px` }}
     >
       {virtualizer.getVirtualItems().map((virtualRow) => {
@@ -152,9 +155,11 @@ export const LibraryEventRows = ({
           <div
             key={event.id}
             role="listitem"
-            className="absolute left-0 top-0 w-full border-b border-zinc-800/80"
+            ref={showNotesInList ? virtualizer.measureElement : undefined}
+            data-index={virtualRow.index}
+            className="absolute left-0 top-0 w-full overflow-hidden border-b border-zinc-800/60 bg-zinc-950"
             style={{
-              height: `${rowHeight}px`,
+              height: `${virtualRow.size}px`,
               transform: `translateY(${virtualRow.start}px)`,
             }}
           >

@@ -1,4 +1,4 @@
-export const APP_VERSION = "1.12";
+export const APP_VERSION = "1.13";
 
 /** Branded download entry on this site (resolves to the latest installer). */
 export const DOWNLOAD_URL = import.meta.env.VITE_DOWNLOAD_URL ?? "/download";

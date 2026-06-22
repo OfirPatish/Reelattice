@@ -121,7 +121,7 @@ export const LibraryFilterPanel = ({
       >
         <span className="flex items-center gap-2">
           <List className="h-3.5 w-3.5 shrink-0" aria-hidden />
-          More list options
+          More filters
           <span
             className={cn(
               "rounded-full px-1.5 py-0.5 text-[10px] font-medium",
@@ -211,7 +211,7 @@ export const LibraryFilterPanel = ({
               </Select>
             </FilterField>
 
-            <FilterField label="Notes">
+            <FilterField label="Notes in list">
               <label className="flex h-8 cursor-pointer items-center gap-2 rounded-lg border border-zinc-700 bg-zinc-900 px-2.5 text-xs text-zinc-400">
                 <input
                   type="checkbox"
@@ -219,7 +219,7 @@ export const LibraryFilterPanel = ({
                   onChange={(e) => onPrefsChange({ showNotesInList: e.target.checked })}
                   className="size-3.5 shrink-0 rounded border-zinc-700 bg-zinc-950 text-sky-500 focus:ring-0 focus:ring-offset-0"
                 />
-                <span className="truncate">Show previews</span>
+                <span className="truncate">Show note previews</span>
               </label>
             </FilterField>
           </div>

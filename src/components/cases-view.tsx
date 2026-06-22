@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import { confirm } from "@tauri-apps/plugin-dialog";
+import { showConfirm } from "@/lib/show-confirm";
 import {
   AlertCircle,
   Briefcase,
@@ -17,6 +17,10 @@ import {
   removeEventFromIncidentCase,
   updateIncidentCase,
 } from "@/lib/api";
+import {
+  secondaryListItemClass,
+  secondaryPanelClass,
+} from "@/components/layout/secondary-view-layout";
 import { formatRelativeTime } from "@/lib/format";
 import type { CaseDetail, CaseSummary } from "@/lib/types";
 import { CaseLinkedEventsList } from "@/components/cases/case-linked-events-list";
@@ -36,7 +40,7 @@ const sortCasesByUpdated = (items: CaseSummary[]) =>
   [...items].sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
 
 const fieldClassName =
-  "w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2 text-sm text-zinc-100 outline-none transition focus:border-violet-500/50";
+  "w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2 text-sm text-zinc-100 outline-none transition focus:border-sky-500/40 focus:ring-1 focus:ring-sky-500/20";
 
 export const CasesView = ({
   active = true,
@@ -270,10 +274,12 @@ export const CasesView = ({
   const handleDeleteCase = async () => {
     if (!selectedCaseId || !selectedSummary) return;
 
-    const confirmed = await confirm(
-      `Delete "${selectedSummary.title}"? Events stay in your library; only the case bundle is removed.`,
-      { title: "Delete case", kind: "warning", okLabel: "Delete" },
-    );
+    const confirmed = await showConfirm({
+      title: "Delete case",
+      description: `Delete "${selectedSummary.title}"? Events stay in your library; only the case bundle is removed.`,
+      confirmLabel: "Delete",
+      variant: "warning",
+    });
     if (!confirmed) return;
 
     setSaving(true);
@@ -339,10 +345,10 @@ export const CasesView = ({
     <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
       {isInitialLoad && <IndeterminateBar />}
 
-      <div className="mx-auto flex min-h-0 w-full max-w-6xl flex-1 flex-col gap-4 overflow-hidden p-5 lg:p-6">
-        <header className="shrink-0">
-          <h1 className="text-lg font-semibold tracking-tight text-zinc-100">Cases</h1>
-          <p className="mt-0.5 max-w-2xl text-sm text-zinc-400">
+      <div className="mx-auto flex min-h-0 w-full max-w-6xl flex-1 flex-col gap-6 overflow-hidden p-5 lg:p-8">
+        <header className="shrink-0 border-b border-zinc-800/80 pb-5">
+          <h1 className="text-xl font-semibold tracking-tight text-zinc-100">Cases</h1>
+          <p className="mt-1 max-w-2xl text-sm leading-relaxed text-zinc-500">
             Group related events into incident bundles for review and export planning.
           </p>
         </header>
@@ -360,7 +366,8 @@ export const CasesView = ({
         <div className="grid min-h-0 flex-1 gap-4 lg:grid-cols-[300px_minmax(0,1fr)]">
           <aside
             className={cn(
-              "relative flex min-h-0 flex-col overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900/30",
+              "relative flex min-h-0 flex-col overflow-hidden",
+              secondaryPanelClass,
               (isInitialLoad || refreshing) && "pointer-events-none",
               isInitialLoad && "opacity-90",
               refreshing && !isInitialLoad && "opacity-60",
@@ -394,12 +401,12 @@ export const CasesView = ({
               ) : null}
             </div>
 
-            <div data-scroll-root className="min-h-0 flex-1 overflow-y-auto p-2">
+            <div data-scroll-root className="min-h-0 flex-1 overflow-y-auto">
               {isInitialLoad ? (
                 <CaseListSkeleton />
               ) : cases.length === 0 ? (
                 <div className="flex flex-col items-center px-4 py-10 text-center">
-                  <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-zinc-800/80 text-zinc-600">
+                  <span className="flex h-11 w-11 items-center justify-center rounded-lg bg-zinc-900 text-zinc-500 ring-1 ring-inset ring-zinc-800/80">
                     <Briefcase className="h-5 w-5" aria-hidden />
                   </span>
                   <p className="mt-3 text-sm font-medium text-zinc-400">No cases yet</p>
@@ -408,7 +415,7 @@ export const CasesView = ({
                   </p>
                 </div>
               ) : (
-                <ul className="space-y-1" aria-label="Case list">
+                <ul className="divide-y divide-zinc-800/60" aria-label="Case list">
                   {cases.map((item) => {
                     const isActive = item.id === selectedCaseId && !creating;
                     return (
@@ -421,30 +428,18 @@ export const CasesView = ({
                             createDraftSnapshotRef.current = null;
                             setSelectedCaseId(item.id);
                           }}
-                          className={cn(
-                            "group flex w-full items-center gap-3 rounded-lg px-2.5 py-2.5 text-left transition",
-                            isActive
-                              ? "bg-violet-500/10 ring-1 ring-inset ring-violet-500/25"
-                              : "hover:bg-zinc-800/60",
-                          )}
+                          className={cn(secondaryListItemClass(isActive), "group pr-3")}
                         >
                           <span
                             className={cn(
-                              "flex h-9 w-9 shrink-0 items-center justify-center rounded-lg transition",
-                              isActive
-                                ? "bg-violet-500/20 text-violet-300"
-                                : "bg-zinc-800/80 text-zinc-500 group-hover:text-zinc-400",
+                              "flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-zinc-900 text-zinc-500 ring-1 ring-inset ring-zinc-800/80 transition",
+                              isActive && "text-sky-400",
                             )}
                           >
-                            <Briefcase className="h-4 w-4" aria-hidden />
+                            <Briefcase className="h-3.5 w-3.5" aria-hidden />
                           </span>
                           <span className="min-w-0 flex-1">
-                            <p
-                              className={cn(
-                                "truncate text-sm font-medium",
-                                isActive ? "text-zinc-100" : "text-zinc-300",
-                              )}
-                            >
+                            <p className="truncate text-sm font-medium text-zinc-200">
                               {item.title}
                             </p>
                             <p className="mt-0.5 text-xs text-zinc-500">
@@ -454,10 +449,8 @@ export const CasesView = ({
                           </span>
                           <ChevronRight
                             className={cn(
-                              "h-4 w-4 shrink-0 transition",
-                              isActive
-                                ? "text-violet-400/80"
-                                : "text-zinc-700 group-hover:text-zinc-500",
+                              "h-4 w-4 shrink-0 text-zinc-700 transition group-hover:text-zinc-500",
+                              isActive && "text-sky-400/80",
                             )}
                             aria-hidden
                           />
@@ -484,16 +477,17 @@ export const CasesView = ({
 
           <section
             className={cn(
-              "relative flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900/30 transition-opacity duration-200 ease-out",
+              "relative flex min-h-0 flex-1 flex-col overflow-hidden transition-opacity duration-200 ease-out",
+              secondaryPanelClass,
               isDetailBusy && showDetailContent && "opacity-70",
             )}
             aria-busy={isInitialLoad || detailLoading || detailRefreshing}
           >
             {creating ? (
               <>
-                <div className="border-b border-violet-500/20 bg-violet-500/5 px-5 py-4">
-                  <p className="text-sm font-medium text-violet-100">New incident case</p>
-                  <p className="mt-0.5 text-xs text-violet-300/70">
+                <div className="border-b border-zinc-800/80 px-5 py-4">
+                  <p className="text-sm font-medium text-zinc-100">New incident case</p>
+                  <p className="mt-0.5 text-xs text-zinc-500">
                     Name the bundle, then link events from Library.
                   </p>
                 </div>
@@ -612,7 +606,7 @@ const CasesEmptyDetail = ({
   onCreate: () => void;
 }) => (
   <div className="flex flex-1 flex-col items-center justify-center gap-3 px-8 py-16 text-center">
-    <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-zinc-800/80 text-zinc-600">
+    <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-zinc-900 text-zinc-500 ring-1 ring-inset ring-zinc-800/80">
       <Briefcase className="h-6 w-6" aria-hidden />
     </span>
     {hasCases ? (

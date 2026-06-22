@@ -1,6 +1,10 @@
 import { Loader2 } from "lucide-react";
 import { AppLogo } from "@/components/app-logo";
-import { isUpdateOverlayVisible, type AppUpdateState } from "@/lib/app-update";
+import {
+  formatDownloadProgressDetail,
+  isUpdateOverlayVisible,
+  type AppUpdateState,
+} from "@/lib/app-update";
 
 type AppUpdateOverlayProps = {
   state: AppUpdateState;
@@ -23,6 +27,11 @@ const overlayDetail = (state: AppUpdateState) => {
     return "Reelattice will restart automatically when the update is ready.";
   }
 
+  const progressDetail = formatDownloadProgressDetail(state);
+  if (progressDetail) {
+    return progressDetail;
+  }
+
   if (state.availableVersion) {
     return `Updating to version ${state.availableVersion}`;
   }
@@ -37,6 +46,7 @@ export const AppUpdateOverlay = ({ state }: AppUpdateOverlayProps) => {
 
   const showDeterminateProgress =
     state.status === "downloading" && state.downloadPercent !== null;
+  const progressDetail = formatDownloadProgressDetail(state);
 
   return (
     <div
@@ -65,6 +75,10 @@ export const AppUpdateOverlay = ({ state }: AppUpdateOverlayProps) => {
               aria-valuenow={state.downloadPercent ?? 0}
               aria-valuemin={0}
               aria-valuemax={100}
+              aria-valuetext={
+                progressDetail ??
+                `${state.downloadPercent ?? 0}% downloaded`
+              }
               aria-label="Download progress"
             >
               <div

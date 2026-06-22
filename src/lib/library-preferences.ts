@@ -1,3 +1,9 @@
+import {
+  GRID_EXPORT_QUALITY_LABELS,
+  isGridExportQuality,
+  type GridExportQuality,
+} from "@/lib/grid-export-quality";
+
 export type LibrarySort = "newest" | "oldest" | "most-cameras" | "recently-updated";
 
 export type LibraryDateRange = "all" | "today" | "7d" | "30d" | "month";
@@ -27,6 +33,7 @@ export type LibraryPreferences = {
   libraryListOpen: boolean;
   seekStepSecs: SeekStepSecs;
   exportSegmentSecs: ExportSegmentSecs;
+  gridExportQuality: GridExportQuality;
 };
 
 const STORAGE_KEY = "Reelattice-library-preferences";
@@ -56,6 +63,7 @@ export const DEFAULT_LIBRARY_PREFERENCES: LibraryPreferences = {
   libraryListOpen: true,
   seekStepSecs: 5,
   exportSegmentSecs: 30,
+  gridExportQuality: "standard",
 };
 
 const isSeekStepSecs = (value: unknown): value is SeekStepSecs =>
@@ -79,6 +87,9 @@ export const loadLibraryPreferences = (): LibraryPreferences => {
       exportSegmentSecs: isExportSegmentSecs(parsed.exportSegmentSecs)
         ? parsed.exportSegmentSecs
         : DEFAULT_LIBRARY_PREFERENCES.exportSegmentSecs,
+      gridExportQuality: isGridExportQuality(parsed.gridExportQuality)
+        ? parsed.gridExportQuality
+        : DEFAULT_LIBRARY_PREFERENCES.gridExportQuality,
     };
   } catch {
     return DEFAULT_LIBRARY_PREFERENCES;
@@ -171,6 +182,10 @@ export const describeLibraryPreferences = (
   {
     label: "Export segment",
     value: EXPORT_SEGMENT_LABELS[preferences.exportSegmentSecs],
+  },
+  {
+    label: "Grid export",
+    value: GRID_EXPORT_QUALITY_LABELS[preferences.gridExportQuality],
   },
   {
     label: "Notes in list",

@@ -70,7 +70,7 @@ export const PlaybackControlsBar = ({
   const showSegmentRail = segmentEnabled && exportSegment != null && duration > 0;
 
   const segmentHoverLabel = segmentEnabled
-    ? "Export segment on — ZIP and grid use this range"
+    ? "Export segment on. ZIP and grid use this range."
     : canUseSegment
       ? `Set ${exportSegmentWindowSecs}s export segment at playhead`
       : "Load footage first";

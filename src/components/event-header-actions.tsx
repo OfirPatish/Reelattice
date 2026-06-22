@@ -8,6 +8,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { useState } from "react";
+import { GridExportQualityDialog } from "@/components/grid-export-quality-dialog";
 import {
   InlineActionLabel,
   useInlineActionLabel,
@@ -20,6 +21,7 @@ import {
   runExportEvent,
   runToggleArchiveEvent,
 } from "@/lib/event-actions";
+import type { GridExportQuality } from "@/lib/grid-export-quality";
 import type { ExportSegment } from "@/lib/playback-metrics";
 import { segmentExportLabel } from "@/lib/playback-metrics";
 import type { DashEvent } from "@/lib/types";
@@ -28,10 +30,12 @@ import { cn } from "@/lib/utils";
 type EventHeaderActionsProps = {
   event: DashEvent;
   exportSegment?: ExportSegment | null;
+  gridExportQuality: GridExportQuality;
+  onGridExportQualityChange: (quality: GridExportQuality) => void;
   onLibraryChange: () => void;
   onDeleted: () => void;
   onError: (message: string) => void;
-  onExportingChange?: (exporting: boolean, destPath?: string) => void;
+  onExportingChange?: (exporting: boolean, destPath?: string, quality?: GridExportQuality) => void;
   onExportSuccess?: (destPath: string) => void;
 };
 
@@ -40,6 +44,8 @@ type HeaderAction = "folder" | "export" | "grid-export" | "archive" | "delete";
 export const EventHeaderActions = ({
   event,
   exportSegment = null,
+  gridExportQuality,
+  onGridExportQualityChange,
   onLibraryChange,
   onDeleted,
   onError,
@@ -47,6 +53,7 @@ export const EventHeaderActions = ({
   onExportSuccess,
 }: EventHeaderActionsProps) => {
   const [busyAction, setBusyAction] = useState<HeaderAction | null>(null);
+  const [qualityDialogOpen, setQualityDialogOpen] = useState(false);
   const { hoveredLabel, hoverProps, clearHover, handleBlur } = useInlineActionLabel();
   const isBusy = Boolean(busyAction);
   const canExportGrid = event.clips.length >= 2;
@@ -58,9 +65,7 @@ export const EventHeaderActions = ({
       : "Export grid MP4"
     : "Needs 2+ cameras";
 
-  const handleGridExport = async () => {
-    if (busyAction) return;
-
+  const runGridExport = async (quality: GridExportQuality) => {
     setBusyAction("grid-export");
     onError("");
 
@@ -68,9 +73,8 @@ export const EventHeaderActions = ({
       const destPath = await pickGridExportPath(event, exportSegment);
       if (!destPath) return;
 
-      onExportingChange?.(true, destPath);
-
-      await exportGridVideoToPath(event.id, destPath, exportSegment);
+      onExportingChange?.(true, destPath, quality);
+      await exportGridVideoToPath(event.id, destPath, exportSegment, quality);
       onExportSuccess?.(destPath);
     } catch (err) {
       onError(String(err));
@@ -78,6 +82,12 @@ export const EventHeaderActions = ({
       onExportingChange?.(false);
       setBusyAction(null);
     }
+  };
+
+  const handleQualityConfirm = (quality: GridExportQuality) => {
+    setQualityDialogOpen(false);
+    onGridExportQualityChange(quality);
+    void runGridExport(quality);
   };
 
   const runAction = async (
@@ -114,116 +124,125 @@ export const EventHeaderActions = ({
     );
 
   return (
-    <div
-      className="flex shrink-0 items-center"
-      onMouseLeave={clearHover}
-      onBlur={handleBlur}
-    >
+    <>
       <div
-        className={cn(
-          "flex items-center gap-0.5 rounded-lg bg-zinc-900/90 p-0.5 ring-1 ring-zinc-800/60 backdrop-blur-sm",
-          exportSegment && "ring-fuchsia-500/30",
-        )}
+        className="flex shrink-0 items-center"
+        onMouseLeave={clearHover}
+        onBlur={handleBlur}
       >
-        <button
-          type="button"
-          disabled={isBusy}
-          aria-label="Show event folder in file explorer"
-          className={actionButtonClass("folder")}
-          {...hoverProps("Open in Explorer")}
-          onClick={() =>
-            void runAction(
-              "folder",
-              async () => {
-                await openEventFolder(event.id);
-                return true;
-              },
-              () => undefined,
-            )
-          }
-        >
-          {busyAction === "folder" ? (
-            <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden />
-          ) : (
-            <FolderOpen className="h-3.5 w-3.5" aria-hidden />
+        <div
+          className={cn(
+            "flex items-center gap-0.5 rounded-lg bg-zinc-900/90 p-0.5 ring-1 ring-zinc-800/60 backdrop-blur-sm",
+            exportSegment && "ring-fuchsia-500/30",
           )}
-        </button>
+        >
+          <button
+            type="button"
+            disabled={isBusy}
+            aria-label="Show event folder in file explorer"
+            className={actionButtonClass("folder")}
+            {...hoverProps("Open in Explorer")}
+            onClick={() =>
+              void runAction(
+                "folder",
+                async () => {
+                  await openEventFolder(event.id);
+                  return true;
+                },
+                () => undefined,
+              )
+            }
+          >
+            {busyAction === "folder" ? (
+              <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden />
+            ) : (
+              <FolderOpen className="h-3.5 w-3.5" aria-hidden />
+            )}
+          </button>
 
-        <button
-          type="button"
-          disabled={isBusy}
-          className={actionButtonClass("export")}
-          {...hoverProps(zipHoverLabel)}
-          onClick={() =>
-            void runAction(
-              "export",
-              () => runExportEvent(event, exportSegment),
-              () => undefined,
-            )
-          }
-        >
-          {busyAction === "export" ? (
-            <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden />
-          ) : (
-            <Download className="h-3.5 w-3.5" aria-hidden />
-          )}
-        </button>
+          <button
+            type="button"
+            disabled={isBusy}
+            className={actionButtonClass("export")}
+            {...hoverProps(zipHoverLabel)}
+            onClick={() =>
+              void runAction(
+                "export",
+                () => runExportEvent(event, exportSegment),
+                () => undefined,
+              )
+            }
+          >
+            {busyAction === "export" ? (
+              <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden />
+            ) : (
+              <Download className="h-3.5 w-3.5" aria-hidden />
+            )}
+          </button>
 
-        <button
-          type="button"
-          disabled={isBusy || !canExportGrid}
-          className={actionButtonClass("grid")}
-          {...hoverProps(gridHoverLabel)}
-          onClick={() => void handleGridExport()}
-        >
-          {busyAction === "grid-export" ? (
-            <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden />
-          ) : (
-            <Grid2x2 className="h-3.5 w-3.5" aria-hidden />
-          )}
-        </button>
+          <button
+            type="button"
+            disabled={isBusy || !canExportGrid}
+            className={actionButtonClass("grid")}
+            {...hoverProps(gridHoverLabel)}
+            onClick={() => setQualityDialogOpen(true)}
+          >
+            {busyAction === "grid-export" ? (
+              <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden />
+            ) : (
+              <Grid2x2 className="h-3.5 w-3.5" aria-hidden />
+            )}
+          </button>
 
-        <button
-          type="button"
-          disabled={isBusy}
-          className={actionButtonClass(event.archived ? "restore" : "archive")}
-          {...hoverProps(event.archived ? "Restore" : "Archive")}
-          onClick={() =>
-            void runAction(
-              "archive",
-              () => runToggleArchiveEvent(event),
-              onLibraryChange,
-            )
-          }
-        >
-          {busyAction === "archive" ? (
-            <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden />
-          ) : event.archived ? (
-            <ArchiveRestore className="h-3.5 w-3.5" aria-hidden />
-          ) : (
-            <Archive className="h-3.5 w-3.5" aria-hidden />
-          )}
-        </button>
+          <button
+            type="button"
+            disabled={isBusy}
+            className={actionButtonClass(event.archived ? "restore" : "archive")}
+            {...hoverProps(event.archived ? "Restore" : "Archive")}
+            onClick={() =>
+              void runAction(
+                "archive",
+                () => runToggleArchiveEvent(event),
+                onLibraryChange,
+              )
+            }
+          >
+            {busyAction === "archive" ? (
+              <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden />
+            ) : event.archived ? (
+              <ArchiveRestore className="h-3.5 w-3.5" aria-hidden />
+            ) : (
+              <Archive className="h-3.5 w-3.5" aria-hidden />
+            )}
+          </button>
 
-        <button
-          type="button"
-          disabled={isBusy}
-          aria-label="Delete event"
-          className={actionButtonClass("delete")}
-          {...hoverProps("Delete")}
-          onClick={() =>
-            void runAction("delete", () => runDeleteEvent(event), onDeleted)
-          }
-        >
-          {busyAction === "delete" ? (
-            <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden />
-          ) : (
-            <Trash2 className="h-3.5 w-3.5" aria-hidden />
-          )}
-        </button>
+          <button
+            type="button"
+            disabled={isBusy}
+            aria-label="Delete event"
+            className={actionButtonClass("delete")}
+            {...hoverProps("Delete")}
+            onClick={() =>
+              void runAction("delete", () => runDeleteEvent(event), onDeleted)
+            }
+          >
+            {busyAction === "delete" ? (
+              <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden />
+            ) : (
+              <Trash2 className="h-3.5 w-3.5" aria-hidden />
+            )}
+          </button>
+        </div>
+
+        <InlineActionLabel label={hoveredLabel} className="ml-2" />
       </div>
 
-      <InlineActionLabel label={hoveredLabel} className="ml-2" />
-    </div>
+      <GridExportQualityDialog
+        open={qualityDialogOpen}
+        initialQuality={gridExportQuality}
+        onConfirm={handleQualityConfirm}
+        onCancel={() => setQualityDialogOpen(false)}
+      />
+    </>
   );
 };

@@ -40,7 +40,7 @@ export const SettingsAboutSection = ({
     <div className="mt-5 flex flex-col gap-3 border-t border-zinc-800/80 pt-4 sm:flex-row sm:items-center sm:justify-between">
       <p className="flex items-start gap-2 text-xs leading-relaxed text-zinc-500">
         <Shield className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-400/80" aria-hidden />
-        <span>Local-first — footage and metadata stay on your machine.</span>
+        <span>Local-first. Footage and metadata stay on your machine.</span>
       </p>
       <LegalLinks variant="inline" />
     </div>

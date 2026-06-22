@@ -1,4 +1,4 @@
-import { ChevronLeft, Search, X } from "lucide-react";
+import { ChevronLeft, Search, StickyNote, X } from "lucide-react";
 import {
   ArchiveEmptyIllustration,
   TimelineIdleIllustration,
@@ -16,10 +16,16 @@ type LibraryToolbarProps = {
   searchInput: string;
   libraryView: LibraryView;
   sourceFilter?: string;
+  showNotesInList: boolean;
+  selectionMode: boolean;
+  selectedCount: number;
+  isBulkBusy: boolean;
   onSearchChange: (value: string) => void;
   onClearSearch: () => void;
   onLibraryViewChange: (view: LibraryView) => void;
   onSourceFilterChange: (value: string | undefined) => void;
+  onShowNotesChange: (show: boolean) => void;
+  onToggleSelectionMode: () => void;
   canCollapse?: boolean;
   onCollapse?: () => void;
 };
@@ -32,17 +38,23 @@ export const LibraryToolbar = ({
   searchInput,
   libraryView,
   sourceFilter,
+  showNotesInList,
+  selectionMode,
+  selectedCount,
+  isBulkBusy,
   onSearchChange,
   onClearSearch,
   onLibraryViewChange,
   onSourceFilterChange,
+  onShowNotesChange,
+  onToggleSelectionMode,
   canCollapse = false,
   onCollapse,
 }: LibraryToolbarProps) => {
   const countLabel = (() => {
-    if (isInitialLoad) return "Loading events…";
+    if (isInitialLoad) return "Loading…";
     if (hasActiveFilters) {
-      return `${filteredCount} of ${totalCount} event${totalCount === 1 ? "" : "s"}`;
+      return `${filteredCount} of ${totalCount} shown`;
     }
     return `${totalCount} event${totalCount === 1 ? "" : "s"}`;
   })();
@@ -50,8 +62,8 @@ export const LibraryToolbar = ({
   const scopeLabel = libraryView === "archived" ? "Archived" : "Active";
 
   return (
-    <div className="space-y-3">
-      <div className="flex items-start justify-between gap-3">
+    <div className="space-y-2.5">
+      <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
           <h2 className="text-sm font-semibold tracking-tight text-zinc-100">Library</h2>
           <p className="mt-0.5 text-xs text-zinc-500">
@@ -72,33 +84,6 @@ export const LibraryToolbar = ({
             className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-zinc-500 transition hover:bg-zinc-800/80 hover:text-zinc-200"
           >
             <ChevronLeft className="h-4 w-4" aria-hidden />
-          </button>
-        )}
-      </div>
-
-      <div className="relative">
-        <Search
-          className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500"
-          aria-hidden
-        />
-        <Input
-          id="library-search"
-          type="search"
-          placeholder="Search notes, tags, or time…"
-          value={searchInput}
-          onChange={(e) => onSearchChange(e.target.value)}
-          aria-label="Search events"
-          disabled={isInitialLoad}
-          className="h-9 pl-9 pr-9"
-        />
-        {searchInput && (
-          <button
-            type="button"
-            onClick={onClearSearch}
-            className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded p-0.5 text-zinc-500 hover:text-zinc-300"
-            aria-label="Clear search"
-          >
-            <X className="h-4 w-4" aria-hidden />
           </button>
         )}
       </div>
@@ -135,35 +120,93 @@ export const LibraryToolbar = ({
         ))}
       </div>
 
-      <div className="space-y-1.5">
-        <span className="text-[10px] font-semibold uppercase tracking-wider text-zinc-600">
-          Source
-        </span>
-        <div
-          className="flex flex-wrap gap-1"
-          role="group"
-          aria-label="Filter by source"
-        >
-          {SOURCE_PILL_OPTIONS.map((option) => {
-            const isActive = sourceFilter === option.value;
-            return (
-              <button
-                key={option.label}
-                type="button"
-                aria-pressed={isActive}
-                disabled={isInitialLoad}
-                onClick={() => onSourceFilterChange(option.value)}
-                className={cn(
-                  "rounded-full px-2.5 py-1 text-xs font-medium transition",
-                  sourceFilterPillClass(option.value, isActive),
-                )}
-              >
-                {option.label}
-              </button>
-            );
-          })}
-        </div>
+      <div className="relative">
+        <Search
+          className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500"
+          aria-hidden
+        />
+        <Input
+          id="library-search"
+          type="search"
+          placeholder="Search notes, tags, time…"
+          value={searchInput}
+          onChange={(e) => onSearchChange(e.target.value)}
+          aria-label="Search events"
+          disabled={isInitialLoad}
+          className="h-9 pl-9 pr-9"
+        />
+        {searchInput && (
+          <button
+            type="button"
+            onClick={onClearSearch}
+            className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded p-0.5 text-zinc-500 hover:text-zinc-300"
+            aria-label="Clear search"
+          >
+            <X className="h-4 w-4" aria-hidden />
+          </button>
+        )}
       </div>
+
+      <div className="flex flex-wrap gap-1" role="group" aria-label="Filter by source">
+        {SOURCE_PILL_OPTIONS.map((option) => {
+          const isActive = sourceFilter === option.value;
+          return (
+            <button
+              key={option.label}
+              type="button"
+              aria-pressed={isActive}
+              disabled={isInitialLoad}
+              onClick={() => onSourceFilterChange(option.value)}
+              className={cn(
+                "rounded-full px-2.5 py-1 text-[11px] font-medium transition",
+                sourceFilterPillClass(option.value, isActive),
+              )}
+            >
+              {option.label}
+            </button>
+          );
+        })}
+      </div>
+
+      {!isInitialLoad && filteredCount > 0 && (
+        <div className="flex items-center justify-between gap-2 border-t border-zinc-800/80 pt-2">
+          <div className="flex min-w-0 items-center gap-1">
+            <button
+              type="button"
+              aria-pressed={showNotesInList}
+              disabled={isBulkBusy}
+              onClick={() => onShowNotesChange(!showNotesInList)}
+              className={cn(
+                "inline-flex h-7 items-center gap-1.5 rounded-md px-2 text-[11px] font-medium transition",
+                showNotesInList
+                  ? "bg-zinc-800 text-zinc-100 ring-1 ring-inset ring-zinc-700"
+                  : "text-zinc-500 hover:bg-zinc-900/80 hover:text-zinc-300",
+              )}
+            >
+              <StickyNote className="h-3 w-3 shrink-0" aria-hidden />
+              Notes
+            </button>
+          </div>
+          <button
+            type="button"
+            disabled={isBulkBusy}
+            aria-pressed={selectionMode}
+            onClick={onToggleSelectionMode}
+            className={cn(
+              "inline-flex h-7 shrink-0 items-center rounded-md px-2 text-[11px] font-medium transition",
+              selectionMode
+                ? "bg-sky-500/15 text-sky-200 ring-1 ring-inset ring-sky-500/25"
+                : "text-zinc-500 hover:bg-zinc-900/80 hover:text-zinc-300",
+            )}
+          >
+            {selectionMode
+              ? selectedCount > 0
+                ? `${selectedCount} selected · Done`
+                : "Selecting · Done"
+              : "Select"}
+          </button>
+        </div>
+      )}
     </div>
   );
 };
@@ -181,8 +224,8 @@ export const LibraryListIdleHint = ({
     )}
     <p className="max-w-[12rem] text-xs leading-relaxed text-zinc-600">
       {libraryView === "archived"
-        ? "Archived events will be listed here."
-        : "Your timeline fills in here once footage is imported."}
+        ? "Archived events show up here."
+        : "Import footage and your events will appear here."}
     </p>
   </div>
 );

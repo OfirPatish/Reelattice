@@ -4,6 +4,7 @@ import type { AppView } from "@/lib/types";
 import { scrollAppViewToTop } from "@/lib/scroll-app-view";
 import { AppShell } from "@/components/layout/app-shell";
 import { AppUpdateProvider } from "@/contexts/app-update-context";
+import { ConfirmProvider } from "@/contexts/confirm-context";
 import { TeslaCamDrivePrompt } from "@/components/tesla-cam-drive-prompt";
 import { CasesView } from "@/components/cases-view";
 import { EventList } from "@/components/event-list";
@@ -44,6 +45,7 @@ const App = () => {
   };
 
   return (
+    <ConfirmProvider>
     <AppUpdateProvider>
       <TeslaCamDrivePrompt onImportDrive={handleImportDrive} />
       <AppShell activeView={view} onNavigate={setView}>
@@ -119,6 +121,7 @@ const App = () => {
         </div>
       </AppShell>
     </AppUpdateProvider>
+    </ConfirmProvider>
   );
 };
 

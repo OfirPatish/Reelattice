@@ -94,7 +94,7 @@ export const ImportPreviewPanel = ({
         className="flex items-start gap-2 rounded-lg border border-sky-500/20 bg-sky-500/5 px-3 py-2.5 text-sm text-sky-100/90"
       >
         <Info className="mt-0.5 h-4 w-4 shrink-0 text-sky-400" aria-hidden />
-        <p>Nothing new — this footage is already in your library.</p>
+        <p>Nothing new. This footage is already in your library.</p>
       </div>
     )}
 

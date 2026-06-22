@@ -293,9 +293,9 @@ export const LibraryBulkPanel = ({
                           aria-pressed={coverage === "all"}
                           aria-label={
                             coverage === "all"
-                              ? `${tag.name} on all selected — click to remove`
+                              ? `${tag.name} on all selected. Click to remove.`
                               : coverage === "some"
-                                ? `${tag.name} on some selected — click to apply to all`
+                                ? `${tag.name} on some selected. Click to apply to all.`
                                 : `Add ${tag.name} to all selected`
                           }
                           className={cn(

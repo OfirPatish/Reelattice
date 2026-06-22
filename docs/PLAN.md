@@ -2,7 +2,7 @@
 
 **Product:** Reelattice  
 **Type:** Local-first desktop app (Tauri 2 + React)  
-**Status:** v1.12 — daily-use ready, public releases on GitHub  
+**Status:** v1.13 — daily-use ready, public releases on GitHub  
 **Last updated:** June 2026
 
 ---
@@ -149,15 +149,19 @@
 - [x] **AppConfirmDialog** — shared in-app confirm shell (used for drive prompt; migrate other confirms later)
 - [x] **Website quest cards** — equal height on desktop in Main Quest Line workflow section
 
+### Shipped (v1.13)
+
+- [x] **Automated tests** — Vitest specs for bulk selection, playback metrics, grid export quality, and update progress formatting; expanded Rust grid export quality tests
+- [x] **Front camera playback polish** — visible-camera-only preload in single mode, poster crossfade, lighter grid play/pause targeting
+- [x] **Show notes in list — long text overflow** — `break-words`, dynamic virtual row heights, full-note tooltip via `title`
+- [x] **Update overlay — richer download progress** — downloaded/total size and ETA on overlay and shared formatter
+- [x] **Single-instance launch** — `tauri-plugin-single-instance` focuses existing window on repeat launch
+- [x] **Custom in-app dialogs** — `ConfirmProvider` + `showConfirm()`; migrated archive/delete, bulk actions, settings, import discard, case delete, startup update prompt
+- [x] **Grid export quality presets** — Full / Standard / HD / Web with Rust encode settings; quality dialog before save location
+- [x] **Library & secondary views polish** — note previews and toolbar refresh; fixed selection highlight overlap; neutral Help, Settings, and Cases layout
+
 ### Next (future)
 
-- [ ] **Automated tests** — Vitest for React hooks/components and helpers (`npm test`); expand Rust unit/integration tests beyond parser/grouping (import paths, settings, drive detect). Keep CI-friendly `passWithNoTests` until first frontend specs land.
-- [ ] **Front camera playback polish** — Front is the sync master, default camera, often the audio source, and the largest grid cell; poster → video swap and decoding all angles at once can make it look like it stutters or loads slower than the others. Improve with visible-camera-only preload in single mode, smoother poster → video crossfade, and lighter grid audio handling (e.g. mute all feeds, route audio separately).
-- [ ] **Show notes in list — long text overflow** — Notes use `line-clamp-2` inside a fixed 108px virtual row; long or unbroken text can clip awkwardly and rows don’t grow with content. Consider `break-words`, dynamic row height (or measure + cache heights in the virtualizer), and optional expand/tooltip for the full note.
-- [ ] **Update overlay — richer download progress** — Show downloaded/total size (e.g. `21 / 30 MB`) and optional ETA on the in-app update overlay, not just integer percent. Makes slow GitHub downloads easier to read when progress ticks 1% at a time.
-- [ ] **Single-instance launch** — Prevent opening a second `reelattice.exe`. On a repeat launch (shortcut, Start menu, installer), **focus the existing window** (show, unminimize, bring to front) and exit the new process silently — do not show an error dialog. Use Tauri `single-instance` plugin (or equivalent mutex + IPC). Avoids duplicate SQLite writers, parallel imports, and twin windows; matches standard desktop UX (VS Code, Spotify, etc.).
-- [ ] **Custom in-app dialogs (unified confirm UI)** — Replace OS-native `confirm()` prompts with one branded Reelattice dialog shell used everywhere: same layout, typography, backdrop, and button styling; only title, body, and action labels change per use case. Align visually with existing in-app surfaces (`AppUpdateOverlay`, `CasePickerDialog` — zinc panel, rounded corners, backdrop blur). Shared component (e.g. `AppConfirmDialog`) + small helper (e.g. `showConfirm({ title, description, confirmLabel, cancelLabel, variant }) → Promise<boolean>`) so async flows in `lib/` stay simple. **Variants:** `default` (info), `warning` (destructive actions — delete), optional `accent` (positive actions — import). **Migrate:** delete event (`event-actions.ts`), bulk delete / archive / restore (`bulk-actions.ts`), import wizard cancel mid-scan, settings reset / change library location, case delete, app update prompt (`app-update.ts`). Keep native `open` / `save` file pickers — only confirmation prompts move in-app. Accessibility: focus trap, Escape to cancel, `role="dialog"`, `aria-labelledby` / `aria-describedby`.
-- [ ] **Grid export quality presets** — Full / Standard (1920×960) / HD / Web
 - [ ] **Telemetry overlay** — Parse Tesla SEI metadata; speed, GPS, G-force overlay on playback
 - [ ] **Insurance PDF report** — Event dossier with key frames, notes, and clip manifest
 
@@ -360,4 +364,4 @@ See [Developer Guide](./DEVELOPER.md) for build commands and project layout.
 
 ---
 
-*Document revision: 2.1 — June 2026 (Reelattice app **v1.12**; Tauri **2.11.x**)*
+*Document revision: 2.2 — June 2026 (Reelattice app **v1.13**; Tauri **2.11.x**)*
