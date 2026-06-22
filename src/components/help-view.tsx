@@ -129,6 +129,7 @@ const buildHelpTopics = (
     examples: [
       "Valid name: 2026-06-16_02-11-07-front.mp4 (timestamp + camera)",
       "USB: RecentClips = flat MP4s; SentryClips & SavedClips = timestamp subfolders",
+      "Plug in your TeslaCam USB while Reelattice is open → Import prompt (Settings to disable)",
       "Import the whole TeslaCam folder, or just RecentClips / SentryClips / SavedClips",
       "Picking a timestamp folder directly (e.g. 2024-01-15_14-30-22/) → choose source manually",
       "Loose MP4s or generic folders → choose Recent or Saved (default Recent)",

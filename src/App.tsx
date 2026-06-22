@@ -4,6 +4,7 @@ import type { AppView } from "@/lib/types";
 import { scrollAppViewToTop } from "@/lib/scroll-app-view";
 import { AppShell } from "@/components/layout/app-shell";
 import { AppUpdateProvider } from "@/contexts/app-update-context";
+import { TeslaCamDrivePrompt } from "@/components/tesla-cam-drive-prompt";
 import { CasesView } from "@/components/cases-view";
 import { EventList } from "@/components/event-list";
 import { ImportWizard } from "@/components/import-wizard";
@@ -37,8 +38,14 @@ const App = () => {
     scrollAppViewToTop(view);
   }, [view]);
 
+  const handleImportDrive = (mountPath: string) => {
+    setImportSeedPaths([mountPath]);
+    setView("import");
+  };
+
   return (
     <AppUpdateProvider>
+      <TeslaCamDrivePrompt onImportDrive={handleImportDrive} />
       <AppShell activeView={view} onNavigate={setView}>
         <div
           data-app-view="library"

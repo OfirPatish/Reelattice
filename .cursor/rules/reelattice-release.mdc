@@ -43,7 +43,8 @@ The website has no changelog page; version badges and marketing copy are the vis
 ## Docs
 
 - [ ] `docs/PLAN.md` — status line + new **Shipped (vX.Y)** section
-- [ ] `README.md` — only if setup, release, or feature list changed materially
+- [ ] `docs/USER_GUIDE.md` — if user workflows, settings, or paths changed
+- [ ] `README.md` — only if positioning, download link, or highlights changed materially
 
 ## Tag & publish
 

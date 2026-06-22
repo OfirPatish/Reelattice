@@ -19,11 +19,3 @@ export const getPlaybackShortcuts = (seekStepSecs: number): KeyboardShortcut[] =
   { description: `Skip forward ${seekStepSecs} seconds`, keyGroups: [["→"]] },
   { description: "Play / pause", keyGroups: [["Space"]] },
 ];
-
-/** @deprecated Use getPlaybackShortcuts with the user's seek step preference. */
-export const PLAYBACK_SHORTCUTS: KeyboardShortcut[] = getPlaybackShortcuts(5);
-
-export const ALL_SHORTCUTS: KeyboardShortcut[] = [
-  ...LIBRARY_SHORTCUTS,
-  ...getPlaybackShortcuts(5),
-];

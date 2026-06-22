@@ -20,7 +20,7 @@ const QUESTS = [
   {
     level: "LVL 3",
     title: "Export Boss",
-    objective: "ZIP or grid MP4 · scissors trim · share proof",
+    objective: "ZIP or grid MP4 · scissors trim · share proof with others",
     reward: "Trophy",
     color: "yellow" as const,
   },
@@ -40,20 +40,20 @@ export const WorkflowSection = () => (
         </h2>
       </Reveal>
 
-      <ol className="relative grid gap-6 md:grid-cols-3 md:gap-4">
+      <ol className="relative grid gap-6 md:grid-cols-3 md:items-stretch md:gap-4">
         <div
           aria-hidden
           className="absolute left-[16%] right-[16%] top-12 hidden h-0.5 bg-gradient-to-r from-cyan-500 via-fuchsia-500 to-yellow-400 md:block"
         />
 
         {QUESTS.map((quest, index) => (
-          <Reveal key={quest.level} as="li" delay={index * 120}>
-            <HudFrame glow={glowMap[quest.color]} title={quest.level}>
-              <div className="p-5">
+          <Reveal key={quest.level} as="li" delay={index * 120} className="h-full">
+            <HudFrame glow={glowMap[quest.color]} title={quest.level} className="flex h-full flex-col">
+              <div className="flex min-h-[11.5rem] flex-1 flex-col p-5">
                 <h3 className="font-display text-base font-bold uppercase tracking-wide text-white">
                   {quest.title}
                 </h3>
-                <p className="mt-3 text-sm leading-relaxed text-slate-400">{quest.objective}</p>
+                <p className="mt-3 flex-1 text-sm leading-relaxed text-slate-400">{quest.objective}</p>
                 <p
                   className={cn(
                     "mt-4 font-display text-[10px] font-bold uppercase tracking-widest",

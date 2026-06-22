@@ -1,61 +1,12 @@
 # Documentation
 
-| Document | Description |
-|----------|-------------|
-| [../README.md](../README.md) | Features, setup, releases, icon workflow, keyboard shortcuts |
-| [PLAN.md](./PLAN.md) | Roadmap, architecture, module map |
+| Document | For |
+|----------|-----|
+| [User Guide](./USER_GUIDE.md) | End users — import, library, Cases, export, settings |
+| [Developer Guide](./DEVELOPER.md) | Contributors — build, test, release |
+| [Plan & roadmap](./PLAN.md) | Architecture, module map, future work |
+| [../README.md](../README.md) | Project overview and download link |
 
-## In-app Help
+**In the app:** Help and Changelog tabs mirror user-facing topics. Update `src/components/help-view.tsx` and `src/lib/changelog.ts` when shipping features.
 
-The **Help** tab (`src/components/help-view.tsx`) mirrors and expands on this README for end users: quick start, workflow examples, shortcuts, and storage notes. Keep it updated when adding user-facing features.
-
-The **Changelog** tab reads from `src/lib/changelog.ts` — add an entry for every release.
-
-Before tagging, follow `.cursor/rules/reelattice-release.mdc`.
-
-Shortcut definitions live in one place: `src/lib/keyboard-shortcuts.ts` (shown in Help).
-
-## Project layout
-
-```
-reelattice/
-├── website/                  # Marketing landing page (Vite + React) — see website/README.md
-├── src/                      # React UI
-│   ├── components/
-│   │   ├── library/          # Event list, filters, bulk bar, case picker, virtual rows
-│   │   ├── cases/            # Case title presets
-│   │   ├── layout/           # App shell (Library · Import · Cases · Help · Changelog · Settings)
-│   │   ├── help-view.tsx
-│   │   ├── event-header-actions.tsx
-│   │   ├── event-detail-panel.tsx
-│   │   ├── event-detail-placeholder.tsx  # contextual empty states (detail panel)
-│   │   ├── dashcam-rec-empty.tsx         # Dashcam REC animation
-│   │   ├── empty-illustrations.tsx       # timeline, filter, archive, import, bulk animations
-│   │   ├── encrypted-clips-banner.tsx
-│   │   ├── playback-clip-error.tsx
-│   │   ├── grid-export-status.tsx
-│   │   ├── event-playback-surface.tsx
-│   │   ├── playback-controls-bar.tsx
-│   │   ├── video-player.tsx
-│   │   ├── import-source-select.tsx
-│   │   ├── import-wizard.tsx
-│   │   ├── cases-view.tsx
-│   │   ├── settings-view.tsx
-│   │   └── ui/               # Shared primitives (button, fade-in, collapse-fade, …)
-│   ├── hooks/                # use-library, use-synced-videos, use-library-drop-import
-│   └── lib/                  # api, accent-tones, case-presets, changelog, bulk-actions
-├── src-tauri/src/
-│   ├── commands/
-│   │   ├── events/           # CRUD, archive, export, bulk ops, thumbnails, open
-│   │   ├── cases.rs          # Incident bundles
-│   │   └── import.rs         # Scan, async import, library location
-│   ├── tesla/
-│   │   ├── parser.rs
-│   │   ├── grouping.rs
-│   │   ├── encrypted.rs      # EncryptedClips + MP4 header checks
-│   │   ├── ffmpeg.rs
-│   │   └── grid_video.rs     # FFmpeg grid export (1920×960)
-│   └── db/                   # SQLite schema & migrations
-├── scripts/download-ffmpeg.ps1
-└── docs/                     # This folder
-```
+**Before a release:** `.cursor/rules/reelattice-release.mdc`

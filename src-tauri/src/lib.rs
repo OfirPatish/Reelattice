@@ -11,6 +11,7 @@ use commands::cases::{
     add_events_to_case, create_case, delete_case, get_case, list_cases, remove_event_from_case,
     update_case, CaseDetail, CaseSummary,
 };
+use commands::drive_detect::{dismiss_teslacam_drive, write_notify_teslacam_drive};
 use commands::events::{
     bulk_delete_events as bulk_delete_event_records, bulk_export_events_zip,
     bulk_set_events_archived as bulk_set_event_archive, bulk_toggle_tag as bulk_toggle_event_tag,
@@ -383,6 +384,23 @@ fn get_app_settings(state: tauri::State<'_, AppState>) -> Result<AppSettings, er
     get_settings(&state.db)
 }
 
+#[tauri::command]
+fn set_notify_teslacam_drive_setting(
+    state: tauri::State<'_, AppState>,
+    enabled: bool,
+) -> Result<(), error::AppError> {
+    write_notify_teslacam_drive(&state.db, enabled)
+}
+
+#[tauri::command]
+fn dismiss_teslacam_drive_session(
+    state: tauri::State<'_, AppState>,
+    volume_id: String,
+) -> Result<(), error::AppError> {
+    dismiss_teslacam_drive(&state.drive_detect, volume_id);
+    Ok(())
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     let app_state = AppState::new().expect("Failed to initialize database");
@@ -411,6 +429,13 @@ pub fn run() {
                 let _ = window.show();
                 let _ = window.set_focus();
             }
+
+            if let Some(state) = app.try_state::<AppState>() {
+                state
+                    .drive_detect
+                    .start_watch(app.handle().clone(), Arc::clone(&state.db));
+            }
+
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
@@ -444,6 +469,8 @@ pub fn run() {
             get_path_byte_size,
             get_all_tags,
             get_app_settings,
+            set_notify_teslacam_drive_setting,
+            dismiss_teslacam_drive_session,
         ])
         .build(tauri::generate_context!())
         .expect("error while building tauri application")
@@ -451,6 +478,7 @@ pub fn run() {
             tauri::RunEvent::ExitRequested { .. } | tauri::RunEvent::Exit => {
                 if let Some(state) = app_handle.try_state::<AppState>() {
                     state.stop_active_ffmpeg();
+                    state.drive_detect.stop_watch();
                 }
             }
             _ => {}

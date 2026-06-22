@@ -18,6 +18,7 @@ use std::path::{Path, PathBuf};
 use rusqlite::params;
 use serde::{Deserialize, Serialize};
 
+use crate::commands::drive_detect::read_notify_teslacam_drive;
 use crate::db::Database;
 use crate::error::AppResult;
 
@@ -87,6 +88,7 @@ pub struct AppSettings {
     pub library_path: String,
     pub db_path: String,
     pub version: String,
+    pub notify_teslacam_drive: bool,
     pub stats: LibraryStats,
 }
 
@@ -300,6 +302,7 @@ pub fn get_settings(db: &Database) -> AppResult<AppSettings> {
         library_path: library_path.to_string_lossy().to_string(),
         db_path: db_path.to_string_lossy().to_string(),
         version: format_display_version(env!("CARGO_PKG_VERSION")),
+        notify_teslacam_drive: read_notify_teslacam_drive(db)?,
         stats,
     })
 }

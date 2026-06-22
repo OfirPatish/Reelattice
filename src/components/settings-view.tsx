@@ -17,9 +17,10 @@ import {
   RotateCcw,
   Settings,
   Tag,
+  Upload,
   Video,
 } from "lucide-react";
-import { getAppSettings, openDataFolder, openLibraryFolder, setLibraryLocation } from "@/lib/api";
+import { getAppSettings, openDataFolder, openLibraryFolder, setLibraryLocation, setNotifyTeslacamDrive } from "@/lib/api";
 import {
   accentIconBox,
   accentPageBannerClass,
@@ -45,6 +46,7 @@ import {
 } from "@/lib/library-preferences";
 import type { AppSettings } from "@/lib/types";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
   SelectContent,
@@ -334,6 +336,18 @@ export const SettingsView = ({ active, refreshKey }: SettingsViewProps) => {
     setLibraryPrefs(loadLibraryPreferences());
     setPrefsReset(true);
     window.setTimeout(() => setPrefsReset(false), 2500);
+  };
+
+  const handleNotifyTeslacamDriveChange = async (enabled: boolean) => {
+    setError("");
+    try {
+      await setNotifyTeslacamDrive(enabled);
+      setSettings((current) =>
+        current ? { ...current, notifyTeslacamDrive: enabled } : current,
+      );
+    } catch (err) {
+      setError(String(err));
+    }
   };
 
   const stats = settings?.stats;
@@ -656,6 +670,43 @@ export const SettingsView = ({ active, refreshKey }: SettingsViewProps) => {
                 <p className="text-[11px] leading-relaxed text-zinc-600">
                   Scissors on the playback bar centers this window on the playhead.
                 </p>
+              </div>
+            </div>
+          </SettingsSection>
+
+          <SettingsSection
+            title="Import"
+            description="USB detection while Reelattice is open. Nothing is scanned until you confirm."
+            accent="sky"
+            className="xl:col-span-6"
+          >
+            <div className="flex gap-3 p-5">
+              <div className={accentIconBox("sky", "h-9 w-9 shrink-0 rounded-lg")}>
+                <Upload className="h-4 w-4" aria-hidden />
+              </div>
+              <div className="min-w-0 flex-1">
+                <label
+                  htmlFor="notify-teslacam-drive"
+                  className="flex cursor-pointer items-start gap-3"
+                >
+                  <Checkbox
+                    id="notify-teslacam-drive"
+                    checked={settings?.notifyTeslacamDrive ?? true}
+                    disabled={loading}
+                    onCheckedChange={(checked) =>
+                      void handleNotifyTeslacamDriveChange(checked === true)
+                    }
+                  />
+                  <span className="min-w-0">
+                    <span className="block text-sm font-medium text-zinc-100">
+                      Notify when TeslaCam drive is connected
+                    </span>
+                    <span className="mt-0.5 block text-xs leading-relaxed text-zinc-500">
+                      Shows a prompt when a removable drive with TeslaCam folders is detected.
+                      Choose Import to open the wizard — clips are never imported automatically.
+                    </span>
+                  </span>
+                </label>
               </div>
             </div>
           </SettingsSection>

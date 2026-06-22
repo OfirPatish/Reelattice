@@ -10,6 +10,7 @@ use crate::error::{AppError, AppResult};
 use crate::paths;
 
 pub const LIBRARY_ROOT_SETTING_KEY: &str = "library_root";
+pub const NOTIFY_TESLACAM_DRIVE_KEY: &str = "notify_teslacam_drive";
 
 pub struct Database {
     conn: Mutex<Connection>,
@@ -89,11 +90,33 @@ pub fn read_library_root_setting(conn: &Connection) -> AppResult<Option<PathBuf>
 }
 
 fn write_library_root_setting(conn: &Connection, path: &Path) -> AppResult<()> {
-    let value = path.to_string_lossy().to_string();
+    write_string_setting(conn, LIBRARY_ROOT_SETTING_KEY, &path.to_string_lossy())?;
+    Ok(())
+}
+
+pub fn read_bool_setting(conn: &Connection, key: &str, default: bool) -> AppResult<bool> {
+    let value: Result<String, rusqlite::Error> = conn.query_row(
+        "SELECT value FROM app_settings WHERE key = ?1",
+        [key],
+        |row| row.get(0),
+    );
+
+    match value {
+        Ok(raw) => Ok(matches!(raw.trim(), "1" | "true" | "yes" | "on")),
+        Err(rusqlite::Error::QueryReturnedNoRows) => Ok(default),
+        Err(error) => Err(error.into()),
+    }
+}
+
+pub fn write_bool_setting(conn: &Connection, key: &str, enabled: bool) -> AppResult<()> {
+    write_string_setting(conn, key, if enabled { "true" } else { "false" })
+}
+
+fn write_string_setting(conn: &Connection, key: &str, value: &str) -> AppResult<()> {
     conn.execute(
         "INSERT INTO app_settings (key, value) VALUES (?1, ?2)
          ON CONFLICT(key) DO UPDATE SET value = excluded.value",
-        (LIBRARY_ROOT_SETTING_KEY, value),
+        (key, value),
     )?;
     Ok(())
 }

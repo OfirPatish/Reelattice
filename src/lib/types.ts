@@ -120,7 +120,20 @@ export type AppSettings = {
   libraryPath: string;
   dbPath: string;
   version: string;
+  notifyTeslacamDrive: boolean;
   stats: LibraryStats;
+};
+
+export type TeslaCamDriveMatch = {
+  volumeId: string;
+  mountPath: string;
+  teslaCamRoot: string;
+  volumeLabel: string;
+  driveLetter: string;
+};
+
+export type TeslaCamDriveDetectedPayload = {
+  drives: TeslaCamDriveMatch[];
 };
 
 export type AppView = "library" | "import" | "cases" | "settings" | "help" | "changelog";

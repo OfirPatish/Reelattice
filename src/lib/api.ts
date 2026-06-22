@@ -151,3 +151,9 @@ export const openDataFolder = () => invoke<void>("open_data_folder");
 export const getAllTags = () => invoke<TagInfo[]>("get_all_tags");
 
 export const getAppSettings = () => invoke<AppSettings>("get_app_settings");
+
+export const setNotifyTeslacamDrive = (enabled: boolean) =>
+  invoke<void>("set_notify_teslacam_drive_setting", { enabled });
+
+export const dismissTeslaCamDrive = (volumeId: string) =>
+  invoke<void>("dismiss_teslacam_drive_session", { volumeId });

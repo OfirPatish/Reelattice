@@ -143,12 +143,20 @@
 - [x] Public-facing UI de-linked from GitHub (downloads + in-app update panel)
 - [x] New circular Tesla multi-cam app icon (regenerated via `npm run icons:generate`)
 
+### Shipped (v1.12)
+
+- [x] **TeslaCam drive detection** — Windows polling while app is open; opt-in import prompt (never auto-import); volume serial/label session dismiss; Settings toggle (default on); sequential prompts when multiple drives connected
+- [x] **AppConfirmDialog** — shared in-app confirm shell (used for drive prompt; migrate other confirms later)
+- [x] **Website quest cards** — equal height on desktop in Main Quest Line workflow section
+
 ### Next (future)
 
+- [ ] **Automated tests** — Vitest for React hooks/components and helpers (`npm test`); expand Rust unit/integration tests beyond parser/grouping (import paths, settings, drive detect). Keep CI-friendly `passWithNoTests` until first frontend specs land.
 - [ ] **Front camera playback polish** — Front is the sync master, default camera, often the audio source, and the largest grid cell; poster → video swap and decoding all angles at once can make it look like it stutters or loads slower than the others. Improve with visible-camera-only preload in single mode, smoother poster → video crossfade, and lighter grid audio handling (e.g. mute all feeds, route audio separately).
 - [ ] **Show notes in list — long text overflow** — Notes use `line-clamp-2` inside a fixed 108px virtual row; long or unbroken text can clip awkwardly and rows don’t grow with content. Consider `break-words`, dynamic row height (or measure + cache heights in the virtualizer), and optional expand/tooltip for the full note.
 - [ ] **Update overlay — richer download progress** — Show downloaded/total size (e.g. `21 / 30 MB`) and optional ETA on the in-app update overlay, not just integer percent. Makes slow GitHub downloads easier to read when progress ticks 1% at a time.
 - [ ] **Single-instance launch** — Prevent opening a second `reelattice.exe`. On a repeat launch (shortcut, Start menu, installer), **focus the existing window** (show, unminimize, bring to front) and exit the new process silently — do not show an error dialog. Use Tauri `single-instance` plugin (or equivalent mutex + IPC). Avoids duplicate SQLite writers, parallel imports, and twin windows; matches standard desktop UX (VS Code, Spotify, etc.).
+- [ ] **Custom in-app dialogs (unified confirm UI)** — Replace OS-native `confirm()` prompts with one branded Reelattice dialog shell used everywhere: same layout, typography, backdrop, and button styling; only title, body, and action labels change per use case. Align visually with existing in-app surfaces (`AppUpdateOverlay`, `CasePickerDialog` — zinc panel, rounded corners, backdrop blur). Shared component (e.g. `AppConfirmDialog`) + small helper (e.g. `showConfirm({ title, description, confirmLabel, cancelLabel, variant }) → Promise<boolean>`) so async flows in `lib/` stay simple. **Variants:** `default` (info), `warning` (destructive actions — delete), optional `accent` (positive actions — import). **Migrate:** delete event (`event-actions.ts`), bulk delete / archive / restore (`bulk-actions.ts`), import wizard cancel mid-scan, settings reset / change library location, case delete, app update prompt (`app-update.ts`). Keep native `open` / `save` file pickers — only confirmation prompts move in-app. Accessibility: focus trap, Escape to cancel, `role="dialog"`, `aria-labelledby` / `aria-describedby`.
 - [ ] **Grid export quality presets** — Full / Standard (1920×960) / HD / Web
 - [ ] **Telemetry overlay** — Parse Tesla SEI metadata; speed, GPS, G-force overlay on playback
 - [ ] **Insurance PDF report** — Event dossier with key frames, notes, and clip manifest
@@ -314,7 +322,7 @@ src-tauri/src/
 | `ffmpeg` | Grid MP4 export; short-lived per-clip thumbnail extract (cached) |
 | `node`/Vite | `npm run tauri:dev` only — not shipped |
 
-See [docs/README.md](./README.md) for the full tree.
+See [Developer Guide](./DEVELOPER.md) for build commands and project layout.
 
 ---
 
@@ -352,4 +360,4 @@ See [docs/README.md](./README.md) for the full tree.
 
 ---
 
-*Plan version: 2.0 — June 2026*
+*Document revision: 2.0 — June 2026 (Reelattice app **v1.11**; Tauri **2.11.x**)*

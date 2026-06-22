@@ -4,6 +4,7 @@ use std::sync::{Arc, Mutex};
 
 use serde::Serialize;
 
+use crate::commands::drive_detect::DriveDetectState;
 use crate::commands::import::ImportResult;
 use crate::db::Database;
 use crate::error::{AppError, AppResult};
@@ -111,6 +112,7 @@ pub struct AppState {
     pub grid_export_lock: Arc<Mutex<()>>,
     pub active_ffmpeg: Arc<Mutex<Option<Child>>>,
     pub import_job: Arc<ImportJob>,
+    pub drive_detect: Arc<DriveDetectState>,
 }
 
 impl AppState {
@@ -120,6 +122,7 @@ impl AppState {
             grid_export_lock: Arc::new(Mutex::new(())),
             active_ffmpeg: Arc::new(Mutex::new(None)),
             import_job: Arc::new(ImportJob::new()),
+            drive_detect: Arc::new(DriveDetectState::new()),
         })
     }
 
