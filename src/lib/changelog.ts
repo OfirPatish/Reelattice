@@ -7,6 +7,15 @@ export type ChangelogEntry = {
 /** Newest first. User-facing release notes (major.minor). */
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: "1.15",
+    date: "June 2026",
+    highlights: [
+      "Reel sits fixed beside the window controls — hex lens orb that stays put when you resize",
+      "Click Reel for contextual tips in a left speech bubble (briefly covers the header context)",
+      "Update install dialog — version, highlights, and Install or Later before download starts",
+    ],
+  },
+  {
     version: "1.14",
     date: "June 2026",
     highlights: [
@@ -143,3 +152,18 @@ export const CHANGELOG: ChangelogEntry[] = [
     ],
   },
 ];
+
+/** Match updater version strings (e.g. 1.14.0) to changelog major.minor entries. */
+export const normalizeChangelogVersion = (version: string) => {
+  const parts = version.replace(/^v/i, "").trim().split(".");
+  if (parts.length >= 2) {
+    return `${parts[0]}.${parts[1]}`;
+  }
+
+  return parts[0] ?? version;
+};
+
+export const getChangelogHighlights = (version: string): readonly string[] => {
+  const key = normalizeChangelogVersion(version);
+  return CHANGELOG.find((entry) => entry.version === key)?.highlights ?? [];
+};

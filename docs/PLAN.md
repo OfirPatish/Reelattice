@@ -2,7 +2,7 @@
 
 **Product:** Reelattice  
 **Type:** Local-first desktop app (Tauri 2 + React)  
-**Status:** v1.14 — daily-use ready, public releases on GitHub  
+**Status:** v1.15 — daily-use ready, public releases on GitHub  
 **Last updated:** June 2026
 
 ---
@@ -156,13 +156,18 @@
 - [x] **Show notes in list — long text overflow** — `break-words`, dynamic virtual row heights, full-note tooltip via `title`
 - [x] **Update overlay — richer download progress** — downloaded/total size and ETA on overlay and shared formatter
 - [x] **Single-instance launch** — `tauri-plugin-single-instance` focuses existing window on repeat launch
-- [x] **Custom in-app dialogs** — `ConfirmProvider` + `showConfirm()`; migrated archive/delete, bulk actions, settings, import discard, case delete, startup update prompt
+- [x] **Custom in-app dialogs** — `ConfirmProvider` + `showConfirm()`; migrated archive/delete, bulk actions, settings, import discard, case delete
 - [x] **Grid export quality presets** — Full / Standard / HD / Web with Rust encode settings; quality dialog before save location
 - [x] **Library & secondary views polish** — note previews and toolbar refresh; fixed selection highlight overlap; neutral Help, Settings, and Cases layout
 
 ### Shipped (v1.14)
 
-- [x] **Reel header companion** — pixel dashcam buddy patrols the navbar gap; click for tab-specific tips; pauses in place with tooltip below the header
+- [x] **Reel header companion** — first dashcam buddy in the header with contextual tips per tab
+
+### Shipped (v1.15)
+
+- [x] **Reel header companion** — fixed hex orb beside window controls; left speech bubble for tips (overlays header context briefly)
+- [x] **Update install dialog** — dedicated pre-install dialog (version, changelog highlights, Install / Later) before download overlay; used from Settings and startup
 
 ### Next (future)
 

@@ -151,7 +151,7 @@ export const AppShell = ({ activeView, onNavigate, children }: AppShellProps) =>
   return (
     <div className="flex h-screen select-none flex-col bg-zinc-950 text-zinc-100">
       <header
-        className="flex h-14 shrink-0 cursor-default items-center border-b border-zinc-800"
+        className="relative z-10 flex h-14 shrink-0 cursor-default items-center overflow-visible border-b border-zinc-800"
         data-tauri-drag-region
         onMouseDown={handleTitleBarMouseDown}
       >
@@ -193,17 +193,23 @@ export const AppShell = ({ activeView, onNavigate, children }: AppShellProps) =>
         </nav>
 
         <div
-          className="flex min-h-0 min-w-0 flex-1 self-stretch items-end gap-3 px-2"
+          className="flex min-w-0 flex-1 items-center justify-end gap-3 px-4"
           data-no-drag
           onMouseDown={stopTitleBarMouseDown}
         >
-          <HeaderCompanion activeView={activeView} />
-          <div className="hidden shrink-0 pb-3 sm:block">
+          <div className="hidden shrink-0 sm:block">
             <HeaderContext activeView={activeView} />
           </div>
         </div>
 
-        <WindowControls />
+        <div
+          className="flex shrink-0 items-stretch overflow-visible border-l border-zinc-800/80"
+          data-no-drag
+          onMouseDown={stopTitleBarMouseDown}
+        >
+          <HeaderCompanion activeView={activeView} />
+          <WindowControls />
+        </div>
       </header>
 
       <main className="flex min-h-0 flex-1 flex-col">{children}</main>

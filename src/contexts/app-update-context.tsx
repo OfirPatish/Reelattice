@@ -1,7 +1,9 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import { AppUpdateOverlay } from "@/components/app-update-overlay";
-import { getAppSettings } from "@/lib/api";
+import { UpdateInstallDialog } from "@/components/settings/update-install-dialog";
 import { useAppUpdate } from "@/hooks/use-app-update";
+import { getAppSettings } from "@/lib/api";
+import { getChangelogHighlights } from "@/lib/changelog";
 import type { AppUpdateState } from "@/lib/app-update";
 
 type AppUpdateContextValue = {
@@ -26,7 +28,14 @@ export const AppUpdateProvider = ({ children }: AppUpdateProviderProps) => {
       .catch(() => setCurrentVersion(null));
   }, []);
 
-  const { state, checkForUpdate, installUpdate } = useAppUpdate({
+  const {
+    state,
+    checkForUpdate,
+    installUpdate,
+    installPrompt,
+    confirmInstall,
+    dismissInstall,
+  } = useAppUpdate({
     currentVersion: currentVersion ?? "0.0.0",
     checkOnStartup: currentVersion !== null,
   });
@@ -41,6 +50,17 @@ export const AppUpdateProvider = ({ children }: AppUpdateProviderProps) => {
       }}
     >
       {children}
+      {installPrompt && currentVersion ? (
+        <UpdateInstallDialog
+          open
+          currentVersion={currentVersion}
+          availableVersion={installPrompt.availableVersion}
+          highlights={getChangelogHighlights(installPrompt.availableVersion)}
+          releaseNotes={installPrompt.releaseNotes}
+          onInstall={confirmInstall}
+          onLater={dismissInstall}
+        />
+      ) : null}
       <AppUpdateOverlay state={state} />
     </AppUpdateContext.Provider>
   );

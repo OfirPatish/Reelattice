@@ -5,9 +5,9 @@ import { APP_VERSION } from "@/lib/constants";
  * Keep in sync with the top entry in `src/lib/changelog.ts` when shipping an app release.
  */
 export const RELEASE_HIGHLIGHTS: readonly string[] = [
-  "Reel — a tiny dashcam buddy patrolling the header; click for contextual tips",
+  "Reel — hex buddy beside window controls; click for a speech-bubble tip",
+  "Update install dialog — version, highlights, Install or Later before download",
   "Grid export quality — Full, Standard, HD, or Web before you pick a save location",
-  "In-app confirm dialogs and a refreshed Library, Help, Settings, and Cases layout",
 ];
 
 export const releaseHighlightsHeading = () => `What's new in v${APP_VERSION}`;

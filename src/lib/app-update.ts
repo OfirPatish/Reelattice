@@ -1,6 +1,5 @@
 import { relaunch } from "@tauri-apps/plugin-process";
 import { formatFileSize } from "@/lib/format";
-import { showConfirm } from "@/lib/show-confirm";
 import { check, type DownloadEvent, type Update } from "@tauri-apps/plugin-updater";
 
 /** How long transient statuses stay visible in the header before hiding. */
@@ -187,33 +186,8 @@ export const installAppUpdate = async (
   await relaunch();
 };
 
-export const promptStartupUpdate = async (
-  update: Update,
-  currentVersion: string,
-): Promise<boolean> => {
-  if (getDismissedVersion() === update.version) {
-    return false;
-  }
-
-  const notes = update.body?.trim();
-  const description = notes
-    ? `Reelattice ${update.version} is available (you have ${currentVersion}).\n\n${notes}`
-    : `Reelattice ${update.version} is available (you have ${currentVersion}). Install now?`;
-
-  const accepted = await showConfirm({
-    title: "Update available",
-    description,
-    confirmLabel: "Install",
-    cancelLabel: "Later",
-    variant: "accent",
-  });
-
-  if (!accepted) {
-    dismissUpdateVersion(update.version);
-  }
-
-  return accepted;
-};
+export const shouldSkipStartupUpdatePrompt = (version: string) =>
+  getDismissedVersion() === version;
 
 export const formatUpdateError = (error: unknown) => {
   if (error instanceof Error) {

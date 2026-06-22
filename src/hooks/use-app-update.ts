@@ -2,11 +2,12 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import type { Update } from "@tauri-apps/plugin-updater";
 import {
   checkForAppUpdate,
+  dismissUpdateVersion,
   formatUpdateError,
   initialAppUpdateState,
   installAppUpdate,
   isUpdaterEnabled,
-  promptStartupUpdate,
+  shouldSkipStartupUpdatePrompt,
   UPDATE_STATUS_VISIBLE_MS,
   type AppDownloadProgress,
   type AppUpdateState,
@@ -17,8 +18,16 @@ type UseAppUpdateOptions = {
   checkOnStartup?: boolean;
 };
 
+type InstallPromptState = {
+  update: Update;
+  dismissOnLater: boolean;
+  resolve: (accepted: boolean) => void;
+};
+
 export const useAppUpdate = ({ currentVersion, checkOnStartup = false }: UseAppUpdateOptions) => {
   const [state, setState] = useState<AppUpdateState>(() => initialAppUpdateState(currentVersion));
+  const [installPrompt, setInstallPrompt] = useState<InstallPromptState | null>(null);
+
   const pendingUpdateRef = useRef<Update | null>(null);
   const startupCheckedRef = useRef(false);
   const idleTimerRef = useRef<number | null>(null);
@@ -109,6 +118,43 @@ export const useAppUpdate = ({ currentVersion, checkOnStartup = false }: UseAppU
     }
   }, [scheduleReturnToIdle]);
 
+  const promptInstall = useCallback(
+    (update: Update, options?: { dismissOnLater?: boolean }) =>
+      new Promise<boolean>((resolve) => {
+        setInstallPrompt({
+          update,
+          dismissOnLater: options?.dismissOnLater ?? false,
+          resolve,
+        });
+      }),
+    [],
+  );
+
+  const closeInstallPrompt = useCallback((accepted: boolean) => {
+    setInstallPrompt((current) => {
+      if (!current) return null;
+
+      if (!accepted && current.dismissOnLater) {
+        dismissUpdateVersion(current.update.version);
+      }
+
+      current.resolve(accepted);
+      return null;
+    });
+  }, []);
+
+  const installUpdate = useCallback(async () => {
+    const update = pendingUpdateRef.current;
+    if (!update) {
+      return;
+    }
+
+    const accepted = await promptInstall(update);
+    if (accepted) {
+      await runInstall(update);
+    }
+  }, [promptInstall, runInstall]);
+
   const runCheck = useCallback(
     async (options?: { silent?: boolean }) => {
       if (!isUpdaterEnabled()) {
@@ -162,7 +208,11 @@ export const useAppUpdate = ({ currentVersion, checkOnStartup = false }: UseAppU
         }));
 
         if (options?.silent && checkOnStartup) {
-          const shouldInstall = await promptStartupUpdate(update, currentVersion);
+          if (shouldSkipStartupUpdatePrompt(update.version)) {
+            return update;
+          }
+
+          const shouldInstall = await promptInstall(update, { dismissOnLater: true });
           if (shouldInstall) {
             await runInstall(update);
           }
@@ -184,7 +234,7 @@ export const useAppUpdate = ({ currentVersion, checkOnStartup = false }: UseAppU
         return null;
       }
     },
-    [checkOnStartup, currentVersion, runInstall, scheduleReturnToIdle],
+    [checkOnStartup, promptInstall, runInstall, scheduleReturnToIdle],
   );
 
   useEffect(() => {
@@ -203,6 +253,14 @@ export const useAppUpdate = ({ currentVersion, checkOnStartup = false }: UseAppU
   return {
     state,
     checkForUpdate: () => runCheck(),
-    installUpdate: () => runInstall(),
+    installUpdate,
+    installPrompt: installPrompt
+      ? {
+          availableVersion: installPrompt.update.version,
+          releaseNotes: installPrompt.update.body?.trim() || state.releaseNotes,
+        }
+      : null,
+    confirmInstall: () => closeInstallPrompt(true),
+    dismissInstall: () => closeInstallPrompt(false),
   };
 };

@@ -51,7 +51,7 @@ export const WindowControls = () => {
 
   return (
     <div
-      className="flex shrink-0 items-stretch border-l border-zinc-800/80"
+      className="flex shrink-0 items-stretch"
       role="group"
       aria-label="Window controls"
       data-no-drag
