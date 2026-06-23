@@ -63,4 +63,5 @@ When unsure, treat as marketing-visible.
 
 - [ ] Every marketing-visible changelog item is represented publicly, or consciously deferred with a note in the commit message
 - [ ] README and website contain no contradictions with current app behavior
-- [ ] `APP_VERSION` and release highlights match the shipped tag (see `reelattice-release.mdc`)
+- [ ] `APP_VERSION` and `release-highlights.ts` match the shipped tag (see `reelattice-release.mdc`)
+- [ ] Release tag `vX.Y` is pushed — marketing copy without a tag does not ship an app update
