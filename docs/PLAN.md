@@ -168,6 +168,8 @@
 
 - [x] **Reel header companion** — fixed hex orb beside window controls; left speech bubble for tips (overlays header context briefly)
 - [x] **Update install dialog** — dedicated pre-install dialog (version, changelog highlights, Install / Later) before download overlay; used from Settings and startup
+- [x] **Cases tab loading flash on every visit** — keep cached detail while tab is inactive; silent background refresh on return; skeleton only on true first load or after 200ms
+- [x] **Playback load polish** — unified camera reveal (no front-first pop); thumbnails at t=0 to match video start
 
 ### Next (future)
 
@@ -270,7 +272,7 @@ Sentry is never guessed from folder layout alone. Timestamp folders do not conta
 
 - Output: **1920×960** (2:1) — matches a 3×2 grid of 4:3 Tesla cameras; cells are 640×480
 - FFmpeg sidecar bundled via `scripts/download-ffmpeg.ps1`; used for grid export and list thumbnails
-- Thumbnails: 320px-wide JPEG extract at ~0.4s; cached under `library/.thumbnails/`; served to UI as base64 data URLs
+- Thumbnails: 320px-wide JPEG extract at t=0; cached under `library/.thumbnails/`; served to UI as base64 data URLs
 - Writes to `*.mp4.part` during encode, renames on success; duration capped to shortest clip
 - **Import copy does not use FFmpeg**; thumbnails generate on first list view
 

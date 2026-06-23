@@ -157,6 +157,21 @@ export const EventPlaybackSurface = ({
     onActiveCameraChange(camera);
   };
 
+  const displayClipIds = useMemo(() => {
+    if (showGrid) return sortedClips.map((clip) => clip.id);
+    const activeId = sortedClips.find((clip) => clip.camera === activeCamera)?.id;
+    return activeId ? [activeId] : [];
+  }, [activeCamera, showGrid, sortedClips]);
+
+  const allDisplayClipsReady = useMemo(
+    () =>
+      displayClipIds.length > 0 &&
+      displayClipIds.every(
+        (clipId) => readyClips.has(clipId) || failedClips.has(clipId),
+      ),
+    [displayClipIds, failedClips, readyClips],
+  );
+
   return (
     <div className={cn("flex min-h-0 flex-col bg-black", className)}>
       <div
@@ -174,16 +189,13 @@ export const EventPlaybackSurface = ({
           const shouldLoadVideo = showGrid || isActiveSingle || isMasterClip;
           const isReady = readyClips.has(clip.id);
           const hasFailed = failedClips.has(clip.id);
-          const showVideo = isReady && (showGrid || isActiveSingle);
+          const isVisible = showGrid || isActiveSingle;
+          const showVideo =
+            allDisplayClipsReady && isReady && isVisible;
           const showPlaybackError =
-            hasFailed && (showGrid || isActiveSingle) && !isReady;
-          const preloadLevel = showGrid
-            ? clip.camera === "front"
-              ? "auto"
-              : "metadata"
-            : isActiveSingle || isMasterClip
-              ? "auto"
-              : "none";
+            hasFailed && isVisible && !isReady;
+          const preloadLevel =
+            showGrid || isActiveSingle || isMasterClip ? "auto" : "none";
 
           return (
             <div
@@ -208,15 +220,14 @@ export const EventPlaybackSurface = ({
                   <CameraBadge camera={clip.camera} className="left-3 top-3 z-10" />
                 )}
 
-                {clip.thumbnailPath && (
+                {clip.thumbnailPath && !showVideo && (
                   <img
                     src={convertFileSrc(clip.thumbnailPath)}
                     alt=""
                     aria-hidden
                     className={cn(
-                      "absolute inset-0 z-[1] h-full w-full bg-black transition-opacity duration-300",
+                      "absolute inset-0 z-[1] h-full w-full bg-black",
                       showGrid ? "object-cover" : "object-contain",
-                      showVideo ? "opacity-0" : "opacity-100",
                     )}
                   />
                 )}
@@ -247,9 +258,9 @@ export const EventPlaybackSurface = ({
                       : undefined
                   }
                   className={cn(
-                    "h-full w-full bg-black transition-opacity duration-300",
+                    "absolute inset-0 h-full w-full bg-black",
                     showGrid ? "object-cover" : "object-contain",
-                    showVideo ? "opacity-100" : "opacity-0",
+                    showVideo ? "z-[1] opacity-100" : "z-0 opacity-0",
                     !showGrid && isActiveSingle && "cursor-pointer",
                   )}
                   aria-label={cameraAriaLabel(clip.camera)}

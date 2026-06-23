@@ -60,14 +60,18 @@ export const CasesView = ({
   const [descriptionDraft, setDescriptionDraft] = useState("");
   const [creating, setCreating] = useState(false);
   const [editingCase, setEditingCase] = useState(false);
+  const [detailSkeletonVisible, setDetailSkeletonVisible] = useState(false);
 
   const hasLoadedOnceRef = useRef(false);
   const casesRequestIdRef = useRef(0);
   const detailRequestIdRef = useRef(0);
   const prevRefreshKeyRef = useRef(refreshKey);
   const prevSelectedCaseIdRef = useRef<string | null>(null);
+  const detailRef = useRef<CaseDetail | null>(null);
   const saveInFlightRef = useRef(false);
   const createDraftSnapshotRef = useRef<{ title: string; description: string } | null>(null);
+
+  detailRef.current = detail;
 
   const selectedSummary = useMemo(
     () => cases.find((item) => item.id === selectedCaseId) ?? null,
@@ -80,12 +84,12 @@ export const CasesView = ({
     );
   }, []);
 
-  const loadCases = useCallback(async (options: { silent?: boolean } = {}) => {
+  const loadCases = useCallback(async (options: { silent?: boolean; background?: boolean } = {}) => {
     const requestId = ++casesRequestIdRef.current;
 
     if (!options.silent && !hasLoadedOnceRef.current) {
       setIsInitialLoad(true);
-    } else if (options.silent) {
+    } else if (options.silent && !options.background) {
       setRefreshing(true);
     }
 
@@ -147,21 +151,26 @@ export const CasesView = ({
 
   useEffect(() => {
     if (!active) return;
-    void loadCases({ silent: hasLoadedOnceRef.current });
+
+    const silent = hasLoadedOnceRef.current;
+    void loadCases({ silent, background: silent });
   }, [active, loadCases, refreshKey]);
 
   useEffect(() => {
-    if (!active || !selectedCaseId) {
+    if (!selectedCaseId) {
       setDetail(null);
       prevSelectedCaseIdRef.current = null;
       return;
     }
 
+    if (!active) return;
+
     const selectionChanged = prevSelectedCaseIdRef.current !== selectedCaseId;
     prevSelectedCaseIdRef.current = selectedCaseId;
     prevRefreshKeyRef.current = refreshKey;
 
-    void loadDetail(selectedCaseId, { silent: !selectionChanged });
+    const hasCachedDetail = detailRef.current?.id === selectedCaseId;
+    void loadDetail(selectedCaseId, { silent: hasCachedDetail || !selectionChanged });
   }, [active, loadDetail, refreshKey, selectedCaseId]);
 
   useEffect(() => {
@@ -336,8 +345,27 @@ export const CasesView = ({
   };
 
   const showDetailContent = detail?.id === selectedCaseId;
-  const showDetailSkeleton =
-    isInitialLoad || (detailLoading && !showDetailContent);
+  const pendingDetailSkeleton = detailLoading && !showDetailContent;
+
+  useEffect(() => {
+    if (!pendingDetailSkeleton) {
+      setDetailSkeletonVisible(false);
+      return;
+    }
+
+    if (isInitialLoad) {
+      setDetailSkeletonVisible(true);
+      return;
+    }
+
+    const timeout = window.setTimeout(() => {
+      setDetailSkeletonVisible(true);
+    }, 200);
+
+    return () => window.clearTimeout(timeout);
+  }, [isInitialLoad, pendingDetailSkeleton]);
+
+  const showDetailSkeleton = isInitialLoad || detailSkeletonVisible;
   const isDetailBusy = detailRefreshing;
   const hasCases = cases.length > 0;
 

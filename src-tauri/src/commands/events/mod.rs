@@ -401,6 +401,11 @@ fn file_size(path: &Path) -> u64 {
         .unwrap_or(0)
 }
 
+/// Keep in sync with `CLIP_THUMBNAIL_SEEK_SECS` in `src/lib/clip-thumbnail.ts`.
+const CLIP_THUMBNAIL_SEEK_SECS: f64 = 0.0;
+/// Bump when thumbnail seek or encoding changes so stale JPEGs are regenerated.
+const CLIP_THUMBNAIL_VERSION: &str = "t0";
+
 pub fn ensure_clip_thumbnail(
     app: &tauri::AppHandle,
     db: &Database,
@@ -440,7 +445,7 @@ pub fn ensure_clip_thumbnail(
     }
 
     let ffmpeg = crate::tesla::ffmpeg::resolve_ffmpeg(app)?;
-    crate::tesla::ffmpeg::extract_thumbnail_jpeg(&ffmpeg, clip_path, &dest, 0.4)?;
+    crate::tesla::ffmpeg::extract_thumbnail_jpeg(&ffmpeg, clip_path, &dest, CLIP_THUMBNAIL_SEEK_SECS)?;
 
     let dest_str = dest.to_string_lossy().to_string();
     update_clip_thumbnail_path(db, clip_id, &dest_str)?;
@@ -462,7 +467,7 @@ pub fn get_clip_thumbnail_data(
 fn thumbnail_dest_path(db: &Database, clip_id: &str) -> PathBuf {
     db.library_root()
         .join(".thumbnails")
-        .join(format!("{clip_id}.jpg"))
+        .join(format!("{clip_id}-{CLIP_THUMBNAIL_VERSION}.jpg"))
 }
 
 fn migrate_legacy_thumbnail(clip_id: &str, dest: &Path) -> AppResult<()> {

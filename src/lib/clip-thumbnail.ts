@@ -1,5 +1,10 @@
 import { invoke } from "@tauri-apps/api/core";
 
+/** Must match `CLIP_THUMBNAIL_SEEK_SECS` in `src-tauri/src/commands/events/mod.rs`. */
+export const CLIP_THUMBNAIL_SEEK_SECS = 0;
+/** Bump with `CLIP_THUMBNAIL_VERSION` in `src-tauri/src/commands/events/mod.rs`. */
+const THUMBNAIL_CACHE_VERSION = "t0";
+
 const MAX_CONCURRENT_THUMBNAIL_BUILDS = 4;
 const MAX_CACHED_DATA_URLS = 300;
 
@@ -29,12 +34,15 @@ const releaseBuildSlot = () => {
   if (next) next();
 };
 
+const cacheKey = (clipId: string) => `${clipId}:${THUMBNAIL_CACHE_VERSION}`;
+
 const rememberDataUrl = (clipId: string, dataUrl: string) => {
-  if (dataUrlCache.has(clipId)) {
-    dataUrlCache.delete(clipId);
+  const key = cacheKey(clipId);
+  if (dataUrlCache.has(key)) {
+    dataUrlCache.delete(key);
   }
 
-  dataUrlCache.set(clipId, dataUrl);
+  dataUrlCache.set(key, dataUrl);
 
   while (dataUrlCache.size > MAX_CACHED_DATA_URLS) {
     const oldest = dataUrlCache.keys().next().value;
@@ -44,12 +52,13 @@ const rememberDataUrl = (clipId: string, dataUrl: string) => {
 };
 
 export const loadClipThumbnail = (clipId: string) => {
-  const cached = dataUrlCache.get(clipId);
+  const key = cacheKey(clipId);
+  const cached = dataUrlCache.get(key);
   if (cached) {
     return Promise.resolve(cached);
   }
 
-  const pending = pendingByClipId.get(clipId);
+  const pending = pendingByClipId.get(key);
   if (pending) {
     return pending;
   }
@@ -66,9 +75,9 @@ export const loadClipThumbnail = (clipId: string) => {
     }
   })();
 
-  pendingByClipId.set(clipId, promise);
+  pendingByClipId.set(key, promise);
   void promise.finally(() => {
-    pendingByClipId.delete(clipId);
+    pendingByClipId.delete(key);
   });
 
   return promise;
