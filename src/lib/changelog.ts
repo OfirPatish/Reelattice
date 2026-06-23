@@ -7,6 +7,15 @@ export type ChangelogEntry = {
 /** Newest first. User-facing release notes (major.minor). */
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: "1.16",
+    date: "June 2026",
+    highlights: [
+      "Playback opens smoothly — all cameras appear together without the front view popping in first",
+      "Thumbnails match the first video frame so scenes no longer jump when footage loads",
+      "Cases tab keeps your selected case visible when you switch tabs — no skeleton flash on return",
+    ],
+  },
+  {
     version: "1.15",
     date: "June 2026",
     highlights: [

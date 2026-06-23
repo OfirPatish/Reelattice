@@ -5,9 +5,9 @@ import { APP_VERSION } from "@/lib/constants";
  * Keep in sync with the top entry in `src/lib/changelog.ts` when shipping an app release.
  */
 export const RELEASE_HIGHLIGHTS: readonly string[] = [
-  "Reel — hex buddy beside window controls; click for a speech-bubble tip",
-  "Update install dialog — version, highlights, Install or Later before download",
-  "Grid export quality — Full, Standard, HD, or Web before you pick a save location",
+  "Smoother event playback — all cameras load together, no front-first pop",
+  "Thumbnails align with the first video frame — no scene jump when footage appears",
+  "Cases tab remembers your selection when switching tabs — no reload flash",
 ];
 
 export const releaseHighlightsHeading = () => `What's new in v${APP_VERSION}`;

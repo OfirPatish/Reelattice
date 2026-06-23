@@ -8,9 +8,9 @@ describe("changelog helpers", () => {
   });
 
   it("returns highlights for a known release", () => {
-    const highlights = getChangelogHighlights("1.14.0");
+    const highlights = getChangelogHighlights("1.16.0");
     expect(highlights.length).toBeGreaterThan(0);
-    expect(highlights[0]).toContain("Reel");
+    expect(highlights[0]).toContain("Playback");
   });
 
   it("returns empty highlights for unknown versions", () => {

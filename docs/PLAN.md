@@ -2,7 +2,7 @@
 
 **Product:** Reelattice  
 **Type:** Local-first desktop app (Tauri 2 + React)  
-**Status:** v1.15 — daily-use ready, public releases on GitHub  
+**Status:** v1.16 — daily-use ready, public releases on GitHub  
 **Last updated:** June 2026
 
 ---
@@ -168,6 +168,9 @@
 
 - [x] **Reel header companion** — fixed hex orb beside window controls; left speech bubble for tips (overlays header context briefly)
 - [x] **Update install dialog** — dedicated pre-install dialog (version, changelog highlights, Install / Later) before download overlay; used from Settings and startup
+
+### Shipped (v1.16)
+
 - [x] **Cases tab loading flash on every visit** — keep cached detail while tab is inactive; silent background refresh on return; skeleton only on true first load or after 200ms
 - [x] **Playback load polish** — unified camera reveal (no front-first pop); thumbnails at t=0 to match video start
 
