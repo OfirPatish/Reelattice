@@ -96,16 +96,16 @@ export const AppPreview = () => {
           <p className="mb-2 hidden font-display text-[8px] uppercase tracking-widest text-slate-600 sm:block">
             Events
           </p>
-          <ul className="flex gap-2 overflow-x-auto pb-1 sm:flex-col sm:space-y-1 sm:overflow-visible sm:pb-0">
+          <ul className="scrollbar-none flex gap-2 overflow-x-auto pb-1 snap-x snap-mandatory sm:flex-col sm:space-y-1 sm:overflow-visible sm:pb-0">
             {EVENTS.map((event, index) => {
               const isActive = index === activeEventIndex;
               return (
-                <li key={event.id} className="shrink-0 sm:shrink">
+                <li key={event.id} className="shrink-0 snap-start sm:shrink">
                   <button
                     type="button"
                     onClick={() => handleSelectEvent(index)}
                     className={cn(
-                      "min-w-[88px] border px-2 py-1.5 text-left transition-all sm:min-w-0 sm:w-full",
+                      "min-h-11 min-w-[92px] border px-2.5 py-2 text-left transition-all sm:min-w-0 sm:w-full",
                       isActive
                         ? "border-cyan-400/50 bg-cyan-400/10 shadow-[0_0_12px_rgba(0,240,255,0.15)]"
                         : "border-transparent hover:border-slate-700 hover:bg-slate-900/50",
@@ -140,7 +140,7 @@ export const AppPreview = () => {
                   type="button"
                   onClick={() => handleToggleView(mode)}
                   className={cn(
-                    "border border-slate-700 px-2 py-0.5 uppercase transition-colors",
+                    "min-h-10 border border-slate-700 px-2.5 py-1 uppercase transition-colors",
                     viewMode === mode
                       ? "border-fuchsia-400 bg-fuchsia-500/20 text-fuchsia-300"
                       : "text-slate-600 hover:text-slate-400",

@@ -21,6 +21,8 @@ npm run build
 npm run preview
 ```
 
+`build` generates `public/og-image.png` from the SVG (better social previews) then compiles the site.
+
 Output is written to `website/dist/` (gitignored).
 
 ## Environment variables
@@ -44,7 +46,9 @@ Production is on **Vercel** (`patish/reelattice`, root directory `website`). Pus
 3. Set `VITE_SITE_URL` to your production URL (e.g. `https://reelattice.vercel.app`).
 4. Deploy — `vercel.json` handles SPA routing and `/download` → `download.html`.
 
-The `/download` page resolves the latest Windows installer without exposing GitHub links in the marketing UI.
+The `/download` page resolves the latest Windows installer from GitHub Releases without exposing raw API URLs in the marketing UI. If auto-redirect fails, users get a direct GitHub Releases link.
+
+**Analytics:** [Vercel Analytics](https://vercel.com/docs/analytics) is included (`@vercel/analytics`). Enable Web Analytics in the Vercel project dashboard for page-view stats — no extra env vars required on Vercel.
 
 CI: `.github/workflows/website-build.yml` verifies `npm run build` on pull requests and `main` pushes.
 

@@ -6,5 +6,6 @@ export const DOWNLOAD_URL = import.meta.env.VITE_DOWNLOAD_URL ?? "/download";
 export const NAV_LINKS = [
   { label: "Abilities", href: "#features" },
   { label: "Quest Line", href: "#workflow" },
+  { label: "Briefing", href: "#faq" },
   { label: "Final Stage", href: "#download" },
 ] as const;

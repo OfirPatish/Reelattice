@@ -15,13 +15,13 @@ export const SiteHeader = () => {
     <>
       <header
         className={cn(
-          "sticky top-0 z-50 border-b transition-all duration-300",
+          "sticky top-0 z-50 border-b transition-all duration-300 safe-top",
           open || scrolled
             ? "border-cyan-500/20 bg-[#06080f]/95 backdrop-blur-md"
             : "border-transparent bg-transparent",
         )}
       >
-        <div className="mx-auto flex max-w-6xl items-center gap-3 px-4 py-3 md:gap-4 md:px-6">
+        <div className="mx-auto flex max-w-6xl items-center gap-3 safe-x px-4 py-3 md:gap-4 md:px-6">
           <a
             href="#"
             className="group flex min-w-0 shrink-0 items-center gap-2 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-cyan-400"

@@ -5,6 +5,7 @@ import { HudFrame } from "@/components/hud-frame";
 import { Reveal } from "@/components/reveal";
 import { useCycleText } from "@/hooks/use-cycle-text";
 import { APP_VERSION, DOWNLOAD_URL } from "@/lib/constants";
+import { BUILT_FOR } from "@/lib/site-content";
 import { cn } from "@/lib/utils";
 
 const CYCLE_LINES = [
@@ -24,8 +25,8 @@ export const HeroSection = () => {
   const { text, visible } = useCycleText(CYCLE_LINES);
 
   return (
-    <section className="relative px-4 pb-16 pt-8 md:px-6 md:pb-24 md:pt-12">
-      <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[1fr_1.1fr] lg:items-center lg:gap-8">
+    <section id="hero" className="safe-x px-4 pb-14 pt-6 md:px-6 md:pb-24 md:pt-12">
+      <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[1fr_1.1fr] lg:items-center lg:gap-8">
         <div>
           <Reveal delay={0}>
             <div className="mb-4 inline-flex items-center gap-2 border border-red-500/40 bg-red-500/10 px-3 py-1 font-display text-[10px] font-bold uppercase tracking-[0.2em] text-red-400">
@@ -35,7 +36,7 @@ export const HeroSection = () => {
           </Reveal>
 
           <Reveal delay={80}>
-            <h1 className="glitch-title font-display text-3xl font-black uppercase leading-[0.95] tracking-tight text-white min-[420px]:text-4xl md:text-5xl lg:text-6xl">
+            <h1 className="glitch-title font-display text-[1.75rem] font-black uppercase leading-[0.95] tracking-tight text-white min-[380px]:text-3xl min-[420px]:text-4xl md:text-5xl lg:text-6xl">
               Tesla
               <br />
               <span className="text-neon-cyan">Footage</span>
@@ -58,9 +59,22 @@ export const HeroSection = () => {
 
           <Reveal delay={220}>
             <p className="mt-4 max-w-md text-base leading-relaxed text-slate-400">
-              Import dashcam clips, review every angle in a synced grid, tag incidents,
-              export proof — like managing a squad, except the squad is six camera feeds.
+              Your local Tesla incident library — import dashcam clips, review every angle in a
+              synced grid, bundle events into Cases, and export proof when you need it.
             </p>
+          </Reveal>
+
+          <Reveal delay={250}>
+            <div className="mt-5 flex flex-wrap gap-2">
+              {BUILT_FOR.map((label) => (
+                <span
+                  key={label}
+                  className="border border-slate-700/80 bg-slate-900/40 px-2.5 py-1 font-display text-[9px] font-bold uppercase tracking-widest text-slate-400"
+                >
+                  {label}
+                </span>
+              ))}
+            </div>
           </Reveal>
 
           <Reveal delay={280}>

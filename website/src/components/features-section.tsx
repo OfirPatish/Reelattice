@@ -49,6 +49,12 @@ const SKILLS: Skill[] = [
     hotkey: "∞",
     span: "md:col-span-2",
   },
+  {
+    name: "Live Patch",
+    desc: "Signed installer and in-app updates from Settings — no manual reinstall hunts.",
+    rarity: "rare",
+    hotkey: "U",
+  },
 ];
 
 const RARITY_LABEL: Record<Skill["rarity"], string> = {
@@ -59,7 +65,7 @@ const RARITY_LABEL: Record<Skill["rarity"], string> = {
 };
 
 export const FeaturesSection = () => (
-  <section id="features" className="px-4 py-20 md:px-6 md:py-28">
+  <section id="features" className="safe-x px-4 py-16 md:px-6 md:py-28">
     <div className="mx-auto max-w-6xl">
       <Reveal className="mb-12 text-center md:mb-16">
         <p className="font-display text-[10px] font-bold uppercase tracking-[0.3em] text-fuchsia-400">

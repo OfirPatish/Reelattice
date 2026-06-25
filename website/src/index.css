@@ -12,6 +12,7 @@
 
 html {
   scroll-behavior: smooth;
+  scroll-padding-top: 4.5rem;
   background-color: var(--bg);
 }
 
@@ -20,6 +21,40 @@ body {
   font-family: var(--font-body);
   font-size: 17px;
   background-color: var(--bg);
+  -webkit-tap-highlight-color: transparent;
+}
+
+@media (max-width: 640px) {
+  body {
+    font-size: 16px;
+  }
+}
+
+.safe-top {
+  padding-top: max(0.75rem, env(safe-area-inset-top, 0px));
+}
+
+.safe-bottom {
+  padding-bottom: max(1.5rem, env(safe-area-inset-bottom, 0px));
+}
+
+.safe-x {
+  padding-left: max(1rem, env(safe-area-inset-left, 0px));
+  padding-right: max(1rem, env(safe-area-inset-right, 0px));
+}
+
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
+.skip-link {
+  @apply sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:border focus:border-cyan-400/60 focus:bg-[#0a0e17] focus:px-4 focus:py-2 focus:text-xs focus:font-bold focus:uppercase focus:tracking-wider focus:text-cyan-300;
+  font-family: var(--font-display);
 }
 
 #root {
@@ -162,6 +197,12 @@ body {
 
 .float-badge {
   animation: float-badge 3s ease-in-out infinite;
+}
+
+@media (max-width: 768px) {
+  .float-badge {
+    animation: none;
+  }
 }
 
 .stat-bar-fill {
