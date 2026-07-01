@@ -7,6 +7,13 @@ export type ChangelogEntry = {
 /** Newest first. User-facing release notes (major.minor). */
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: "1.18",
+    date: "July 2026",
+    highlights: [
+      "Windows release build fix — restores the v1.17 installer after a TypeScript build error blocked CI",
+    ],
+  },
+  {
     version: "1.17",
     date: "July 2026",
     highlights: [

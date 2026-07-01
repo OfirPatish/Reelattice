@@ -21,7 +21,6 @@ type EventDetailPlaceholderProps = {
   canBrowseEvents: boolean;
   onShowLibrary: () => void;
   onImport?: () => void;
-  onHelp?: () => void;
   onClearFilters?: () => void;
 };
 
@@ -61,7 +60,6 @@ export const EventDetailPlaceholder = ({
   canBrowseEvents,
   onShowLibrary,
   onImport,
-  onHelp,
   onClearFilters,
 }: EventDetailPlaceholderProps) => {
   const copy = PLACEHOLDER_COPY[reason];

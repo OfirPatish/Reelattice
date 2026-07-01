@@ -2,7 +2,7 @@
 
 **Product:** Reelattice  
 **Type:** Local-first desktop app (Tauri 2 + React)  
-**Status:** v1.17 — daily-use ready, public releases on GitHub  
+**Status:** v1.18 — daily-use ready, public releases on GitHub  
 **Last updated:** June 2026
 
 ---
@@ -173,6 +173,10 @@
 
 - [x] **Cases tab loading flash on every visit** — keep cached detail while tab is inactive; silent background refresh on return; skeleton only on true first load or after 200ms
 - [x] **Playback load polish** — unified camera reveal (no front-first pop); thumbnails at t=0 to match video start
+
+### Shipped (v1.18)
+
+- [x] **Windows release build fix** — remove unused `onHelp` prop that blocked TypeScript CI for v1.17
 
 ### Shipped (v1.17)
 

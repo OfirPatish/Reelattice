@@ -326,7 +326,6 @@ export const EventList = ({
                   canBrowseEvents={library.filteredEvents.length > 0}
                   onShowLibrary={() => library.updatePrefs({ libraryListOpen: true })}
                   onImport={() => onNavigate("import")}
-                  onHelp={() => onNavigate("help")}
                   onClearFilters={library.handleClearFilters}
                 />
               </div>

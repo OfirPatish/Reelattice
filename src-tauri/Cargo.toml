@@ -1,6 +1,6 @@
 [package]
 name = "reelattice"
-version = "1.17.0"
+version = "1.18.0"
 description = "Reelattice — Tesla Dashcam and Sentry Mode footage organizer"
 authors = ["ofirp"]
 edition = "2021"
