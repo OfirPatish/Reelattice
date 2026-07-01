@@ -17,8 +17,9 @@ Reelattice groups Tesla clips into **events** (one timestamp, up to six cameras)
 ### 1. Import footage
 
 - Open the **Import** tab, or drag Tesla clips onto **Library**.
-- Select your TeslaCam USB folder, or a folder such as `RecentClips`, `SentryClips`, or `SavedClips`.
-- Pick which events to import. Reelattice **copies** files into your library — you can remove the USB afterward.
+- Drop a folder or browse — TeslaCam USB, `RecentClips`, `SentryClips`, `SavedClips`, or loose `.mp4` files.
+- Review scanned events, choose which to copy, then **Import**. Reelattice **copies** files into your library — you can remove the USB afterward.
+- Expand **What can I import?** on the Import tab for filename examples.
 
 **Accepted files:** `.mp4` only, named like `2026-06-16_02-11-07-front.mp4`.
 
@@ -27,10 +28,10 @@ Reelattice groups Tesla clips into **events** (one timestamp, up to six cameras)
 ### 2. Review in Library
 
 - Search with `/`, move between events with `j` / `k` or arrow keys.
-- Filter by source (Recent / Sentry / Saved), tag, or date.
+- Use the **filter** button (list header) for source, tag, sort, date, and display options.
 - Open an event → switch cameras or use **Grid** for all angles synced.
-- Toggle **Notes** in the library toolbar to preview note text in the list (500 character limit per event).
-- Add tags, notes, archive, or delete from the detail panel.
+- Enable **Note previews** in the filter panel to show note text in the list (500 character limit per event).
+- Open **Details** (playback header) for tags, notes, and camera file info; use header icons to export, archive, or delete.
 
 ### 3. Cases (incident bundles)
 
@@ -42,7 +43,7 @@ Use **Cases** when several events belong to one incident (insurance claim, parki
 
 ### 4. Export proof
 
-From an open event (header icons):
+From an open event (header icon strip — hover for labels):
 
 - **ZIP** — all camera files plus metadata.
 - **Grid MP4** — one video matching the in-app 6-camera grid (1920×960). Choose quality (Full, Standard, HD, or Web) before picking a save location.

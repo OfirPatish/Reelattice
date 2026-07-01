@@ -153,7 +153,7 @@ export const CasePickerDialog = ({
                 <input
                   value={newTitle}
                   onChange={(event) => setNewTitle(event.target.value)}
-                  className="w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2 text-sm text-zinc-100 outline-none focus:border-violet-500/50"
+                  className="w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2 text-sm text-zinc-100 outline-none focus:border-zinc-600 focus:ring-1 focus:ring-zinc-600/30"
                   placeholder="Or type a custom title"
                   autoFocus
                 />
@@ -213,8 +213,8 @@ export const CasePickerDialog = ({
                           className={cn(
                             "w-full rounded-lg px-3 py-2.5 text-left transition",
                             isSelected
-                              ? "bg-violet-500/15 text-zinc-100 ring-1 ring-inset ring-violet-500/30"
-                              : "text-zinc-300 hover:bg-zinc-800/70",
+                              ? "bg-amber-500/[0.06] text-zinc-100 ring-1 ring-inset ring-amber-500/20"
+                              : "text-zinc-300 hover:bg-zinc-900/40",
                           )}
                         >
                           <p className="truncate text-sm font-medium">{item.title}</p>

@@ -2,7 +2,7 @@
 
 **Product:** Reelattice  
 **Type:** Local-first desktop app (Tauri 2 + React)  
-**Status:** v1.16 — daily-use ready, public releases on GitHub  
+**Status:** v1.17 — daily-use ready, public releases on GitHub  
 **Last updated:** June 2026
 
 ---
@@ -39,7 +39,7 @@
 - [x] Consistent single-camera playback (`object-contain`, full frame in player area)
 - [x] Settings overview: stats, prefs summary, shortcuts, reset preferences syncs Library
 - [x] Import: loose-file source picker + bulk “Set all to” when structure is ambiguous
-- [x] Library filter panel: collapsible Filter & view; stays open when reverting filters (no ghost-click collapse)
+- [x] Library filter panel: collapsible **Filters** sheet (tag, sort, date, cameras, note previews, list width); select-close guard prevents accidental collapse
 
 ### Shipped (v0.3)
 
@@ -174,6 +174,64 @@
 - [x] **Cases tab loading flash on every visit** — keep cached detail while tab is inactive; silent background refresh on return; skeleton only on true first load or after 200ms
 - [x] **Playback load polish** — unified camera reveal (no front-first pop); thumbnails at t=0 to match video start
 
+### Shipped (v1.17)
+
+- [x] **App-wide UI refresh** — compact neutral Library and Import; Cases, Help, Settings, Changelog aligned; subtle semantic accents (source chips, Cases amber, Changelog latest)
+- [x] **Library** — Filters button + collapsible panel; active filter chips; softer row selection; compact detail header with Details inspector
+- [x] **Import** — tighter drop zone; review rows with source dots; Add folders · Add files footer
+- [x] **Cases** — amber selection identity; linked events with source dots; neutral Changelog latest-only violet highlight
+
+### UI refresh — app-wide (shipped v1.17)
+
+Compact, neutral layout across primary and secondary tabs. Changelog entry ships with the next app release.
+
+**Library**
+
+- [x] List header — Active/Archived toggle, search, **Filters** button (badge when active), Select; filters in one collapsible panel (source, tag, sort, date, cameras, note previews, list width)
+- [x] Active filter chips — shown when filter panel is closed; zinc styling
+- [x] Event rows — source dot + text (shared `getSourceDotClass` in `format.ts`); softer selection ring
+- [x] Detail column — compact header (time, meta, neutral action strip with **left-side hover labels**, **Details** toggle); inspector panel replaces chevron rail
+- [x] Empty playback state — shorter copy, smaller illustrations
+
+**Import**
+
+- [x] Pick step — tighter drop zone; helper line in zone; collapsible guide unchanged
+- [x] Review step — zinc notices; source dots on rows; `Add folders · Add files` links; aligned with Library row styling
+
+**Cases**
+
+- [x] Sidebar list — neutral `libraryListItemClass` selection (no sky left-border accent)
+- [x] Detail header — compact title + meta; sentence-case section labels
+- [x] Linked events — divide-y rows with source dots (aligned with Library / Import)
+- [x] Title presets + case picker — zinc selection chips instead of violet
+
+**Help · Settings · Changelog**
+
+- [x] Changelog — `SecondaryViewRoot` layout; neutral cards with violet **Latest** highlight only
+- [x] Legal links card — zinc panel (inline variant unchanged)
+
+**Subtle accents (semantic, not chrome)**
+
+- [x] **Library** — source-colored filter chips; filter badge + Select mode stay sky (unchanged)
+- [x] **Import** — sky tint on drop zone while dragging
+- [x] **Cases** — amber selection + briefcase icons (Cases identity)
+- [x] **Help** — per-topic icon tones; colored quick-start step badges; Good to know cards
+- [x] **Settings** — tinted stat icon boxes (sky/amber/violet/rose/emerald/teal by metric)
+- [x] **Changelog** — violet highlight on latest release only; sky update tip card
+
+**Shared / cleanup**
+
+- [x] `filtersOpen` state (renamed from `filtersExpanded`; same sessionStorage key)
+- [x] Removed unused `InlineActionLabel` component (hook + `InlineActionHintRow` remain for playback bar)
+- [x] `libraryListItemClass` is the shared neutral row style; `secondaryListItemClass` aliases it
+- [x] Docs: `USER_GUIDE.md`, `help-view.tsx`, module map below
+
+**Website (spot-check, July 2026)**
+
+- [x] `APP_VERSION` and `RELEASE_HIGHLIGHTS` updated for v1.17
+- [x] `MARKETED_CAPABILITIES.organize` — Filters panel wording
+- Audited features/workflow — still accurate; no structural workflow changes beyond cleaner Library chrome
+
 ### Next (future)
 
 - [ ] **Telemetry overlay** — Parse Tesla SEI metadata; speed, GPS, G-force overlay on playback
@@ -294,17 +352,21 @@ Sentry is never guessed from folder layout alone. Timestamp folders do not conta
 ```
 src/
 ├── components/
-│   ├── library/                # filters, virtual rows, thumbnails, bulk panel, drop import
+│   ├── library/                # toolbar, filter panel, virtual rows, thumbnails, bulk panel, drop import
 │   ├── empty-illustrations.tsx # animated empty states (timeline, filter, archive, import, bulk)
 │   ├── dashcam-rec-empty.tsx   # Dashcam REC animation (detail placeholder)
-│   ├── event-list.tsx          # library shell (list collapse, Active/Archived fades)
-│   ├── event-detail-panel.tsx  # playback, tags, notes, export status
-│   ├── event-header-actions.tsx
+│   ├── event-list.tsx          # library shell (list collapse, Active/Archived)
+│   ├── event-detail-panel.tsx  # playback, Details inspector (tags, notes, clips), export status
+│   ├── event-detail-placeholder.tsx
+│   ├── event-header-actions.tsx  # export/archive/delete; left-side hover labels
 │   ├── grid-export-status.tsx
 │   ├── event-playback-surface.tsx  # single mount for all video elements
 │   ├── playback-controls-bar.tsx   # seek, play, camera tabs, layout, fullscreen
 │   ├── video-player.tsx        # fullscreen wrapper + camera state
-│   ├── import-wizard.tsx
+│   ├── import-wizard.tsx       # pick + preview steps
+│   ├── import-pick-panel.tsx
+│   ├── import-preview-panel.tsx
+│   ├── import-guide-panel.tsx
 │   ├── help-view.tsx
 │   ├── settings-view.tsx
 │   └── …
@@ -319,7 +381,8 @@ src/
     ├── bulk-selection.ts       # shift+click range select, BulkBusyAction type
     ├── event-actions.ts        # export / archive / delete helpers
     ├── keyboard-shortcuts.ts   # shared shortcut list (Help)
-    ├── library-filters.ts      # filter & sort logic
+    ├── format.ts               # labels, source dots, camera order
+    ├── library-filters.ts      # filter & sort logic; countActiveLibraryFilters
     ├── library-preferences.ts  # localStorage (incl. playbackLayout, list inner width)
     ├── import-source.ts        # import review source overrides
     └── playback-metrics.ts     # segment export window, 5s seek step
@@ -351,7 +414,7 @@ See [Developer Guide](./DEVELOPER.md) for build commands and project layout.
 | App name | **Reelattice** (user-facing) |
 | Repo layout | `Desktop/Projects/Reelattice` |
 | Import | Copy to library (not reference in place) |
-| Playback UI | Single angle + tabs; inline grid toggle; optional fullscreen |
+| Playback UI | Single angle + tabs; inline grid toggle; Details panel for tags/notes; optional fullscreen |
 | Video player | Native `<video>` + Tauri asset protocol; one surface, CSS layout switch |
 | Single-camera frame | `object-contain` in player — full frame, side bars on wide panels are normal |
 | Window | Default 1680×945; resizable and maximizable |

@@ -127,7 +127,7 @@ export const EventList = ({
             )}
             aria-hidden={!listOpen}
           >
-            <div className="shrink-0 space-y-2.5 border-b border-zinc-800 bg-zinc-950/40 p-3">
+            <div className="shrink-0 space-y-2 border-b border-zinc-800 p-3">
               <LibraryToolbar
                 filteredCount={library.filteredEvents.length}
                 totalCount={library.events.length}
@@ -136,46 +136,48 @@ export const EventList = ({
                 searchInput={library.searchInput}
                 libraryView={library.libraryView}
                 sourceFilter={library.sourceFilter}
-                showNotesInList={library.prefs.showNotesInList}
+                tagFilter={library.tagFilter}
+                prefs={library.prefs}
+                filtersOpen={library.filtersOpen}
                 selectionMode={library.selectionMode}
                 selectedCount={library.selectedIds.size}
                 isBulkBusy={library.isBulkBusy}
                 onSearchChange={library.setSearchInput}
                 onClearSearch={() => library.setSearchInput("")}
                 onLibraryViewChange={library.handleLibraryViewChange}
-                onSourceFilterChange={library.setSourceFilter}
-                onShowNotesChange={(showNotesInList) =>
-                  library.updatePrefs({ showNotesInList })
-                }
+                onToggleFilters={() => library.setFiltersOpen((open) => !open)}
                 onToggleSelectionMode={library.handleToggleSelectionMode}
                 canCollapse={canCollapseList}
                 onCollapse={handleListToggle}
               />
 
               <LibraryFilterPanel
-                expanded={library.filtersExpanded}
+                open={library.filtersOpen}
                 isInitialLoad={library.isInitialLoad}
+                sourceFilter={library.sourceFilter}
                 tagFilter={library.tagFilter}
                 tags={library.tags}
                 prefs={library.prefs}
-                onToggleExpanded={() => library.setFiltersExpanded((open) => !open)}
+                onSourceFilterChange={library.setSourceFilter}
                 onTagFilterChange={library.setTagFilter}
                 onPrefsChange={library.updatePrefs}
               />
 
-              <LibraryActiveFilters
-                searchInput={library.searchInput}
-                sourceFilter={library.sourceFilter}
-                tagFilter={library.tagFilter}
-                dateRange={library.prefs.dateRange}
-                minCameras={library.prefs.minCameras}
-                onClearSearch={() => library.setSearchInput("")}
-                onSourceFilterChange={library.setSourceFilter}
-                onTagFilterChange={library.setTagFilter}
-                onDateRangeChange={(dateRange) => library.updatePrefs({ dateRange })}
-                onMinCamerasChange={(minCameras) => library.updatePrefs({ minCameras })}
-                onClearAll={library.handleClearFilters}
-              />
+              {!library.filtersOpen && (
+                <LibraryActiveFilters
+                  searchInput={library.searchInput}
+                  sourceFilter={library.sourceFilter}
+                  tagFilter={library.tagFilter}
+                  dateRange={library.prefs.dateRange}
+                  minCameras={library.prefs.minCameras}
+                  onClearSearch={() => library.setSearchInput("")}
+                  onSourceFilterChange={library.setSourceFilter}
+                  onTagFilterChange={library.setTagFilter}
+                  onDateRangeChange={(dateRange) => library.updatePrefs({ dateRange })}
+                  onMinCamerasChange={(minCameras) => library.updatePrefs({ minCameras })}
+                  onClearAll={library.handleClearFilters}
+                />
+              )}
             </div>
 
             <div className="relative flex min-h-0 flex-1 flex-col">

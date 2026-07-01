@@ -7,6 +7,16 @@ export type ChangelogEntry = {
 /** Newest first. User-facing release notes (major.minor). */
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: "1.17",
+    date: "July 2026",
+    highlights: [
+      "Library toolbar simplified — Active/Archived, search, Filters button, and Select; source, tag, sort, and more in one collapsible panel",
+      "Event detail compact header — time and source at a glance, action icons with hover labels, Details panel for tags and notes",
+      "Import refreshed — tighter drop zone, zinc review rows with source dots, Add folders · Add files links",
+      "Cases, Help, Settings, and Changelog — calmer neutral layout; amber Cases identity and subtle color cues for scanning",
+    ],
+  },
+  {
     version: "1.16",
     date: "June 2026",
     highlights: [

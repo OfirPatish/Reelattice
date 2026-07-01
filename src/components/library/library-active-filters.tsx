@@ -5,6 +5,7 @@ import {
   SOURCE_OPTIONS,
 } from "@/lib/library-filters";
 import type { LibraryDateRange, LibraryMinCameras } from "@/lib/library-preferences";
+import { sourceBadgeClass } from "@/lib/format";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -92,19 +93,22 @@ export const LibraryActiveFilters = ({
   if (chips.length === 0) return null;
 
   return (
-    <div className="flex flex-wrap items-center gap-1.5" aria-label="Active filters">
+    <div className="flex flex-wrap items-center gap-1" aria-label="Active filters">
       {chips.map((chip) => (
         <button
           key={chip.id}
           type="button"
           onClick={chip.onRemove}
           className={cn(
-            "inline-flex max-w-full items-center gap-1 rounded-full bg-sky-500/10 px-2.5 py-1 text-[11px] font-medium text-sky-200 ring-1 ring-inset ring-sky-500/25 transition hover:bg-sky-500/15",
+            "inline-flex max-w-full items-center gap-1 rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset transition hover:opacity-90",
+            chip.id === "source" && sourceFilter
+              ? sourceBadgeClass(sourceFilter)
+              : "bg-zinc-900 text-zinc-400 ring-zinc-800 hover:bg-zinc-800/80 hover:text-zinc-300",
           )}
           aria-label={`Remove filter: ${chip.label}`}
         >
           <span className="truncate">{chip.label}</span>
-          <X className="h-3 w-3 shrink-0 opacity-70" aria-hidden />
+          <X className="h-2.5 w-2.5 shrink-0 opacity-60" aria-hidden />
         </button>
       ))}
       {chips.length > 1 && (
@@ -113,9 +117,9 @@ export const LibraryActiveFilters = ({
           variant="ghost"
           size="sm"
           onClick={onClearAll}
-          className="h-6 px-2 text-[11px] text-zinc-500 hover:text-zinc-300"
+          className="h-5 px-1.5 text-[10px] text-zinc-600 hover:text-zinc-400"
         >
-          Clear all
+          Clear
         </Button>
       )}
     </div>

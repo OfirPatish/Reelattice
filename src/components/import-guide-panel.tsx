@@ -63,11 +63,11 @@ export const ImportGuidePanel = () => {
       <CollapseFade show={open} className="w-full">
         <div
           id="import-guide-panel"
-          className="mt-3 rounded-lg border border-zinc-800/80 bg-zinc-900/30 px-4 py-4"
+          className="mt-2 rounded-lg border border-zinc-800/80 bg-zinc-950/50 px-3 py-3"
         >
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
-            <ImportGuideIllustration size="compact" className="mx-auto sm:mx-0 sm:w-44" />
-            <ul className="min-w-0 flex-1 space-y-2 text-xs leading-relaxed text-zinc-500">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:gap-5">
+            <ImportGuideIllustration size="compact" className="mx-auto sm:mx-0" />
+            <ul className="min-w-0 flex-1 space-y-1.5 text-xs leading-relaxed text-zinc-500">
               <li>TeslaCam USB folder, or RecentClips / SentryClips / SavedClips</li>
               <li>Individual .mp4 files with Tesla naming</li>
               <li className="font-mono text-[10px] text-zinc-600">

@@ -18,8 +18,10 @@ import {
   updateIncidentCase,
 } from "@/lib/api";
 import {
-  secondaryListItemClass,
+  casesIconBoxClass,
+  casesListItemClass,
   secondaryPanelClass,
+  SecondaryViewHeader,
 } from "@/components/layout/secondary-view-layout";
 import { formatRelativeTime } from "@/lib/format";
 import type { CaseDetail, CaseSummary } from "@/lib/types";
@@ -40,7 +42,7 @@ const sortCasesByUpdated = (items: CaseSummary[]) =>
   [...items].sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
 
 const fieldClassName =
-  "w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2 text-sm text-zinc-100 outline-none transition focus:border-sky-500/40 focus:ring-1 focus:ring-sky-500/20";
+  "w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2 text-sm text-zinc-100 outline-none transition focus:border-zinc-600 focus:ring-1 focus:ring-zinc-600/30";
 
 export const CasesView = ({
   active = true,
@@ -373,13 +375,11 @@ export const CasesView = ({
     <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
       {isInitialLoad && <IndeterminateBar />}
 
-      <div className="mx-auto flex min-h-0 w-full max-w-6xl flex-1 flex-col gap-6 overflow-hidden p-5 lg:p-8">
-        <header className="shrink-0 border-b border-zinc-800/80 pb-5">
-          <h1 className="text-xl font-semibold tracking-tight text-zinc-100">Cases</h1>
-          <p className="mt-1 max-w-2xl text-sm leading-relaxed text-zinc-500">
-            Group related events into incident bundles for review and export planning.
-          </p>
-        </header>
+      <div className="mx-auto flex min-h-0 w-full max-w-6xl flex-1 flex-col gap-5 overflow-hidden p-5 lg:p-8">
+        <SecondaryViewHeader
+          title="Cases"
+          description="Group related events into incident bundles for review and export planning."
+        />
 
         {error && (
           <div
@@ -403,13 +403,11 @@ export const CasesView = ({
             )}
             aria-busy={isInitialLoad || refreshing}
           >
-            <div className="flex items-center justify-between gap-3 border-b border-zinc-800/80 px-4 py-3">
+            <div className="flex items-center justify-between gap-3 border-b border-zinc-800/80 px-3 py-2.5">
               <div>
-                <p className="text-xs font-medium uppercase tracking-wider text-zinc-500">
-                  Your cases
-                </p>
+                <p className="text-sm font-medium text-zinc-200">Your cases</p>
                 {!isInitialLoad && (
-                  <p className="mt-0.5 text-[11px] text-zinc-600">
+                  <p className="mt-0.5 text-xs text-zinc-500">
                     {hasCases
                       ? `${cases.length} bundle${cases.length === 1 ? "" : "s"}`
                       : "None yet"}
@@ -434,7 +432,7 @@ export const CasesView = ({
                 <CaseListSkeleton />
               ) : cases.length === 0 ? (
                 <div className="flex flex-col items-center px-4 py-10 text-center">
-                  <span className="flex h-11 w-11 items-center justify-center rounded-lg bg-zinc-900 text-zinc-500 ring-1 ring-inset ring-zinc-800/80">
+                  <span className="flex h-11 w-11 items-center justify-center rounded-lg bg-amber-500/10 text-amber-400/90 ring-1 ring-inset ring-amber-500/20">
                     <Briefcase className="h-5 w-5" aria-hidden />
                   </span>
                   <p className="mt-3 text-sm font-medium text-zinc-400">No cases yet</p>
@@ -443,7 +441,7 @@ export const CasesView = ({
                   </p>
                 </div>
               ) : (
-                <ul className="divide-y divide-zinc-800/60" aria-label="Case list">
+                <ul className="divide-y divide-zinc-800/60 px-1 py-1" aria-label="Case list">
                   {cases.map((item) => {
                     const isActive = item.id === selectedCaseId && !creating;
                     return (
@@ -456,14 +454,9 @@ export const CasesView = ({
                             createDraftSnapshotRef.current = null;
                             setSelectedCaseId(item.id);
                           }}
-                          className={cn(secondaryListItemClass(isActive), "group pr-3")}
+                          className={cn(casesListItemClass(isActive), "group pr-2")}
                         >
-                          <span
-                            className={cn(
-                              "flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-zinc-900 text-zinc-500 ring-1 ring-inset ring-zinc-800/80 transition",
-                              isActive && "text-sky-400",
-                            )}
-                          >
+                          <span className={casesIconBoxClass(isActive)}>
                             <Briefcase className="h-3.5 w-3.5" aria-hidden />
                           </span>
                           <span className="min-w-0 flex-1">
@@ -476,10 +469,7 @@ export const CasesView = ({
                             </p>
                           </span>
                           <ChevronRight
-                            className={cn(
-                              "h-4 w-4 shrink-0 text-zinc-700 transition group-hover:text-zinc-500",
-                              isActive && "text-sky-400/80",
-                            )}
+                            className="h-4 w-4 shrink-0 text-zinc-600 transition group-hover:text-zinc-400"
                             aria-hidden
                           />
                         </button>
@@ -513,7 +503,7 @@ export const CasesView = ({
           >
             {creating ? (
               <>
-                <div className="border-b border-zinc-800/80 px-5 py-4">
+                <div className="border-b border-zinc-800/80 px-4 py-3">
                   <p className="text-sm font-medium text-zinc-100">New incident case</p>
                   <p className="mt-0.5 text-xs text-zinc-500">
                     Name the bundle, then link events from Library.
@@ -542,14 +532,11 @@ export const CasesView = ({
                   isDetailBusy && "pointer-events-none",
                 )}
               >
-                <div className="shrink-0 border-b border-zinc-800/80 px-5 py-4">
-                  <p className="text-xs font-medium uppercase tracking-wider text-zinc-500">
-                    Case details
-                  </p>
-                  <h2 className="mt-1 truncate text-base font-semibold tracking-tight text-zinc-100">
+                <div className="shrink-0 border-b border-zinc-800/80 px-4 py-3">
+                  <h2 className="truncate text-base font-semibold tracking-tight text-zinc-100">
                     {detail.title}
                   </h2>
-                  <p className="mt-1 text-xs text-zinc-500">
+                  <p className="mt-0.5 text-xs text-zinc-500">
                     {detail.events.length} linked event{detail.events.length === 1 ? "" : "s"} ·
                     Updated {formatRelativeTime(detail.updatedAt)}
                   </p>
@@ -590,11 +577,9 @@ export const CasesView = ({
                 </div>
 
                 <div className="flex min-h-36 flex-1 flex-col overflow-hidden border-t border-zinc-800/80">
-                  <div className="flex shrink-0 items-center justify-between px-5 py-3">
-                    <p className="text-xs font-medium uppercase tracking-wider text-zinc-500">
-                      Linked events
-                    </p>
-                    <span className="rounded-full bg-zinc-800/80 px-2 py-0.5 text-[11px] tabular-nums text-zinc-400">
+                  <div className="flex shrink-0 items-center justify-between px-4 py-2.5">
+                    <p className="text-sm font-medium text-zinc-300">Linked events</p>
+                    <span className="rounded-full bg-zinc-800/80 px-2 py-0.5 text-xs tabular-nums text-zinc-400">
                       {detail.events.length}
                     </span>
                   </div>
@@ -634,7 +619,7 @@ const CasesEmptyDetail = ({
   onCreate: () => void;
 }) => (
   <div className="flex flex-1 flex-col items-center justify-center gap-3 px-8 py-16 text-center">
-    <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-zinc-900 text-zinc-500 ring-1 ring-inset ring-zinc-800/80">
+    <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-amber-500/10 text-amber-400/90 ring-1 ring-inset ring-amber-500/20">
       <Briefcase className="h-6 w-6" aria-hidden />
     </span>
     {hasCases ? (
@@ -701,9 +686,7 @@ const CaseEditor = ({
 
         <div className="grid gap-4 sm:grid-cols-1">
           <div className="block space-y-2">
-            <span className="text-xs font-medium uppercase tracking-wider text-zinc-500">
-              Title
-            </span>
+            <span className="text-xs font-medium text-zinc-400">Title</span>
             {isEditing ? (
               <input
                 value={title}
@@ -717,9 +700,7 @@ const CaseEditor = ({
           </div>
 
           <div className="block space-y-2">
-            <span className="text-xs font-medium uppercase tracking-wider text-zinc-500">
-              Description
-            </span>
+            <span className="text-xs font-medium text-zinc-400">Description</span>
             {isEditing ? (
               <textarea
                 value={description}

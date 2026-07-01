@@ -50,6 +50,19 @@ export const sourceLabel = (source: EventSource | string) => {
   }
 };
 
+export const getSourceDotClass = (source: EventSource | string) => {
+  switch (source) {
+    case "sentry":
+      return "bg-amber-400";
+    case "saved":
+      return "bg-emerald-400";
+    case "recent":
+      return "bg-sky-400";
+    default:
+      return "bg-zinc-500";
+  }
+};
+
 export const sourceBadgeClass = (source: EventSource | string) => {
   switch (source) {
     case "sentry":

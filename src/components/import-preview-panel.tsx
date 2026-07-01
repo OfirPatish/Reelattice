@@ -1,8 +1,9 @@
-import { CheckCircle2, Info, Loader2, Plus } from "lucide-react";
+import { CheckCircle2, Loader2 } from "lucide-react";
+import type { ReactNode } from "react";
 import { ImportSourceSelect } from "@/components/import-source-select";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { formatEventTime, sourceBadgeClass, sourceLabel } from "@/lib/format";
+import { formatEventTime, getSourceDotClass, sourceLabel } from "@/lib/format";
 import {
   DEFAULT_LOOSE_IMPORT_SOURCE,
   getUnrecognizedSource,
@@ -35,6 +36,50 @@ type ImportPreviewPanelProps = {
   onCancelImport: () => void;
 };
 
+const ImportNotice = ({ children }: { children: ReactNode }) => (
+  <div
+    role="status"
+    className="rounded-lg border border-zinc-800/80 bg-zinc-950/50 px-3 py-2.5 text-sm leading-relaxed text-zinc-500"
+  >
+    {children}
+  </div>
+);
+
+const ImportEventSource = ({
+  event,
+  sourceOverrides,
+  loading,
+  onSourceOverride,
+}: {
+  event: DetectedEvent;
+  sourceOverrides: Record<string, EventSource>;
+  loading: boolean;
+  onSourceOverride: (folderPath: string, source: EventSource) => void;
+}) => {
+  if (event.sourceInferred) {
+    return (
+      <span className="inline-flex shrink-0 items-center gap-1.5 text-xs text-zinc-500">
+        <span
+          className={cn("h-1.5 w-1.5 rounded-full", getSourceDotClass(event.source))}
+          aria-hidden
+        />
+        {sourceLabel(event.source)}
+      </span>
+    );
+  }
+
+  return (
+    <ImportSourceSelect
+      value={getUnrecognizedSource(event, sourceOverrides)}
+      onChange={(source) => onSourceOverride(event.folderPath, source)}
+      disabled={loading}
+      size="compact"
+      aria-label={`Source for ${formatEventTime(event.eventTime)}`}
+      className="h-auto min-w-0 border-0 bg-transparent px-0 py-0 text-xs text-zinc-500 shadow-none ring-0 [&_svg]:size-3.5"
+    />
+  );
+};
+
 export const ImportPreviewPanel = ({
   detected,
   selectedEvents,
@@ -59,20 +104,20 @@ export const ImportPreviewPanel = ({
   onImport,
   onCancelImport,
 }: ImportPreviewPanelProps) => (
-  <section className="flex flex-col gap-3" aria-label="Review import">
+  <section className="flex flex-col gap-2.5" aria-label="Review import">
     <div className="flex flex-wrap items-center justify-between gap-2 px-0.5">
-      <p className="text-sm text-zinc-400">
-        {detected.length} event{detected.length === 1 ? "" : "s"} found
+      <p className="text-sm text-zinc-500">
+        {detected.length} event{detected.length === 1 ? "" : "s"}
         {newEventCount > 0 && (
-          <span className="text-emerald-400/90">
+          <span className="text-zinc-400">
             {" "}
             · {newEventCount} new
           </span>
         )}
         {importedEventCount > 0 && (
-          <span className="text-zinc-500">
+          <span>
             {" "}
-            · {importedEventCount} already in library
+            · {importedEventCount} in library
           </span>
         )}
       </p>
@@ -82,58 +127,45 @@ export const ImportPreviewPanel = ({
         size="sm"
         onClick={onSelectAllNew}
         disabled={loading || newEventCount === 0}
-        className="h-8 text-zinc-400"
+        className="h-8 text-sm text-zinc-500"
       >
         Select all new
       </Button>
     </div>
 
     {allAlreadyInLibrary && (
-      <div
-        role="status"
-        className="flex items-start gap-2 rounded-lg border border-sky-500/20 bg-sky-500/5 px-3 py-2.5 text-sm text-sky-100/90"
-      >
-        <Info className="mt-0.5 h-4 w-4 shrink-0 text-sky-400" aria-hidden />
-        <p>Nothing new. This footage is already in your library.</p>
-      </div>
+      <ImportNotice>Nothing new — this footage is already in your library.</ImportNotice>
     )}
 
     {hasMixedImportResults && (
-      <div
-        role="status"
-        className="flex items-start gap-2 rounded-lg border border-zinc-800 bg-zinc-900/40 px-3 py-2.5 text-sm text-zinc-400"
-      >
-        <Info className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
-        <p>
-          Events marked <span className="text-zinc-300">In library</span> cannot be imported again.
-        </p>
-      </div>
+      <ImportNotice>
+        Events marked <span className="text-zinc-400">In library</span> cannot be imported again.
+      </ImportNotice>
     )}
 
     {showSourcePicker && (
-      <div className="rounded-lg border border-amber-500/20 bg-amber-500/5 px-3 py-2.5">
-        <p className="text-sm text-amber-100/90">
-          Choose Recent, Sentry, or Saved for each event.
-        </p>
+      <ImportNotice>
+        <p>Choose Recent, Sentry, or Saved for each event.</p>
         <div className="mt-2 flex flex-wrap items-center gap-2">
-          <span className="text-xs text-zinc-500">Set all to:</span>
+          <span className="text-zinc-600">Set all to</span>
           <ImportSourceSelect
             value={bulkUnrecognizedSource ?? DEFAULT_LOOSE_IMPORT_SOURCE}
             onChange={onBulkSourceChange}
             disabled={loading}
             aria-label="Set source for all unrecognized events"
+            className="h-7 w-auto min-w-0 text-xs"
           />
         </div>
-      </div>
+      </ImportNotice>
     )}
 
     <div
       className={cn(
-        "flex flex-col overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900/40",
-        dragOver && "border-zinc-600",
+        "flex flex-col overflow-hidden rounded-xl ring-1 ring-inset ring-zinc-800",
+        dragOver && "ring-zinc-600",
       )}
     >
-      <ul className="max-h-[min(420px,50vh)] divide-y divide-zinc-800/80 overflow-y-auto">
+      <ul className="max-h-[min(420px,50vh)] divide-y divide-zinc-800/80 overflow-y-auto bg-zinc-950/30">
         {detected.map((event) => {
           const isSelected = selectedEvents.has(event.folderPath);
           const isImported = event.alreadyImported;
@@ -142,10 +174,10 @@ export const ImportPreviewPanel = ({
             <li key={event.folderPath}>
               <div
                 className={cn(
-                  "flex items-center gap-3 px-4 py-3 transition-colors",
+                  "flex items-center gap-2.5 px-3 py-2.5 transition-colors",
                   isImported && "opacity-45",
-                  !isImported && !isSelected && "hover:bg-zinc-800/30",
-                  isSelected && !isImported && "bg-zinc-800/60",
+                  !isImported && !isSelected && "hover:bg-zinc-900/40",
+                  isSelected && !isImported && "bg-zinc-900/80 ring-1 ring-inset ring-zinc-700/50",
                 )}
               >
                 <Checkbox
@@ -156,32 +188,20 @@ export const ImportPreviewPanel = ({
                   }
                   aria-label={`Import ${formatEventTime(event.eventTime)}`}
                 />
-                <span className="min-w-0 flex-1 text-sm text-zinc-200">
+                <span className="min-w-0 flex-1 truncate text-sm text-zinc-200">
                   {formatEventTime(event.eventTime)}
                 </span>
-                {event.sourceInferred ? (
-                  <span
-                    className={cn(
-                      "inline-flex shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium ring-1 ring-inset",
-                      sourceBadgeClass(event.source),
-                    )}
-                  >
-                    {sourceLabel(event.source)}
-                  </span>
-                ) : (
-                  <ImportSourceSelect
-                    value={getUnrecognizedSource(event, sourceOverrides)}
-                    onChange={(source) => onSourceOverride(event.folderPath, source)}
-                    disabled={isImported || loading}
-                    size="compact"
-                    aria-label={`Source for ${formatEventTime(event.eventTime)}`}
-                  />
-                )}
+                <ImportEventSource
+                  event={event}
+                  sourceOverrides={sourceOverrides}
+                  loading={isImported || loading}
+                  onSourceOverride={onSourceOverride}
+                />
                 <span className="shrink-0 text-xs tabular-nums text-zinc-500">
                   {event.clips.length} cam{event.clips.length === 1 ? "" : "s"}
                 </span>
                 {isImported && (
-                  <span className="inline-flex shrink-0 items-center gap-1 text-[10px] text-zinc-500">
+                  <span className="inline-flex shrink-0 items-center gap-1 text-[10px] text-zinc-600">
                     <CheckCircle2 className="h-3 w-3" aria-hidden />
                     In library
                   </span>
@@ -192,37 +212,34 @@ export const ImportPreviewPanel = ({
         })}
       </ul>
 
-      <div className="flex border-t border-zinc-800/80 px-2 py-1">
-        <Button
+      <div className="flex items-center gap-2 border-t border-zinc-800/80 px-3 py-2 text-sm">
+        <button
           type="button"
-          variant="ghost"
-          size="sm"
           onClick={onPickFolders}
           disabled={loading || importing}
-          className="text-zinc-500"
+          className="text-zinc-500 transition hover:text-zinc-300 disabled:opacity-40"
         >
-          <Plus className="h-3.5 w-3.5" aria-hidden />
           Add folders
-        </Button>
-        <Button
+        </button>
+        <span className="text-zinc-700" aria-hidden>
+          ·
+        </span>
+        <button
           type="button"
-          variant="ghost"
-          size="sm"
           onClick={onPickFiles}
           disabled={loading || importing}
-          className="text-zinc-500"
+          className="text-zinc-500 transition hover:text-zinc-300 disabled:opacity-40"
         >
-          <Plus className="h-3.5 w-3.5" aria-hidden />
           Add files
-        </Button>
+        </button>
       </div>
 
       <div
-        className="flex flex-wrap items-center justify-between gap-3 border-t border-zinc-800 bg-zinc-950 px-4 py-3"
+        className="flex flex-wrap items-center justify-between gap-3 border-t border-zinc-800 px-3 py-2.5"
         role="status"
         aria-live="polite"
       >
-        <p className="text-sm text-zinc-400">
+        <p className="text-sm text-zinc-500">
           {importing && importProgress ? (
             <>
               Copying {importProgress.completedEvents}/{importProgress.totalEvents}
@@ -235,7 +252,7 @@ export const ImportPreviewPanel = ({
           ) : selectionSummary.events > 0 ? (
             <>
               {selectionSummary.events} event{selectionSummary.events === 1 ? "" : "s"} ·{" "}
-              {selectionSummary.cameras} camera{selectionSummary.cameras === 1 ? "" : "s"}
+              {selectionSummary.cameras} cam{selectionSummary.cameras === 1 ? "" : "s"}
             </>
           ) : (
             "Select events to import"
@@ -248,19 +265,20 @@ export const ImportPreviewPanel = ({
               variant="ghost"
               size="sm"
               onClick={onCancelImport}
-              className="text-zinc-400"
+              className="h-8 text-zinc-500"
             >
               Cancel
             </Button>
           ) : null}
           <Button
             type="button"
+            size="sm"
             onClick={onImport}
             disabled={loading || importing || selectionSummary.events === 0}
           >
             {importing ? (
               <>
-                <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+                <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden />
                 Copying…
               </>
             ) : (

@@ -1,6 +1,6 @@
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { memo, useEffect, type RefObject } from "react";
-import { secondaryListItemClass } from "@/components/layout/secondary-view-layout";
+import { libraryListItemClass } from "@/components/layout/secondary-view-layout";
 import { formatEventTime } from "@/lib/format";
 import type { DashEvent } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -8,8 +8,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { EventListMeta } from "./event-list-meta";
 import { EventThumbnail } from "./event-thumbnail";
 
-const ROW_HEIGHT_DEFAULT = 72;
-const ROW_HEIGHT_WITH_NOTES = 112;
+const ROW_HEIGHT_DEFAULT = 76;
+const ROW_HEIGHT_WITH_NOTES = 118;
 
 type LibraryEventRowProps = {
   event: DashEvent;
@@ -27,8 +27,8 @@ type LibraryEventRowProps = {
 
 const rowSurfaceClass = (isHighlighted: boolean, isArchived: boolean) =>
   cn(
-    secondaryListItemClass(isHighlighted),
-    "h-full gap-3",
+    libraryListItemClass(isHighlighted),
+    "h-full",
     isArchived && !isHighlighted && "opacity-75",
   );
 

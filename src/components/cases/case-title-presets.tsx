@@ -8,7 +8,7 @@ type CaseTitlePresetsProps = {
 
 export const CaseTitlePresets = ({ value, onSelect }: CaseTitlePresetsProps) => (
   <div className="rounded-lg border border-zinc-800/80 bg-zinc-950/40 p-3">
-    <p className="text-xs font-medium uppercase tracking-wider text-zinc-500">Quick labels</p>
+    <p className="text-xs font-medium text-zinc-400">Quick labels</p>
     <p className="mt-1 text-[11px] leading-relaxed text-zinc-600">
       Choose a preset or type your own title below.
     </p>
@@ -29,7 +29,7 @@ export const CaseTitlePresets = ({ value, onSelect }: CaseTitlePresetsProps) => 
             className={cn(
               "rounded-full px-2.5 py-1 text-xs font-medium transition ring-1 ring-inset",
               isSelected
-                ? "bg-violet-500/15 text-violet-200 ring-violet-500/30"
+                ? "bg-amber-500/10 text-amber-200 ring-amber-500/25"
                 : "bg-zinc-900/80 text-zinc-400 ring-zinc-800 hover:bg-zinc-800 hover:text-zinc-200",
             )}
           >

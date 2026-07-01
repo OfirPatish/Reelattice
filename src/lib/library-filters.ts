@@ -119,6 +119,22 @@ export const hasExtendedFilters = (preferences: LibraryPreferences, tag?: string
   preferences.listWidth !== "default" ||
   preferences.sort !== "newest";
 
+/** Non-default filters for the compact filter button badge. */
+export const countActiveLibraryFilters = (
+  preferences: LibraryPreferences,
+  options: { source?: string; tag?: string } = {},
+) => {
+  let count = 0;
+  if (options.source) count += 1;
+  if (options.tag) count += 1;
+  if (preferences.dateRange !== "all") count += 1;
+  if (preferences.minCameras !== "any") count += 1;
+  if (preferences.sort !== "newest") count += 1;
+  if (preferences.showNotesInList) count += 1;
+  if (preferences.listWidth !== "default") count += 1;
+  return count;
+};
+
 export const filterAndSortEvents = (
   events: DashEvent[],
   search: string,

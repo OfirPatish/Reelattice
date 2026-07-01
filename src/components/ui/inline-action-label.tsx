@@ -1,5 +1,4 @@
 import { useCallback, useState, type FocusEvent } from "react";
-import { cn } from "@/lib/utils";
 
 export const useInlineActionLabel = () => {
   const [hoveredLabel, setHoveredLabel] = useState<string | null>(null);
@@ -23,24 +22,6 @@ export const useInlineActionLabel = () => {
   return { hoveredLabel, hoverProps, clearHover, handleBlur };
 };
 
-type InlineActionLabelProps = {
-  label: string | null;
-  className?: string;
-};
-
-export const InlineActionLabel = ({ label, className }: InlineActionLabelProps) => {
-  if (!label) return null;
-
-  return (
-    <span
-      className={cn("text-xs font-medium text-zinc-300 whitespace-nowrap", className)}
-      aria-live="polite"
-    >
-      {label}
-    </span>
-  );
-};
-
 type InlineActionHintRowProps = {
   label: string | null;
   className?: string;
@@ -48,7 +29,7 @@ type InlineActionHintRowProps = {
 
 export const InlineActionHintRow = ({ label, className }: InlineActionHintRowProps) => (
   <div
-    className={cn("h-4 text-center text-xs font-medium text-zinc-300", className)}
+    className={className ?? "h-4 text-center text-sm font-medium text-zinc-300"}
     aria-live="polite"
   >
     {label ?? ""}

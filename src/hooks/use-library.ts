@@ -18,10 +18,10 @@ import {
 } from "@/lib/library-filters";
 import type { DashEvent, EventSource, TagInfo } from "@/lib/types";
 
-const FILTERS_EXPANDED_KEY = "Reelattice-filters-expanded";
+const FILTERS_OPEN_KEY = "Reelattice-filters-expanded";
 
-const loadFiltersExpanded = () => {
-  const stored = sessionStorage.getItem(FILTERS_EXPANDED_KEY);
+const loadFiltersOpen = () => {
+  const stored = sessionStorage.getItem(FILTERS_OPEN_KEY);
   if (stored !== null) return stored === "true";
   return hasExtendedFilters(loadLibraryPreferences());
 };
@@ -38,7 +38,7 @@ export const useLibrary = (refreshKey: number) => {
   const [libraryView, setLibraryView] = useState<LibraryView>("active");
   const [searchInput, setSearchInput] = useState("");
   const [prefs, setPrefs] = useState<LibraryPreferences>(loadLibraryPreferences);
-  const [filtersExpanded, setFiltersExpandedState] = useState(loadFiltersExpanded);
+  const [filtersOpen, setFiltersOpenState] = useState(loadFiltersOpen);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [error, setError] = useState("");
   const [noteDraft, setNoteDraftState] = useState("");
@@ -49,10 +49,10 @@ export const useLibrary = (refreshKey: number) => {
   const [isViewRefreshing, setIsViewRefreshing] = useState(false);
   const eventsCacheRef = useRef<Partial<Record<LibraryView, DashEvent[]>>>({});
 
-  const setFiltersExpanded = useCallback((value: boolean | ((prev: boolean) => boolean)) => {
-    setFiltersExpandedState((prev) => {
+  const setFiltersOpen = useCallback((value: boolean | ((prev: boolean) => boolean)) => {
+    setFiltersOpenState((prev) => {
       const next = typeof value === "function" ? value(prev) : value;
-      sessionStorage.setItem(FILTERS_EXPANDED_KEY, String(next));
+      sessionStorage.setItem(FILTERS_OPEN_KEY, String(next));
       return next;
     });
   }, []);
@@ -550,8 +550,8 @@ export const useLibrary = (refreshKey: number) => {
     searchInput,
     setSearchInput,
     prefs,
-    filtersExpanded,
-    setFiltersExpanded,
+    filtersOpen,
+    setFiltersOpen,
     isInitialLoad,
     error,
     setError,

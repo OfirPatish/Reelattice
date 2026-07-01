@@ -372,6 +372,7 @@ export const SettingsView = ({ active, refreshKey }: SettingsViewProps) => {
                 label="Active events"
                 value={String(stats?.eventCount ?? 0)}
                 icon={<Video className="h-3.5 w-3.5" aria-hidden />}
+                iconTone="sky"
                 loading={loading}
                 hint={
                   !loading && (stats?.archivedCount ?? 0) > 0
@@ -383,6 +384,7 @@ export const SettingsView = ({ active, refreshKey }: SettingsViewProps) => {
                 label="Archived"
                 value={String(stats?.archivedCount ?? 0)}
                 icon={<Archive className="h-3.5 w-3.5" aria-hidden />}
+                iconTone="amber"
                 loading={loading}
                 hint={!loading && totalEvents > 0 ? `${totalEvents} total events` : undefined}
               />
@@ -390,24 +392,28 @@ export const SettingsView = ({ active, refreshKey }: SettingsViewProps) => {
                 label="Clips"
                 value={String(stats?.clipCount ?? 0)}
                 icon={<Camera className="h-3.5 w-3.5" aria-hidden />}
+                iconTone="violet"
                 loading={loading}
               />
               <SecondaryStat
                 label="Tags"
                 value={String(stats?.tagCount ?? 0)}
                 icon={<Tag className="h-3.5 w-3.5" aria-hidden />}
+                iconTone="rose"
                 loading={loading}
               />
               <SecondaryStat
                 label="Video storage"
                 value={formatFileSize(stats?.libraryBytes)}
                 icon={<HardDrive className="h-3.5 w-3.5" aria-hidden />}
+                iconTone="emerald"
                 loading={loading}
               />
               <SecondaryStat
                 label="Database"
                 value={formatFileSize(stats?.dbBytes)}
                 icon={<Database className="h-3.5 w-3.5" aria-hidden />}
+                iconTone="teal"
                 loading={loading}
               />
             </div>

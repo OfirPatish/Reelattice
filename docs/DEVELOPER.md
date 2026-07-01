@@ -36,7 +36,7 @@ npm test               # frontend (vitest)
 cd src-tauri && cargo test   # Rust unit tests
 ```
 
-**FFmpeg sidecar** (if missing):
+**FFmpeg sidecar** (required for `tauri dev` / grid export / thumbnails if missing):
 
 ```powershell
 .\scripts\download-ffmpeg.ps1

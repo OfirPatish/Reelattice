@@ -425,18 +425,11 @@ export const ImportWizard = ({
 
   return (
     <div data-scroll-root className="flex min-h-0 flex-1 flex-col overflow-y-auto">
-      <div className="mx-auto flex w-full max-w-2xl flex-col gap-4 p-6">
-        <header className="flex items-center justify-between gap-4">
-          <div>
-            <h1 className="text-lg font-semibold tracking-tight">
-              {showPreview ? "Review" : "Import"}
-            </h1>
-            {!showPreview && (
-              <p className="mt-0.5 text-sm text-zinc-500">
-                Drop Tesla clips or browse your USB drive.
-              </p>
-            )}
-          </div>
+      <div className="mx-auto flex w-full max-w-2xl flex-col gap-3 p-5">
+        <header className="flex items-center justify-between gap-3">
+          <h1 className="text-lg font-semibold tracking-tight text-zinc-100">
+            {showPreview ? "Review import" : "Import"}
+          </h1>
           {canCancel && (
             <Button
               type="button"
@@ -444,7 +437,7 @@ export const ImportWizard = ({
               size="sm"
               onClick={() => void handleCancelImport()}
               disabled={loading}
-              className="text-zinc-500 hover:text-zinc-300"
+              className="h-7 text-[11px] text-zinc-500 hover:text-zinc-300"
               aria-label={showPreview ? "Start over" : "Cancel"}
             >
               {showPreview ? "Start over" : "Cancel"}
@@ -455,9 +448,9 @@ export const ImportWizard = ({
         {error && (
           <div
             role="alert"
-            className="flex items-start gap-2 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300"
+            className="flex items-start gap-2 rounded-lg border border-red-500/20 bg-red-500/5 px-3 py-2.5 text-sm text-red-300"
           >
-            <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
+            <AlertCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden />
             {error}
           </div>
         )}
@@ -472,9 +465,9 @@ export const ImportWizard = ({
         {loading && showPreview && (
           <div
             role="status"
-            className="flex items-center gap-2 rounded-lg border border-zinc-800 bg-zinc-900/40 px-4 py-3 text-sm text-zinc-400"
+            className="flex items-center gap-2 rounded-lg border border-zinc-800/80 bg-zinc-950/50 px-3 py-2.5 text-sm text-zinc-500"
           >
-            <Loader2 className="h-4 w-4 shrink-0 animate-spin text-sky-400" aria-hidden />
+            <Loader2 className="h-3.5 w-3.5 shrink-0 animate-spin" aria-hidden />
             Scanning for additional clips…
           </div>
         )}

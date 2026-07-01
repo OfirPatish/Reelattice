@@ -21,7 +21,7 @@ Most Tesla tools help you **watch a clip once**. Reelattice helps you **keep and
 
 ## Highlights
 
-- **Import & library** — copy clips locally; search, filter, tag, and archive
+- **Import & library** — copy clips locally; search, Filters panel, tag, and archive
 - **Cases** — bundle related events into incident folders with notes
 - **6-camera review** — synced grid playback; export matches what you see
 - **Export** — ZIP (all cameras) or single grid MP4; optional 30s segment trim
